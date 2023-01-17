@@ -8,11 +8,8 @@
 
 #include "Game.h"
 
-#define WALL_THICKNESS 20;
-
 bool Game::Initialize()
 {
-
 	SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
 	mWindow =
 		SDL_CreateWindow("Pong", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
@@ -21,17 +18,16 @@ bool Game::Initialize()
 
 	if ((mRenderer == nullptr) || (mWindow == nullptr))
 	{
-		return false;
+		mGameisActive = false;
 	}
 
-	mActiveGame = true;
-	return true;
+	mGameisActive = true;
+	return mGameisActive;
 }
 
 void Game::RunLoop()
 {
-
-	while (mActiveGame)
+	while (mGameisActive)
 	{
 		ProcessInput();
 		UpdateGame();
@@ -47,19 +43,94 @@ void Game::ProcessInput()
 		switch (event.type)
 		{
 		case SDL_QUIT:
-			mActiveGame = false;
+			mGameisActive = false;
 		}
 	}
 
 	const Uint8* keyboard = SDL_GetKeyboardState(NULL);
+
 	if (keyboard[SDL_SCANCODE_ESCAPE])
 	{
-		mActiveGame = false;
+		mGameisActive = false;
+	}
+	if (keyboard[SDL_SCANCODE_S])
+	{
+		movement = -1;
+	}
+	if (keyboard[SDL_SCANCODE_W])
+	{
+		movement = 1;
 	}
 }
 
 void Game::UpdateGame()
 {
+	while ((SDL_GetTicks() - mPreviousMS) < 16)
+	{
+		//loop until 16ms have elapsed
+	}
+
+	int deltaTimeMS = SDL_GetTicks() - mPreviousMS;
+	float deltaTimeS = static_cast<float>(deltaTimeMS) / 1000;
+
+	mPreviousMS = SDL_GetTicks();
+
+	if (deltaTimeS > 0.033)
+	{
+		deltaTimeS = 0.033;
+	}
+
+	if (movement < 0)
+	{
+		if (mPaddle.y + (200 * deltaTimeS) + (PADDLE_HEIGHT / 2) < HEIGHT)
+		{
+			mPaddle.y = mPaddle.y + (200 * deltaTimeS);
+		}
+		movement = 0;
+	}
+
+	if (movement > 0)
+	{
+
+		int highPoint = mPaddle.y - (200 * deltaTimeS) - (PADDLE_HEIGHT / 2);
+
+		if (highPoint > WALL_THICKNESS)
+		{
+			mPaddle.y = mPaddle.y - (200 * deltaTimeS);
+		}
+		movement = 0;
+	}
+
+	mBall.x = mBall.x + (mBallVelocity.x * deltaTimeS);
+	mBall.y = mBall.y + (mBallVelocity.y * deltaTimeS);
+
+	if (mBall.y <= WALL_THICKNESS)
+	{
+		mBallVelocity.y = -1 * mBallVelocity.y;
+		mBall.y = WALL_THICKNESS;
+	}
+	else if (mBall.y >= HEIGHT - WALL_THICKNESS)
+	{
+		mBallVelocity.y = -1 * mBallVelocity.y;
+		mBall.y = HEIGHT - WALL_THICKNESS;
+	}
+	else if (mBall.x >= WIDTH - WALL_THICKNESS)
+	{
+		mBallVelocity.x = -1 * mBallVelocity.x;
+		mBall.x = WIDTH - WALL_THICKNESS;
+	}
+	else if (mBall.x <= PADDLE_WIDTH)
+	{
+		if ((mBall.y <= mPaddle.y + PADDLE_HEIGHT) && (mBall.y >= mPaddle.y - PADDLE_HEIGHT))
+		{
+			mBall.x = PADDLE_WIDTH;
+			mBallVelocity.x = -1 * mBallVelocity.x;
+		}
+		else
+		{
+			mGameisActive = false;
+		}
+	}
 }
 
 void Game::GenerateOutput()
