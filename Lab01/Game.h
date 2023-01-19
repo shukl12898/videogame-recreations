@@ -23,7 +23,7 @@ private:
 	SDL_Renderer* mRenderer = nullptr;
 	SDL_Point mPaddle = {5, HEIGHT / 2};
 	SDL_Point mBall = {WIDTH / 2, HEIGHT / 2};
-	SDL_Point mBallVelocity = {-200, 200};
+	SDL_Point mBallVelocity = {-150, 200};
 	bool mGameisActive = false;
 	void ProcessInput();
 	void UpdateGame();

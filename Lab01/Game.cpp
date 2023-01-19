@@ -82,21 +82,18 @@ void Game::UpdateGame()
 
 	if (movement < 0)
 	{
-		if (mPaddle.y + (200 * deltaTimeS) + (PADDLE_HEIGHT / 2) < HEIGHT)
+		if (mPaddle.y + (300 * deltaTimeS) + (PADDLE_HEIGHT / 2) < (HEIGHT - WALL_THICKNESS))
 		{
-			mPaddle.y = mPaddle.y + (200 * deltaTimeS);
+			mPaddle.y = mPaddle.y + (300 * deltaTimeS);
 		}
 		movement = 0;
 	}
 
 	if (movement > 0)
 	{
-
-		int highPoint = mPaddle.y - (200 * deltaTimeS) - (PADDLE_HEIGHT / 2);
-
-		if (highPoint > WALL_THICKNESS)
+		if ((mPaddle.y - (300 * deltaTimeS) - (PADDLE_HEIGHT / 2)) > WALL_THICKNESS)
 		{
-			mPaddle.y = mPaddle.y - (200 * deltaTimeS);
+			mPaddle.y = mPaddle.y - (300 * deltaTimeS);
 		}
 		movement = 0;
 	}
@@ -121,7 +118,8 @@ void Game::UpdateGame()
 	}
 	else if (mBall.x <= PADDLE_WIDTH)
 	{
-		if ((mBall.y <= mPaddle.y + PADDLE_HEIGHT) && (mBall.y >= mPaddle.y - PADDLE_HEIGHT))
+		if ((mBall.y <= mPaddle.y + PADDLE_HEIGHT / 2) &&
+			(mBall.y >= mPaddle.y - PADDLE_HEIGHT / 2))
 		{
 			mBall.x = PADDLE_WIDTH;
 			mBallVelocity.x = -1 * mBallVelocity.x;
