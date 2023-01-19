@@ -16,12 +16,8 @@ bool Game::Initialize()
 	mRenderer =
 		SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	if ((mRenderer == nullptr) || (mWindow == nullptr))
-	{
-		mGameisActive = false;
-	}
+	mGameisActive = !((mRenderer == nullptr) || (mWindow == nullptr));
 
-	mGameisActive = true;
 	return mGameisActive;
 }
 
