@@ -10,6 +10,13 @@
 
 int main(int argc, char** argv)
 {
-	// TODO
+	Game current = Game();
+	bool result = current.Initialize();
+	if (result)
+	{
+		current.RunLoop();
+	}
+
+	current.Shutdown();
 	return 0;
 }

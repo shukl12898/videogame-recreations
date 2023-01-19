@@ -20,7 +20,15 @@ Actor::~Actor()
 
 void Actor::Update(float deltaTime)
 {
-	// TODO
+	if (mState == ActorState::Active)
+	{
+		for (auto i : mComponents)
+		{
+			i->Update(deltaTime);
+		}
+	}
+
+	OnUpdate(deltaTime);
 }
 
 void Actor::OnUpdate(float deltaTime)
@@ -29,7 +37,15 @@ void Actor::OnUpdate(float deltaTime)
 
 void Actor::ProcessInput(const Uint8* keyState)
 {
-	// TODO
+	if (mState == ActorState::Active)
+	{
+		for (auto i : mComponents)
+		{
+			i->ProcessInput(keyState);
+		}
+	}
+
+	OnProcessInput(keyState);
 }
 
 void Actor::OnProcessInput(const Uint8* keyState)
