@@ -8,8 +8,9 @@
 
 #include "Game.h"
 #include "Actor.h"
+#include "SpriteComponent.h"
 #include <algorithm>
-#include <SDL2/SDL_image.h>>
+#include <SDL2/SDL_image.h>
 
 bool Game::Initialize()
 {
@@ -104,6 +105,29 @@ void Game::UpdateGame()
 
 void Game::LoadData()
 {
+	Actor* test = new Actor(this);
+	SpriteComponent* sc = new SpriteComponent(test);
+	sc->SetTexture(GetTexture("Assets/Ship.png"));
+
+	Actor* test2 = new Actor(this);
+	Vector2 test2Pos(200.0f, 100.0f);
+	test2->SetPosition(test2Pos);
+	SpriteComponent* sc2 = new SpriteComponent(test2);
+	sc2->SetTexture(GetTexture("Assets/Laser.png"));
+
+	Actor* test3 = new Actor(this);
+	Vector2 test3Pos(200.0f, 200.0f);
+	test3->SetPosition(test3Pos);
+	test3->SetScale(0.75f);
+	test3->SetRotation(Math::PiOver2);
+	SpriteComponent* sc3 = new SpriteComponent(test3);
+	sc3->SetTexture(GetTexture("Assets/ShipThrust.png"));
+
+	Actor* test4 = new Actor(this);
+	Vector2 test4Pos(512.0f, 384.0f);
+	test4->SetPosition(test4Pos);
+	SpriteComponent* sc4 = new SpriteComponent(test4, 80);
+	sc4->SetTexture(GetTexture("Assets/Stars.png"));
 }
 
 void Game::UnloadData()
@@ -112,12 +136,26 @@ void Game::UnloadData()
 	{
 		delete mActors.back();
 	}
+
+	for (auto it : mTextures)
+	{
+		SDL_DestroyTexture(it.second);
+	}
+
+	mTextures.clear();
 }
 
 void Game::GenerateOutput()
 {
 	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 	SDL_RenderClear(mRenderer);
+	for (auto it : mSprites)
+	{
+		if (it->IsVisible())
+		{
+			it->Draw(mRenderer);
+		}
+	}
 	SDL_RenderPresent(mRenderer);
 }
 
@@ -141,14 +179,35 @@ void Game::RemoveActor(Actor* actor)
 	mActors.erase(toDelete);
 }
 
+void Game::AddSprite(SpriteComponent* sprite)
+{
+	mSprites.push_back(sprite);
+	std::sort(mSprites.begin(), mSprites.end(), [](SpriteComponent* a, SpriteComponent* b) {
+		return a->GetDrawOrder() < b->GetDrawOrder();
+	});
+}
+
+void Game::RemoveSprite(SpriteComponent* sprite)
+{
+	auto toDelete = std::find(mSprites.begin(), mSprites.end(), sprite);
+	mSprites.erase(toDelete);
+}
+
 SDL_Texture* Game::GetTexture(std::string filename)
 {
 	if (mTextures.find(filename) == mTextures.end())
 	{
 		SDL_Surface* surface = IMG_Load(filename.c_str());
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(mRenderer, surface);
-		SDL_FreeSurface(surface);
-		mTextures[filename] = texture;
+		if (surface == nullptr)
+		{
+			SDL_Log("Tried to load %s but failed.", filename.c_str());
+		}
+		else
+		{
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(mRenderer, surface);
+			SDL_FreeSurface(surface);
+			mTextures[filename] = texture;
+		}
 	}
 
 	return mTextures[filename];

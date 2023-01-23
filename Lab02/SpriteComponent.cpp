@@ -10,12 +10,12 @@ SpriteComponent::SpriteComponent(Actor* owner, int drawOrder)
 , mTexHeight(0)
 , mIsVisible(true)
 {
-	//mOwner->GetGame()->AddSprite(this);
+	mOwner->GetGame()->AddSprite(this);
 }
 
 SpriteComponent::~SpriteComponent()
 {
-	//mOwner->GetGame()->RemoveSprite(this);
+	mOwner->GetGame()->RemoveSprite(this);
 }
 
 void SpriteComponent::Draw(SDL_Renderer* renderer)
