@@ -15,9 +15,10 @@ public:
 	static const int PADDLE_WIDTH = 10;
 	static const int BALL_SIZE = 10;
 	static const int WALL_THICKNESS = 20;
+	static const int PADDLE_SPEED = 300;
 
 private:
-	int movement = 0;
+	int mPaddleMovement = 0;
 	Uint32 mPreviousMS = 0;
 	SDL_Window* mWindow = nullptr;
 	SDL_Renderer* mRenderer = nullptr;

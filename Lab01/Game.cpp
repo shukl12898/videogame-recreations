@@ -16,7 +16,7 @@ bool Game::Initialize()
 	mRenderer =
 		SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	mGameisActive = !((mRenderer == nullptr) || (mWindow == nullptr));
+	mGameisActive = (mRenderer != nullptr) && (mWindow != nullptr);
 
 	return mGameisActive;
 }
@@ -51,11 +51,11 @@ void Game::ProcessInput()
 	}
 	if (keyboard[SDL_SCANCODE_S])
 	{
-		movement = -1;
+		mPaddleMovement = 1;
 	}
 	if (keyboard[SDL_SCANCODE_W])
 	{
-		movement = 1;
+		mPaddleMovement = -1;
 	}
 }
 
@@ -76,22 +76,23 @@ void Game::UpdateGame()
 		deltaTimeS = 0.033;
 	}
 
-	if (movement < 0)
+	if (mPaddleMovement > 0)
 	{
-		if (mPaddle.y + (300 * deltaTimeS) + (PADDLE_HEIGHT / 2) < (HEIGHT - WALL_THICKNESS))
+		if (mPaddle.y + (PADDLE_SPEED * deltaTimeS) + (PADDLE_HEIGHT / 2) <
+			(HEIGHT - WALL_THICKNESS))
 		{
-			mPaddle.y = mPaddle.y + (300 * deltaTimeS);
+			mPaddle.y = static_cast<int>(mPaddle.y + (PADDLE_SPEED * deltaTimeS));
 		}
-		movement = 0;
+		mPaddleMovement = 0;
 	}
 
-	if (movement > 0)
+	if (mPaddleMovement < 0)
 	{
 		if ((mPaddle.y - (300 * deltaTimeS) - (PADDLE_HEIGHT / 2)) > WALL_THICKNESS)
 		{
-			mPaddle.y = mPaddle.y - (300 * deltaTimeS);
+			mPaddle.y = static_cast<int>(mPaddle.y - (300 * deltaTimeS));
 		}
-		movement = 0;
+		mPaddleMovement = 0;
 	}
 
 	mBall.x = mBall.x + (mBallVelocity.x * deltaTimeS);

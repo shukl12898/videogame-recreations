@@ -10,13 +10,13 @@
 
 int main(int argc, char** argv)
 {
-	Game current = Game();
-	bool result = current.Initialize();
+	Game currentGame = Game();
+	bool result = currentGame.Initialize();
 	if (result)
 	{
-		current.RunLoop();
+		currentGame.RunLoop();
 	}
 
-	current.Shutdown();
+	currentGame.Shutdown();
 	return 0;
 }
