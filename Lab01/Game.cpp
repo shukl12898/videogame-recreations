@@ -73,7 +73,7 @@ void Game::UpdateGame()
 
 	if (deltaTimeS > 0.033)
 	{
-		deltaTimeS = 0.033;
+		deltaTimeS = static_cast<float>(0.033);
 	}
 
 	if (mPaddleMovement > 0)
@@ -95,8 +95,8 @@ void Game::UpdateGame()
 		mPaddleMovement = 0;
 	}
 
-	mBall.x = mBall.x + (mBallVelocity.x * deltaTimeS);
-	mBall.y = mBall.y + (mBallVelocity.y * deltaTimeS);
+	mBall.x = static_cast<int>(mBall.x + (mBallVelocity.x * deltaTimeS));
+	mBall.y = static_cast<int>(mBall.y + (mBallVelocity.y * deltaTimeS));
 
 	if (mBall.y <= WALL_THICKNESS)
 	{
