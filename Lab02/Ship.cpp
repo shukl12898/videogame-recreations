@@ -2,6 +2,7 @@
 #include "SpriteComponent.h"
 #include "MoveComponent.h"
 #include "Game.h"
+#include "Laser.h"
 
 Ship::Ship(Game* game)
 : Actor(game)
@@ -12,6 +13,8 @@ Ship::Ship(Game* game)
 	mSpriteComponent = sc;
 	MoveComponent* mc = new MoveComponent(this);
 	mMoveComponent = mc;
+	Vector2 shipInitialPosition((game->WIDTH) / 2, (game->HEIGHT) / 2);
+	SetPosition(shipInitialPosition);
 }
 
 void Ship::OnProcessInput(const Uint8* keyState)
@@ -44,4 +47,22 @@ void Ship::OnProcessInput(const Uint8* keyState)
 	{
 		mMoveComponent->SetAngularSpeed(0);
 	}
+
+	if (keyState[SDL_SCANCODE_SPACE])
+	{
+
+		if (GetCooldown() <= 0.0f)
+		{
+			Laser* laser = new Laser(mGame);
+			laser->SetState(ActorState::Active);
+			laser->SetPosition(GetPosition());
+			laser->SetRotation(GetRotation());
+			SetCooldown(1.0f);
+		}
+	}
+}
+
+void Ship::OnUpdate(float deltaTime)
+{
+	mCooldown -= deltaTime;
 }

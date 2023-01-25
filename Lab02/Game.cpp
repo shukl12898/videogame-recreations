@@ -9,12 +9,15 @@
 #include "Game.h"
 #include "Actor.h"
 #include "Ship.h"
+#include "Random.h"
 #include "SpriteComponent.h"
+#include "Asteroid.h"
 #include <algorithm>
 #include <SDL2/SDL_image.h>
 
 bool Game::Initialize()
 {
+	Random::Init();
 	SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
 	mWindow = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH,
 							   HEIGHT, 0);
@@ -107,34 +110,18 @@ void Game::UpdateGame()
 
 void Game::LoadData()
 {
-	// Actor* test = new Actor(this);
-	// SpriteComponent* sc = new SpriteComponent(test);
-	// sc->SetTexture(GetTexture("Assets/Ship.png"));
-
-	// Actor* test2 = new Actor(this);
-	// Vector2 test2Pos(200.0f, 100.0f);
-	// test2->SetPosition(test2Pos);
-	// SpriteComponent* sc2 = new SpriteComponent(test2);
-	// sc2->SetTexture(GetTexture("Assets/Laser.png"));
-
-	// Actor* test3 = new Actor(this);
-	// Vector2 test3Pos(200.0f, 200.0f);
-	// test3->SetPosition(test3Pos);
-	// test3->SetScale(0.75f);
-	// test3->SetRotation(Math::PiOver2);
-	// SpriteComponent* sc3 = new SpriteComponent(test3);
-	// sc3->SetTexture(GetTexture("Assets/ShipThrust.png"));
-
-	Actor* test4 = new Actor(this);
-	Vector2 test4Pos(512.0f, 384.0f);
-	test4->SetPosition(test4Pos);
-	SpriteComponent* sc4 = new SpriteComponent(test4, 80);
-	sc4->SetTexture(GetTexture("Assets/Stars.png"));
+	Actor* background = new Actor(this);
+	Vector2 backgroundPos(512.0f, 384.0f);
+	background->SetPosition(backgroundPos);
+	SpriteComponent* backgroundSC = new SpriteComponent(background, 80);
+	backgroundSC->SetTexture(GetTexture("Assets/Stars.png"));
 
 	mShip = new Ship(this);
-	Vector2 shipInitialPosition(WIDTH / 2, HEIGHT / 2);
-	mShip->SetPosition(shipInitialPosition);
-	mShip->SetRotation(Math::PiOver2);
+
+	for (int i = 0; i < 10; i++)
+	{
+		Asteroid* asteroid = new Asteroid(this);
+	}
 }
 
 void Game::UnloadData()
@@ -184,6 +171,17 @@ void Game::RemoveActor(Actor* actor)
 {
 	auto toDelete = std::find(mActors.begin(), mActors.end(), actor);
 	mActors.erase(toDelete);
+}
+
+void Game::AddAsteroid(Asteroid* asteroid)
+{
+	mAsteroids.push_back(asteroid);
+}
+
+void Game::RemoveAsteroid(Asteroid* asteroid)
+{
+	auto toDelete = std::find(mAsteroids.begin(), mAsteroids.end(), asteroid);
+	mAsteroids.erase(toDelete);
 }
 
 void Game::AddSprite(SpriteComponent* sprite)
