@@ -80,9 +80,9 @@ void Game::UpdateGame()
 
 	mPreviousMS = SDL_GetTicks();
 
-	if (deltaTimeS > 0.033)
+	if (deltaTimeS > 0.033f)
 	{
-		deltaTimeS = 0.033;
+		deltaTimeS = 0.033f;
 	}
 
 	std::vector<Actor*> actorsCopy = mActors;
@@ -120,7 +120,7 @@ void Game::LoadData()
 
 	for (int i = 0; i < 10; i++)
 	{
-		Asteroid* asteroid = new Asteroid(this);
+		new Asteroid(this);
 	}
 }
 
