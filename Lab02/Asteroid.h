@@ -5,7 +5,7 @@ class Asteroid : public Actor
 public:
 	Asteroid(class Game* game);
 	~Asteroid();
-	void OnUpdate(float deltaTime);
+	void OnUpdate(float deltaTime) override;
 
 protected:
 	class Game* mGame;

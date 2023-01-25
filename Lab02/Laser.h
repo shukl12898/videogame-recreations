@@ -4,7 +4,7 @@ class Laser : public Actor
 {
 public:
 	Laser(class Game* game);
-	void OnUpdate(float deltaTime);
+	void OnUpdate(float deltaTime) override;
 	float GetLifetime() const { return mLifetime; }
 
 protected:

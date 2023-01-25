@@ -22,7 +22,7 @@ public:
 	std::vector<class Asteroid*> mAsteroids;
 	static const int WIDTH = 1024;
 	static const int HEIGHT = 768;
-	class Actor* mShip;
+	class Actor* mShip = nullptr;
 
 private:
 	Uint32 mPreviousMS = 0;
