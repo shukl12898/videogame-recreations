@@ -10,5 +10,6 @@ MoveComponent::MoveComponent(class Actor* owner)
 
 void MoveComponent::Update(float deltaTime)
 {
-	// TODO: Implement in Part 2
+	mOwner->SetRotation(mOwner->GetRotation() + mAngularSpeed * deltaTime);
+	mOwner->SetPosition(mOwner->GetPosition() + (mOwner->GetForward() * mForwardSpeed * deltaTime));
 }

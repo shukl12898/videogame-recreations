@@ -8,6 +8,7 @@
 
 #include "Game.h"
 #include "Actor.h"
+#include "Ship.h"
 #include "SpriteComponent.h"
 #include <algorithm>
 #include <SDL2/SDL_image.h>
@@ -20,7 +21,7 @@ bool Game::Initialize()
 	mRenderer =
 		SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	mGameisActive = !((mRenderer == nullptr) || (mWindow == nullptr));
+	mGameisActive = (mRenderer != nullptr) && (mWindow != nullptr);
 	IMG_Init(IMG_INIT_PNG);
 	LoadData();
 
@@ -51,15 +52,16 @@ void Game::ProcessInput()
 
 	const Uint8* keyboard = SDL_GetKeyboardState(NULL);
 
+	std::vector<Actor*> actorsCopy = mActors;
+
+	for (auto i : actorsCopy)
+	{
+		i->ProcessInput(keyboard);
+	}
+
 	if (keyboard[SDL_SCANCODE_ESCAPE])
 	{
 		mGameisActive = false;
-	}
-	if (keyboard[SDL_SCANCODE_S])
-	{
-	}
-	if (keyboard[SDL_SCANCODE_W])
-	{
 	}
 }
 
@@ -105,29 +107,34 @@ void Game::UpdateGame()
 
 void Game::LoadData()
 {
-	Actor* test = new Actor(this);
-	SpriteComponent* sc = new SpriteComponent(test);
-	sc->SetTexture(GetTexture("Assets/Ship.png"));
+	// Actor* test = new Actor(this);
+	// SpriteComponent* sc = new SpriteComponent(test);
+	// sc->SetTexture(GetTexture("Assets/Ship.png"));
 
-	Actor* test2 = new Actor(this);
-	Vector2 test2Pos(200.0f, 100.0f);
-	test2->SetPosition(test2Pos);
-	SpriteComponent* sc2 = new SpriteComponent(test2);
-	sc2->SetTexture(GetTexture("Assets/Laser.png"));
+	// Actor* test2 = new Actor(this);
+	// Vector2 test2Pos(200.0f, 100.0f);
+	// test2->SetPosition(test2Pos);
+	// SpriteComponent* sc2 = new SpriteComponent(test2);
+	// sc2->SetTexture(GetTexture("Assets/Laser.png"));
 
-	Actor* test3 = new Actor(this);
-	Vector2 test3Pos(200.0f, 200.0f);
-	test3->SetPosition(test3Pos);
-	test3->SetScale(0.75f);
-	test3->SetRotation(Math::PiOver2);
-	SpriteComponent* sc3 = new SpriteComponent(test3);
-	sc3->SetTexture(GetTexture("Assets/ShipThrust.png"));
+	// Actor* test3 = new Actor(this);
+	// Vector2 test3Pos(200.0f, 200.0f);
+	// test3->SetPosition(test3Pos);
+	// test3->SetScale(0.75f);
+	// test3->SetRotation(Math::PiOver2);
+	// SpriteComponent* sc3 = new SpriteComponent(test3);
+	// sc3->SetTexture(GetTexture("Assets/ShipThrust.png"));
 
 	Actor* test4 = new Actor(this);
 	Vector2 test4Pos(512.0f, 384.0f);
 	test4->SetPosition(test4Pos);
 	SpriteComponent* sc4 = new SpriteComponent(test4, 80);
 	sc4->SetTexture(GetTexture("Assets/Stars.png"));
+
+	mShip = new Ship(this);
+	Vector2 shipInitialPosition(WIDTH / 2, HEIGHT / 2);
+	mShip->SetPosition(shipInitialPosition);
+	mShip->SetRotation(Math::PiOver2);
 }
 
 void Game::UnloadData()
