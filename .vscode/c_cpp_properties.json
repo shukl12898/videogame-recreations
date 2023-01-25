@@ -1,21 +1,18 @@
 {
     "configurations": [
         {
-            "name": "Mac",
+            "name": "CMake",
+            "compileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerArgs": [
+                "-Wno-pragma-once-outside-header"
+            ],
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/Libraries/SDL/include",
-                "${workspaceFolder}/Libraries/SDL/include"
-            ],
-            "defines": [],
-            "macFrameworkPath": [
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
-            ],
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "macos-clang-arm64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+                "Libraries/stb/include",
+                "Libraries/rapidjson/include",
+                "Libraries/GLEW/include",
+                "Libraries/SDL/include"
+            ]
         }
     ],
     "version": 4

@@ -25,6 +25,7 @@ private:
 	SDL_Window* mWindow = nullptr;
 	SDL_Renderer* mRenderer = nullptr;
 	bool mGameisActive = false;
+	class Actor* mShip;
 	std::vector<class Actor*> mActors;
 	std::vector<class SpriteComponent*> mSprites;
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
