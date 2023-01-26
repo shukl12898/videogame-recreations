@@ -28,7 +28,7 @@ public:
 	void SetScale(float scale) { mScale = scale; }
 	float GetRotation() const { return mRotation; }
 	void SetRotation(float rotation) { mRotation = rotation; }
-
+	class Vector2 GetForward() const;
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }
 
