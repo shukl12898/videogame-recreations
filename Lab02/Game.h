@@ -17,20 +17,22 @@ public:
 	void RemoveAsteroid(class Asteroid* asteroid);
 	void RemoveActor(class Actor* actor);
 	void AddSprite(class SpriteComponent* sprite);
+	class Ship* GetShip() const { return mShip; }
 	void RemoveSprite(class SpriteComponent* sprite);
+	std::vector<class Asteroid*> GetAsteroids() const { return mAsteroids; };
 	SDL_Texture* GetTexture(std::string filename);
-	std::vector<class Asteroid*> mAsteroids;
 	static const int WIDTH = 1024;
 	static const int HEIGHT = 768;
-	class Actor* mShip = nullptr;
 
 private:
 	Uint32 mPreviousMS = 0;
 	SDL_Window* mWindow = nullptr;
 	SDL_Renderer* mRenderer = nullptr;
 	bool mGameisActive = false;
+	class Ship* mShip = nullptr;
 	std::vector<class Actor*> mActors;
 	std::vector<class SpriteComponent*> mSprites;
+	std::vector<class Asteroid*> mAsteroids;
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	void ProcessInput();
 	void UpdateGame();

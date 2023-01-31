@@ -54,9 +54,9 @@ void Actor::ProcessInput(const Uint8* keyState)
 		{
 			i->ProcessInput(keyState);
 		}
-	}
 
-	OnProcessInput(keyState);
+		OnProcessInput(keyState);
+	}
 }
 
 void Actor::OnProcessInput(const Uint8* keyState)

@@ -53,7 +53,7 @@ void Game::ProcessInput()
 		}
 	}
 
-	const Uint8* keyboard = SDL_GetKeyboardState(NULL);
+	const Uint8* keyboard = SDL_GetKeyboardState(nullptr);
 
 	std::vector<Actor*> actorsCopy = mActors;
 

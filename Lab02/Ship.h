@@ -8,11 +8,11 @@ public:
 	void OnUpdate(float deltaTime) override;
 	float GetCooldown() const { return mCooldown; }
 	void SetCooldown(float cooldown) { mCooldown = cooldown; }
+	const float SHIP_FORWARD_SPEED = 150.0;
+	const float SHIP_ANGULAR_SPEED = Math::PiOver2;
 
 protected:
-	float mForwardSpeed = 150;
 	float mCooldown = 0.0f;
-	float mAngularSpeed = Math::PiOver2;
 	class MoveComponent* mMoveComponent;
 	class SpriteComponent* mSpriteComponent;
 	class Game* mGame;

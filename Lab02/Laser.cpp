@@ -27,7 +27,7 @@ void Laser::OnUpdate(float deltaTime)
 		SetState(ActorState::Destroy);
 	}
 
-	for (auto i : mGame->mAsteroids)
+	for (auto i : mGame->GetAsteroids())
 	{
 		if (Vector2::Distance(GetPosition(), i->GetPosition()) <= 70)
 		{
