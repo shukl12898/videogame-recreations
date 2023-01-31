@@ -4,9 +4,10 @@ class Log : public Actor
 {
 public:
 	Log(class Game* game);
-	void SetTexture(char classification);
+	class SpriteComponent* mSpriteComponent;
+	class WrappingMove* GetWrappingMove() { return mWrappingMove; };
 
 protected:
-	class SpriteComponent* mSpriteComponent;
 	class Game* mGame;
+	class WrappingMove* mWrappingMove;
 };

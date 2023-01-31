@@ -13,6 +13,7 @@
 #include "Vehicle.h"
 #include "Random.h"
 #include "SpriteComponent.h"
+#include "WrappingMove.h"
 #include <algorithm>
 #include <SDL2/SDL_image.h>
 #include <fstream>
@@ -121,13 +122,25 @@ void Game::LoadData()
 	backgroundSC->SetTexture(GetTexture("Assets/Background.png"));
 
 	char val = ' ';
+	int initialRow = 1.5 * LEVEL_BLOCK_HEIGHT;
 	int row = 1;
 	int col = 1;
 	std::ifstream levelFile;
 
 	levelFile.open("Assets/Level.txt");
-	while (levelFile >> val)
+	while (row <= 13)
 	{
+		levelFile >> val;
+		SDL_Log("%d %d %c", row, col, val);
+		Vector2 position(col * LEVEL_BLOCK_WIDTH, LEVEL_BLOCK_HEIGHT * row + initialRow);
+		bool even = false;
+		Vector2 oddDirection(-1, 0);
+
+		if ((row - 1) % 2 == 0)
+		{
+			even = true;
+		}
+
 		if (col == 13)
 		{
 			col = 0;
@@ -136,23 +149,48 @@ void Game::LoadData()
 		if (val == 'X')
 		{
 			Log* log = new Log(this);
-			Vector2 position(row * 64, col * 64);
 			log->SetPosition(position);
-			log->SetTexture(val);
+			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogX.png"));
+			if (!even)
+			{
+				log->GetWrappingMove()->SetMoveDirection(oddDirection);
+			}
 		}
 		if (val == 'Y')
 		{
 			Log* log = new Log(this);
-			Vector2 position(row * 64, col * 64);
 			log->SetPosition(position);
-			log->SetTexture(val);
+			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogY.png"));
+			if (!even)
+			{
+				log->GetWrappingMove()->SetMoveDirection(oddDirection);
+			}
 		}
 		if (val == 'Z')
 		{
 			Log* log = new Log(this);
-			Vector2 position(row * 64, col * 64);
 			log->SetPosition(position);
-			log->SetTexture(val);
+			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogZ.png"));
+			if (!even)
+			{
+				log->GetWrappingMove()->SetMoveDirection(oddDirection);
+			}
+		}
+		if (val == 'F')
+		{
+			Frog* frog = new Frog(this);
+			SDL_Log("%f %f", position.x, position.y);
+			frog->SetPosition(position);
+		}
+		if ((val == 'A') | (val == 'B') | (val == 'C') | (val == 'D') | (val == 'T'))
+		{
+			Vehicle* truck = new Vehicle(this);
+			truck->SetPosition(position);
+			truck->SetTexture(val);
+			if (!even)
+			{
+				truck->GetWrappingMove()->SetMoveDirection(oddDirection);
+			}
 		}
 		col++;
 	}

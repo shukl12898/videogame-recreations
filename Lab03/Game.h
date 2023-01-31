@@ -18,7 +18,9 @@ public:
 	void RemoveSprite(class SpriteComponent* sprite);
 	SDL_Texture* GetTexture(std::string filename);
 	static const int WIDTH = 896;
+	static const int LEVEL_BLOCK_WIDTH = WIDTH / 14;
 	static const int HEIGHT = 1024;
+	static const int LEVEL_BLOCK_HEIGHT = HEIGHT / 16;
 
 private:
 	Uint32 mPreviousMS = 0;

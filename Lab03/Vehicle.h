@@ -4,9 +4,11 @@ class Vehicle : public Actor
 {
 public:
 	Vehicle(class Game* game);
+	class SpriteComponent* mSpriteComponent;
 	void SetTexture(char classification);
+	class WrappingMove* GetWrappingMove() { return mWrappingMove; };
 
 protected:
-	class SpriteComponent* mSpriteComponent;
 	class Game* mGame;
+	class WrappingMove* mWrappingMove;
 };
