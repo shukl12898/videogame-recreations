@@ -15,20 +15,23 @@ CollisionComponent::~CollisionComponent()
 
 bool CollisionComponent::Intersect(const CollisionComponent* other) const
 {
-	// TODO: Implement
-	return false;
+	bool noIntersection = GetMax().x < other->GetMin().x || other->GetMax().x < GetMin().x ||
+						  GetMax().y < other->GetMin().y || other->GetMax().y < GetMin().y;
+	return !noIntersection;
 }
 
 Vector2 CollisionComponent::GetMin() const
 {
-	// TODO: Implement
-	return Vector2::Zero;
+	float minX = mOwner->GetPosition().x - (mWidth * mOwner->GetScale()) / 2.0f;
+	float minY = mOwner->GetPosition().y - (mHeight * mOwner->GetScale()) / 2.0f;
+	return Vector2(minX, minY);
 }
 
 Vector2 CollisionComponent::GetMax() const
 {
-	// TODO: Implement
-	return Vector2::Zero;
+	float maxX = mOwner->GetPosition().x + (mWidth * mOwner->GetScale()) / 2.0f;
+	float maxY = mOwner->GetPosition().y + (mHeight * mOwner->GetScale()) / 2.0f;
+	return Vector2(maxX, maxY);
 }
 
 const Vector2& CollisionComponent::GetCenter() const
