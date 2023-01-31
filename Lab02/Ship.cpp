@@ -25,16 +25,19 @@ void Ship::OnProcessInput(const Uint8* keyState)
 	if (keyState[SDL_SCANCODE_S])
 	{
 		forwardSpeed -= SHIP_FORWARD_SPEED;
-		mSpriteComponent->SetTexture(mGame->GetTexture("Assets/ShipThrust.png"));
 	}
-	else if (keyState[SDL_SCANCODE_W])
+	if (keyState[SDL_SCANCODE_W])
 	{
 		forwardSpeed += SHIP_FORWARD_SPEED;
+	}
+
+	if ((keyState[SDL_SCANCODE_W]) ^ (keyState[SDL_SCANCODE_S]))
+	{
+
 		mSpriteComponent->SetTexture(mGame->GetTexture("Assets/ShipThrust.png"));
 	}
 	else
 	{
-		forwardSpeed = 0;
 		mSpriteComponent->SetTexture(mGame->GetTexture("Assets/Ship.png"));
 	}
 
@@ -42,13 +45,9 @@ void Ship::OnProcessInput(const Uint8* keyState)
 	{
 		angularSpeed -= SHIP_ANGULAR_SPEED;
 	}
-	else if (keyState[SDL_SCANCODE_D])
+	if (keyState[SDL_SCANCODE_D])
 	{
 		angularSpeed += SHIP_ANGULAR_SPEED;
-	}
-	else
-	{
-		angularSpeed = 0;
 	}
 
 	mMoveComponent->SetForwardSpeed(forwardSpeed);
