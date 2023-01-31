@@ -1,6 +1,9 @@
 #include "Frog.h"
+#include "DeadFrog.h"
 #include "Game.h"
 #include "SpriteComponent.h"
+#include "CollisionComponent.h"
+#include "Vehicle.h"
 
 Frog::Frog(Game* game)
 : Actor(game)
@@ -8,6 +11,22 @@ Frog::Frog(Game* game)
 	mGame = game;
 	mSpriteComponent = new SpriteComponent(this);
 	mSpriteComponent->SetTexture(game->GetTexture("Assets/Frog.png"));
+	mCollisionComponent = new CollisionComponent(this);
+	mCollisionComponent->SetSize(50, 50);
+}
+
+void Frog::OnUpdate(float deltaTime)
+{
+	std::vector<Vehicle*> copyOfVehicles = mGame->GetVehicles();
+
+	for (auto it : copyOfVehicles)
+	{
+		if (mCollisionComponent->Intersect(it->GetCollisionComponent()))
+		{
+			new DeadFrog(mGame, GetPosition());
+			SetPosition(mInitialPosition);
+		}
+	}
 }
 
 void Frog::OnProcessInput(const Uint8* keyState)

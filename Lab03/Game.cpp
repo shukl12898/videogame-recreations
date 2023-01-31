@@ -181,6 +181,8 @@ void Game::LoadData()
 			Frog* frog = new Frog(this);
 			SDL_Log("%f %f", position.x, position.y);
 			frog->SetPosition(position);
+			frog->SetInitialPosition(position);
+			mFrog = frog;
 		}
 		if ((val == 'A') | (val == 'B') | (val == 'C') | (val == 'D') | (val == 'T'))
 		{
@@ -247,6 +249,17 @@ void Game::RemoveActor(Actor* actor)
 	mActors.erase(toDelete);
 }
 
+void Game::AddVehicle(Vehicle* vehicle)
+{
+	mVehicles.push_back(vehicle);
+}
+
+void Game::RemoveVehicle(Vehicle* vehicle)
+{
+	auto toDelete = std::find(mVehicles.begin(), mVehicles.end(), vehicle);
+	mVehicles.erase(toDelete);
+}
+
 void Game::AddSprite(SpriteComponent* sprite)
 {
 	mSprites.push_back(sprite);
@@ -259,6 +272,11 @@ void Game::RemoveSprite(SpriteComponent* sprite)
 {
 	auto toDelete = std::find(mSprites.begin(), mSprites.end(), sprite);
 	mSprites.erase(toDelete);
+}
+
+Vector2 Game::GetFrogPosition()
+{
+	return mFrog->GetPosition();
 }
 
 SDL_Texture* Game::GetTexture(std::string filename)
