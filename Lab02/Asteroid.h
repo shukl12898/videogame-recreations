@@ -9,6 +9,8 @@ public:
 
 protected:
 	class Game* mGame;
+
+	//Components
 	class SpriteComponent* mSpriteComponent;
 	class MoveComponent* mMoveComponent;
 };

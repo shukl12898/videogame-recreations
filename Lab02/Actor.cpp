@@ -16,7 +16,7 @@ Actor::Actor(Game* game)
 Actor::~Actor()
 {
 	mGame->RemoveActor(this);
-	for (auto i : mComponents)
+	for (Component* i : mComponents)
 	{
 		delete i;
 	}
@@ -25,19 +25,21 @@ Actor::~Actor()
 
 void Actor::Update(float deltaTime)
 {
+	//Updates all actors (and all subclasses) if actor is active
 	if (mState == ActorState::Active)
 	{
-		for (auto i : mComponents)
+		for (Component* i : mComponents)
 		{
 			i->Update(deltaTime);
 		}
-	}
 
-	OnUpdate(deltaTime);
+		OnUpdate(deltaTime);
+	}
 }
 
 Vector2 Actor::GetForward() const
 {
+	//Uses rotation angle to get the x and y coordinates of forward vector
 	Vector2 forward(cos(mRotation), -sin(mRotation));
 	return forward;
 }
@@ -48,9 +50,10 @@ void Actor::OnUpdate(float deltaTime)
 
 void Actor::ProcessInput(const Uint8* keyState)
 {
+	//Processes input of all actors (and all subclasses) if actor is active
 	if (mState == ActorState::Active)
 	{
-		for (auto i : mComponents)
+		for (Component* i : mComponents)
 		{
 			i->ProcessInput(keyState);
 		}

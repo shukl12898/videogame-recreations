@@ -20,7 +20,7 @@ Vehicle::Vehicle(Game* game)
 Vehicle::~Vehicle()
 {
 	mGame->RemoveVehicle(this);
-	for (auto i : mComponents)
+	for (Component* i : mComponents)
 	{
 		delete i;
 	}

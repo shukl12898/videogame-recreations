@@ -9,27 +9,32 @@ Laser::Laser(Game* game)
 : Actor(game)
 {
 	mGame = game;
-	SpriteComponent* sc = new SpriteComponent(this);
-	sc->SetTexture(game->GetTexture("Assets/Laser.png"));
-	mSpriteComponent = sc;
-	MoveComponent* mc = new MoveComponent(this);
-	mc->SetForwardSpeed(400.0f);
-	mMoveComponent = mc;
+	mSpriteComponent = new SpriteComponent(this);
+	mSpriteComponent->SetTexture(game->GetTexture("Assets/Laser.png"));
+	mMoveComponent = new MoveComponent(this);
+	mMoveComponent->SetForwardSpeed(400.0f);
 	mGame = game;
+
+	//Ensures initial state of laser is paused
 	mState = ActorState::Paused;
 }
 
 void Laser::OnUpdate(float deltaTime)
 {
+
+	//Updates lifetime based on delta time
 	mLifetime += deltaTime;
-	if (mLifetime >= 1.0f)
+
+	//Destroys if lifetime has exceeded the laser's max lifetime
+	if (mLifetime >= MAX_LASER_LIFETIME)
 	{
 		SetState(ActorState::Destroy);
 	}
 
-	for (auto i : mGame->GetAsteroids())
+	//Determines whether any asteroid is hit by laser, if so, destroys them
+	for (Asteroid* i : mGame->GetAsteroids())
 	{
-		if (Vector2::Distance(GetPosition(), i->GetPosition()) <= 70)
+		if (Vector2::Distance(GetPosition(), i->GetPosition()) <= LASER_EFFECTIVE_DISTANCE)
 		{
 			SetState(ActorState::Destroy);
 			i->SetState(ActorState::Destroy);

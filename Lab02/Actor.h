@@ -31,14 +31,13 @@ public:
 	class Vector2 GetForward() const;
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }
-
-	class Game* GetGame() { return mGame; }
+	class Game* GetGame() const { return mGame; }
 
 	// Returns component of type T, or null if doesn't exist
 	template <typename T>
 	T* GetComponent() const
 	{
-		for (auto c : mComponents)
+		for (Component* c : mComponents)
 		{
 			T* t = dynamic_cast<T*>(c);
 			if (t != nullptr)

@@ -7,12 +7,10 @@
 Asteroid::Asteroid(Game* game)
 : Actor(game)
 {
-	SpriteComponent* sc = new SpriteComponent(this);
-	sc->SetTexture(game->GetTexture("Assets/Asteroid.png"));
-	mSpriteComponent = sc;
-	MoveComponent* mc = new MoveComponent(this);
-	mc->SetForwardSpeed(150.0f);
-	mMoveComponent = mc;
+	mSpriteComponent = new SpriteComponent(this);
+	mSpriteComponent->SetTexture(game->GetTexture("Assets/Asteroid.png"));
+	mMoveComponent = new MoveComponent(this);
+	mMoveComponent->SetForwardSpeed(150.0f);
 	SetRotation(Random::GetFloatRange(0.0f, Math::TwoPi));
 	Vector2 maxAsteroidPosition(game->WIDTH, game->HEIGHT);
 	Vector2 minAsteroidPosition(0, 0);
@@ -24,7 +22,7 @@ Asteroid::Asteroid(Game* game)
 Asteroid::~Asteroid()
 {
 	mGame->RemoveAsteroid(this);
-	for (auto i : mComponents)
+	for (Component* i : mComponents)
 	{
 		delete i;
 	}
@@ -33,6 +31,7 @@ Asteroid::~Asteroid()
 
 void Asteroid::OnUpdate(float deltaTime)
 {
+	//Ensures asteroids wrap the screen if they float off the boundaries
 	if (GetPosition().x > mGame->WIDTH)
 	{
 		Vector2 wrapLeft(0.0f, GetPosition().y);

@@ -53,11 +53,13 @@ void Game::ProcessInput()
 		}
 	}
 
+	//Gets keyboard input
 	const Uint8* keyboard = SDL_GetKeyboardState(nullptr);
 
 	std::vector<Actor*> actorsCopy = mActors;
 
-	for (auto i : actorsCopy)
+	//Processes inputs appropriately for each actor
+	for (Actor* i : actorsCopy)
 	{
 		i->ProcessInput(keyboard);
 	}
@@ -87,14 +89,15 @@ void Game::UpdateGame()
 
 	std::vector<Actor*> actorsCopy = mActors;
 
-	for (auto i : actorsCopy)
+	//Updates actors based on delta time
+	for (Actor* i : actorsCopy)
 	{
 		i->Update(deltaTimeS);
 	}
 
 	std::vector<Actor*> toDestroy;
 
-	for (auto j : mActors)
+	for (Actor* j : mActors)
 	{
 		if (j->GetState() == ActorState::Destroy)
 		{
@@ -102,7 +105,7 @@ void Game::UpdateGame()
 		}
 	}
 
-	for (auto k : toDestroy)
+	for (Actor* k : toDestroy)
 	{
 		delete k;
 	}
@@ -110,14 +113,18 @@ void Game::UpdateGame()
 
 void Game::LoadData()
 {
+
+	//Loads background
 	Actor* background = new Actor(this);
-	Vector2 backgroundPos(512.0f, 384.0f);
+	Vector2 backgroundPos(BACKGROUND_X_POS, BACKGROUND_Y_POS);
 	background->SetPosition(backgroundPos);
-	SpriteComponent* backgroundSC = new SpriteComponent(background, 80);
+	SpriteComponent* backgroundSC = new SpriteComponent(background, BACKGROUND_DRAW_ORDER);
 	backgroundSC->SetTexture(GetTexture("Assets/Stars.png"));
 
+	//Initializes ship
 	mShip = new Ship(this);
 
+	//Initializes asteroids
 	for (int i = 0; i < 10; i++)
 	{
 		new Asteroid(this);
@@ -143,7 +150,9 @@ void Game::GenerateOutput()
 {
 	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 	SDL_RenderClear(mRenderer);
-	for (auto it : mSprites)
+
+	//Draws all visible sprite components
+	for (SpriteComponent* it : mSprites)
 	{
 		if (it->IsVisible())
 		{
@@ -187,6 +196,8 @@ void Game::RemoveAsteroid(Asteroid* asteroid)
 void Game::AddSprite(SpriteComponent* sprite)
 {
 	mSprites.push_back(sprite);
+
+	//Sorts sprite vector by draw order
 	std::sort(mSprites.begin(), mSprites.end(), [](SpriteComponent* a, SpriteComponent* b) {
 		return a->GetDrawOrder() < b->GetDrawOrder();
 	});
@@ -200,6 +211,7 @@ void Game::RemoveSprite(SpriteComponent* sprite)
 
 SDL_Texture* Game::GetTexture(std::string filename)
 {
+	//Adds used texture to mTextures if not present
 	if (mTextures.find(filename) == mTextures.end())
 	{
 		SDL_Surface* surface = IMG_Load(filename.c_str());
@@ -215,5 +227,6 @@ SDL_Texture* Game::GetTexture(std::string filename)
 		}
 	}
 
+	//Returns texture that corresponds to filename input
 	return mTextures[filename];
 }
