@@ -31,9 +31,8 @@ void Actor::Update(float deltaTime)
 		{
 			i->Update(deltaTime);
 		}
+		OnUpdate(deltaTime);
 	}
-
-	OnUpdate(deltaTime);
 }
 
 Vector2 Actor::GetForward() const
@@ -54,9 +53,8 @@ void Actor::ProcessInput(const Uint8* keyState)
 		{
 			i->ProcessInput(keyState);
 		}
+		OnProcessInput(keyState);
 	}
-
-	OnProcessInput(keyState);
 }
 
 void Actor::OnProcessInput(const Uint8* keyState)
