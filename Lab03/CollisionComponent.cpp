@@ -63,29 +63,29 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 
 	offset = Vector2::Zero;
 
-	if (minDist == topDist)
-	{
-		offset.y = otherMin.y;
-		result = CollSide::Top;
-	}
-	
-	if (minDist == bottomDist)
-	{
-		offset.y = otherMax.y;
-		result = CollSide::Bottom;
-	}
-	
-	if (minDist == leftDist)
-	{
-		offset.x = otherMin.x;
-		result = CollSide::Left;
-	}
-	
-	if (minDist == rightDist)
-	{
-		offset.x = otherMax.x;
-		result = CollSide::Right;
-	}
+	// if (minDist == topDist)
+	// {
+	// 	offset.y = otherMin.y;
+	// 	result = CollSide::Top;
+	// }
 
-	return result;
+	// if (minDist == bottomDist)
+	// {
+	// 	offset.y = otherMax.y;
+	// 	result = CollSide::Bottom;
+	// }
+
+	// if (minDist == leftDist)
+	// {
+	// 	offset.x = otherMin.x;
+	// 	result = CollSide::Left;
+	// }
+
+	// if (minDist == rightDist)
+	// {
+	// 	offset.x = otherMax.x;
+	// 	result = CollSide::Right;
+	// }
+
+	return CollSide::Top;
 }
