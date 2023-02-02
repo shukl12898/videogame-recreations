@@ -65,25 +65,25 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 
 	if (minDist == topDist)
 	{
-		offset.y = otherMin.y;
+		offset.y = -topDist;
 		result = CollSide::Top;
 	}
 
 	if (minDist == bottomDist)
 	{
-		offset.y = otherMax.y;
+		offset.y = bottomDist;
 		result = CollSide::Bottom;
 	}
 
 	if (minDist == leftDist)
 	{
-		offset.x = otherMin.x;
+		offset.x = -leftDist;
 		result = CollSide::Left;
 	}
 
 	if (minDist == rightDist)
 	{
-		offset.x = otherMax.x;
+		offset.x = rightDist;
 		result = CollSide::Right;
 	}
 
