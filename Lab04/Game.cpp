@@ -113,7 +113,7 @@ void Game::UpdateGame()
 void Game::LoadData()
 {
 	Actor* background = new Actor(this);
-	Vector2 screenCenter(WIDTH / 2, HEIGHT / 2);
+	Vector2 screenCenter(BACKGROUND_X_POS, BACKGROUND_Y_POS);
 	background->SetPosition(screenCenter);
 	SpriteComponent* backgroundSC = new SpriteComponent(background);
 	backgroundSC->SetTexture(GetTexture("Assets/Background.png"));
@@ -123,23 +123,11 @@ void Game::LoadData()
 	int col = 1;
 	std::ifstream levelFile;
 
-	levelFile.open("Assets/Level.txt");
+	levelFile.open("Assets/Level0.txt");
 	while (row <= 13)
 	{
 		levelFile >> val;
-		bool even = false;
-		Vector2 oddDirection(-1, 0);
 
-		if ((row - 1) % 2 == 0)
-		{
-			even = true;
-		}
-
-		if (col == 13)
-		{
-			col = 0;
-			row++;
-		}
 		if (val == 'G')
 		{
 			mGoal = new Actor(this);
@@ -199,6 +187,17 @@ void Game::RemoveActor(Actor* actor)
 {
 	auto toDelete = std::find(mActors.begin(), mActors.end(), actor);
 	mActors.erase(toDelete);
+}
+
+void Game::AddBlock(Block* block)
+{
+	mBlocks.push_back(block);
+}
+
+void Game::RemoveBlock(Block* block)
+{
+	auto toDelete = std::find(mBlocks.begin(), mBlocks.end(), block);
+	mBlocks.erase(toDelete);
 }
 
 void Game::AddSprite(SpriteComponent* sprite)
