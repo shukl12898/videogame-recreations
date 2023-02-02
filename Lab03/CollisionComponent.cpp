@@ -56,8 +56,8 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 
 	float topDist = std::abs(otherMin.y - thisMax.y);
 	float bottomDist = std::abs(otherMax.y - thisMin.y);
-	float rightDist = std::abs(otherMin.x - thisMin.x);
-	float leftDist = std::abs(otherMax.x - thisMax.x);
+	float rightDist = std::abs(otherMax.x - thisMin.x);
+	float leftDist = std::abs(otherMin.x - thisMax.x);
 
 	float minDist = std::min(topDist, std::min(bottomDist, std::min(rightDist, leftDist)));
 
@@ -77,13 +77,13 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 
 	if (minDist == leftDist)
 	{
-		offset.x = -leftDist;
+		offset.x = leftDist;
 		result = CollSide::Left;
 	}
 
 	if (minDist == rightDist)
 	{
-		offset.x = rightDist;
+		offset.x = -rightDist;
 		result = CollSide::Right;
 	}
 
