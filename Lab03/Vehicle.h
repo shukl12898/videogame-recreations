@@ -9,6 +9,7 @@ public:
 	class CollisionComponent* GetCollisionComponent() { return mCollisionComponent; }
 	void OnUpdate(float deltaTime) override;
 	class WrappingMove* GetWrappingMove() { return mWrappingMove; };
+	float const VEHICLE_SPEED = 100.0f;
 
 protected:
 	class Game* mGame;

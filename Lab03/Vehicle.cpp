@@ -11,7 +11,7 @@ Vehicle::Vehicle(Game* game)
 	mGame = game;
 	mSpriteComponent = new SpriteComponent(this);
 	mWrappingMove = new WrappingMove(this);
-	mWrappingMove->SetForwardSpeed(100);
+	mWrappingMove->SetForwardSpeed(VEHICLE_SPEED);
 	mCollisionComponent = new CollisionComponent(this);
 	mCollisionComponent->SetSize(64, 64);
 	mGame->AddVehicle(this);
@@ -54,7 +54,7 @@ void Vehicle::SetTexture(char classification)
 
 void Vehicle::OnUpdate(float deltaTime)
 {
-	Vector2 distFrog = GetPosition() - (mGame->GetFrogPosition());
+	Vector2 distFrog = (mGame->GetFrogPosition()) - GetPosition();
 	distFrog.Normalize();
 	Vector2 direction = mWrappingMove->GetMoveDirection();
 	direction.Normalize();
@@ -63,6 +63,10 @@ void Vehicle::OnUpdate(float deltaTime)
 
 	if (angle <= Math::Pi / 6)
 	{
-		mWrappingMove->SetForwardSpeed(mWrappingMove->GetForwardSpeed() / 2);
+		mWrappingMove->SetForwardSpeed(VEHICLE_SPEED / 2);
+	}
+	else
+	{
+		mWrappingMove->SetForwardSpeed(VEHICLE_SPEED);
 	}
 }
