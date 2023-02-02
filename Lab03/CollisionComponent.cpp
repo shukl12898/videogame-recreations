@@ -54,38 +54,38 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 	Vector2 thisMin = GetMin();
 	Vector2 thisMax = GetMax();
 
-	float topDist = otherMin.y - thisMax.y;
-	float bottomDist = otherMax.y - thisMin.y;
-	float rightDist = otherMin.x - thisMin.x;
-	float leftDist = otherMax.x - thisMax.x;
+	float topDist = abs(otherMin.y - thisMax.y);
+	float bottomDist = abs(otherMax.y - thisMin.y);
+	float rightDist = abs(otherMin.x - thisMin.x);
+	float leftDist = abs(otherMax.x - thisMax.x);
 
 	float minDist = std::min(topDist, std::min(bottomDist, std::min(rightDist, leftDist)));
 
 	offset = Vector2::Zero;
 
-	// if (minDist == topDist)
-	// {
-	// 	offset.y = otherMin.y;
-	// 	result = CollSide::Top;
-	// }
+	if (minDist == topDist)
+	{
+		offset.y = otherMin.y;
+		result = CollSide::Top;
+	}
 
-	// if (minDist == bottomDist)
-	// {
-	// 	offset.y = otherMax.y;
-	// 	result = CollSide::Bottom;
-	// }
+	if (minDist == bottomDist)
+	{
+		offset.y = otherMax.y;
+		result = CollSide::Bottom;
+	}
 
-	// if (minDist == leftDist)
-	// {
-	// 	offset.x = otherMin.x;
-	// 	result = CollSide::Left;
-	// }
+	if (minDist == leftDist)
+	{
+		offset.x = otherMin.x;
+		result = CollSide::Left;
+	}
 
-	// if (minDist == rightDist)
-	// {
-	// 	offset.x = otherMax.x;
-	// 	result = CollSide::Right;
-	// }
+	if (minDist == rightDist)
+	{
+		offset.x = otherMax.x;
+		result = CollSide::Right;
+	}
 
-	return CollSide::Top;
+	return result;
 }
