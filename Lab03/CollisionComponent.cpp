@@ -41,7 +41,48 @@ const Vector2& CollisionComponent::GetCenter() const
 
 CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vector2& offset) const
 {
+
+	CollSide result = CollSide::None;
+
+	if (!Intersect(other))
+	{
+		return result;
+	}
+
+	Vector2 otherMin = other->GetMin();
+	Vector2 otherMax = other->GetMax();
+	Vector2 thisMin = GetMin();
+	Vector2 thisMax = GetMax();
+
+	float topDist = otherMin.y - thisMax.y;
+	float bottomDist = otherMax.y - thisMin.y;
+	float rightDist = otherMin.x - thisMin.x;
+	float leftDist = otherMax.x - thisMax.x;
+
+	float minDist = std::min(topDist, std::min(bottomDist, std::min(rightDist, leftDist)));
+
 	offset = Vector2::Zero;
-	// TODO: Implement
-	return CollSide::None;
+
+	if (minDist == topDist)
+	{
+		offset.y = otherMin.y;
+		result = CollSide::Top;
+	}
+	else if (minDist == bottomDist)
+	{
+		offset.y = otherMax.y;
+		result = CollSide::Bottom;
+	}
+	else if (minDist == leftDist)
+	{
+		offset.x = otherMin.x;
+		result = CollSide::Left;
+	}
+	else if (minDist == rightDist)
+	{
+		offset.x = otherMax.x;
+		result = CollSide::Right;
+	}
+
+	return result;
 }
