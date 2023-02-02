@@ -14,6 +14,7 @@
 #include "Random.h"
 #include "SpriteComponent.h"
 #include "WrappingMove.h"
+#include "CollisionComponent.h"
 #include <algorithm>
 #include <SDL2/SDL_image.h>
 #include <fstream>
@@ -131,7 +132,6 @@ void Game::LoadData()
 	while (row <= 13)
 	{
 		levelFile >> val;
-		SDL_Log("%d %d %c", row, col, val);
 		Vector2 position(col * LEVEL_BLOCK_WIDTH, LEVEL_BLOCK_HEIGHT * row + initialRow);
 		bool even = false;
 		Vector2 oddDirection(-1, 0);
@@ -146,11 +146,18 @@ void Game::LoadData()
 			col = 0;
 			row++;
 		}
+		if (val == 'G')
+		{
+			mGoal = new Actor(this);
+			mGoal->SetPosition(position);
+			(new CollisionComponent(mGoal))->SetSize(64, 64);
+		}
 		if (val == 'X')
 		{
 			Log* log = new Log(this);
 			log->SetPosition(position);
 			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogX.png"));
+			log->GetCollisionComponent()->SetSize(192.0f, 48.0f);
 			if (!even)
 			{
 				log->GetWrappingMove()->SetMoveDirection(oddDirection);
@@ -161,6 +168,7 @@ void Game::LoadData()
 			Log* log = new Log(this);
 			log->SetPosition(position);
 			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogY.png"));
+			log->GetCollisionComponent()->SetSize(256.0f, 48.0f);
 			if (!even)
 			{
 				log->GetWrappingMove()->SetMoveDirection(oddDirection);
@@ -171,6 +179,7 @@ void Game::LoadData()
 			Log* log = new Log(this);
 			log->SetPosition(position);
 			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogZ.png"));
+			log->GetCollisionComponent()->SetSize(384.0f, 48.0f);
 			if (!even)
 			{
 				log->GetWrappingMove()->SetMoveDirection(oddDirection);
@@ -258,6 +267,17 @@ void Game::RemoveVehicle(Vehicle* vehicle)
 {
 	auto toDelete = std::find(mVehicles.begin(), mVehicles.end(), vehicle);
 	mVehicles.erase(toDelete);
+}
+
+void Game::AddLog(Log* log)
+{
+	mLogs.push_back(log);
+}
+
+void Game::RemoveLog(Log* log)
+{
+	auto toDelete = std::find(mLogs.begin(), mLogs.end(), log);
+	mLogs.erase(toDelete);
 }
 
 void Game::AddSprite(SpriteComponent* sprite)

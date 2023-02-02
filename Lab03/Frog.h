@@ -16,4 +16,5 @@ protected:
 	std::unordered_map<int, bool> mLastKeyFrame;
 	class CollisionComponent* mCollisionComponent;
 	class Game* mGame;
+	bool mRiding = false;
 };

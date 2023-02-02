@@ -17,11 +17,15 @@ public:
 	void RemoveActor(class Actor* actor);
 	void AddVehicle(class Vehicle* vehicle);
 	void RemoveVehicle(class Vehicle* vehicle);
+	void AddLog(class Log* log);
+	void RemoveLog(class Log* log);
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
 	std::vector<class Vehicle*> GetVehicles() const { return mVehicles; }
+	std::vector<class Log*> GetLogs() const { return mLogs; }
 	SDL_Texture* GetTexture(std::string filename);
 	Vector2 GetFrogPosition();
+	Actor* GetGoal() { return mGoal; };
 	static const int WIDTH = 896;
 	static const int LEVEL_BLOCK_WIDTH = WIDTH / 14;
 	static const int HEIGHT = 1024;
@@ -36,7 +40,9 @@ private:
 	std::vector<class SpriteComponent*> mSprites;
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	std::vector<class Vehicle*> mVehicles;
+	std::vector<class Log*> mLogs;
 	class Frog* mFrog;
+	class Actor* mGoal;
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();

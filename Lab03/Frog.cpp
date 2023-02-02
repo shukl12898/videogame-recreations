@@ -4,6 +4,8 @@
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
 #include "Vehicle.h"
+#include "Log.h"
+#include "WrappingMove.h"
 
 Frog::Frog(Game* game)
 : Actor(game)
@@ -27,6 +29,66 @@ void Frog::OnUpdate(float deltaTime)
 			SetPosition(mInitialPosition);
 		}
 	}
+
+	std::vector<Log*> copyOfLogs = mGame->GetLogs();
+	Vector2 offset(0.0f, 0.0f);
+	CollSide minOverlap = CollSide::None;
+
+	Vector2 frogCurrPos = GetPosition();
+
+	for (auto it : copyOfLogs)
+	{
+		minOverlap = mCollisionComponent->GetMinOverlap(it->GetCollisionComponent(), offset);
+		if (minOverlap != CollSide::None)
+		{
+			mRiding = true;
+			WrappingMove* wrappingMove = it->GetWrappingMove();
+			Vector2 newPos(frogCurrPos.x, it->GetPosition().y);
+			SetPosition(newPos);
+
+			SetPosition(GetPosition() + (wrappingMove->GetMoveDirection() *
+										 wrappingMove->GetForwardSpeed() * deltaTime));
+
+			Vector2 additional(32, 0);
+
+			if (minOverlap == CollSide::Left)
+			{
+				SetPosition(it->GetPosition() + offset - additional);
+			}
+			else if (minOverlap == CollSide::Right)
+			{
+				SetPosition(it->GetPosition() + offset + additional);
+			}
+		}
+	}
+
+	if (!mRiding)
+	{
+
+		if (frogCurrPos.y >= 180 && frogCurrPos.y <= 510)
+		{
+			new DeadFrog(mGame, GetPosition());
+			SetPosition(mInitialPosition);
+		}
+	}
+
+	bool endpoint =
+		mCollisionComponent->Intersect(mGame->GetGoal()->GetComponent<CollisionComponent>());
+
+	if (endpoint)
+	{
+		SetState(ActorState::Paused);
+	}
+	else
+	{
+		if (GetPosition().y < 180)
+		{
+			new DeadFrog(mGame, GetPosition());
+			SetPosition(mInitialPosition);
+		}
+	}
+
+	mRiding = false;
 }
 
 void Frog::OnProcessInput(const Uint8* keyState)
@@ -57,7 +119,7 @@ void Frog::OnProcessInput(const Uint8* keyState)
 		{
 			Vector2 newPosition(0, 64);
 			Vector2 possiblePosition = GetPosition() + newPosition;
-			if (possiblePosition.y <= (mGame->HEIGHT) - 64)
+			if (possiblePosition.y <= (mGame->HEIGHT) - (64 * 4))
 			{
 				mPosition = possiblePosition;
 			}
