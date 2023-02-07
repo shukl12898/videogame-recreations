@@ -8,7 +8,6 @@ public:
 
 protected:
 	class Game* mGame;
-	class WrappingMove* mWrappingMove;
 	class CollisionComponent* mCollisionComponent;
 	class SpriteComponent* mSpriteComponent;
 };

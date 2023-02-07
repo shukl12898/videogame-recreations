@@ -152,48 +152,24 @@ void Game::LoadData()
 			mGoal->SetPosition(position);
 			(new CollisionComponent(mGoal))->SetSize(64, 64);
 		}
-		if (val == 'X')
+		else if (val == 'X' || val == 'Y' || val == 'Z')
 		{
 			Log* log = new Log(this);
 			log->SetPosition(position);
-			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogX.png"));
-			log->GetCollisionComponent()->SetSize(192.0f, 48.0f);
+			log->SetTexture(val);
 			if (!even)
 			{
 				log->GetWrappingMove()->SetMoveDirection(oddDirection);
 			}
 		}
-		if (val == 'Y')
-		{
-			Log* log = new Log(this);
-			log->SetPosition(position);
-			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogY.png"));
-			log->GetCollisionComponent()->SetSize(256.0f, 48.0f);
-			if (!even)
-			{
-				log->GetWrappingMove()->SetMoveDirection(oddDirection);
-			}
-		}
-		if (val == 'Z')
-		{
-			Log* log = new Log(this);
-			log->SetPosition(position);
-			log->mSpriteComponent->SetTexture(GetTexture("Assets/LogZ.png"));
-			log->GetCollisionComponent()->SetSize(384.0f, 48.0f);
-			if (!even)
-			{
-				log->GetWrappingMove()->SetMoveDirection(oddDirection);
-			}
-		}
-		if (val == 'F')
+		else if (val == 'F')
 		{
 			Frog* frog = new Frog(this);
-			SDL_Log("%f %f", position.x, position.y);
 			frog->SetPosition(position);
 			frog->SetInitialPosition(position);
 			mFrog = frog;
 		}
-		if ((val == 'A') | (val == 'B') | (val == 'C') | (val == 'D') | (val == 'T'))
+		else if ((val == 'A') || (val == 'B') || (val == 'C') || (val == 'D') || (val == 'T'))
 		{
 			Vehicle* truck = new Vehicle(this);
 			truck->SetPosition(position);

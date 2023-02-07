@@ -8,6 +8,7 @@
 
 #include "Game.h"
 #include "Actor.h"
+#include "Block.h"
 #include "Random.h"
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
@@ -119,22 +120,37 @@ void Game::LoadData()
 	backgroundSC->SetTexture(GetTexture("Assets/Background.png"));
 
 	char val = ' ';
-	int row = 1;
-	int col = 1;
+	int rowPos = 0;
 	std::ifstream levelFile;
+	std::string allColumns;
+
+	Vector2 initialPosition(16, 16);
+	Vector2 position(0, 0);
 
 	levelFile.open("Assets/Level0.txt");
-	while (row <= 13)
+	while (std::getline(levelFile, allColumns))
 	{
-		levelFile >> val;
 
-		if (val == 'G')
+		for (int colPos = 0; colPos < allColumns.size(); colPos++)
 		{
-			mGoal = new Actor(this);
-			// mGoal->SetPosition(position);
-			(new CollisionComponent(mGoal))->SetSize(64, 64);
+			Vector2 newPosition(colPos * COLUMN_SIZE, rowPos * ROW_SIZE);
+			position += newPosition;
+			if (val == 'A' | val == 'B' | val == 'C' | val == 'D' | val == 'E' | val == 'F' |
+				val == 'G' | val == 'H' | val == 'I')
+			{
+				Block* block = new Block(this, val);
+				block->SetPosition(position);
+			}
+
+			if (val == 'G')
+			{
+				mGoal = new Actor(this);
+				// mGoal->SetPosition(position);
+				(new CollisionComponent(mGoal))->SetSize(64, 64);
+			}
 		}
-		col++;
+
+		rowPos++;
 	}
 
 	levelFile.close();

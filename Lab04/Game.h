@@ -25,6 +25,8 @@ public:
 	static const int HEIGHT = 448;
 	static const int BACKGROUND_X_POS = 3392;
 	static const int BACKGROUND_Y_POS = 224;
+	static const int COLUMN_SIZE = 32;
+	static const int ROW_SIZE = 32;
 
 private:
 	Uint32 mPreviousMS = 0;

@@ -21,8 +21,8 @@ public:
 	void RemoveLog(class Log* log);
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
-	std::vector<class Vehicle*> GetVehicles() const { return mVehicles; }
-	std::vector<class Log*> GetLogs() const { return mLogs; }
+	const std::vector<class Vehicle*>& GetVehicles() { return mVehicles; }
+	const std::vector<class Log*>& GetLogs() { return mLogs; }
 	SDL_Texture* GetTexture(std::string filename);
 	Vector2 GetFrogPosition();
 	Actor* GetGoal() { return mGoal; };
@@ -41,8 +41,8 @@ private:
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	std::vector<class Vehicle*> mVehicles;
 	std::vector<class Log*> mLogs;
-	class Frog* mFrog;
-	class Actor* mGoal;
+	class Frog* mFrog = nullptr;
+	class Actor* mGoal = nullptr;
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
