@@ -123,7 +123,7 @@ void Game::LoadData()
 	backgroundSC->SetTexture(GetTexture("Assets/Background.png"));
 
 	char val = ' ';
-	int initialRow = 1.5 * LEVEL_BLOCK_HEIGHT;
+	int initialRow = static_cast<int>(1.5 * LEVEL_BLOCK_HEIGHT);
 	int row = 1;
 	int col = 1;
 	std::ifstream levelFile;

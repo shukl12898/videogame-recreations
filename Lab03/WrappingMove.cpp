@@ -15,19 +15,19 @@ void WrappingMove::Update(float deltaTime)
 {
 	GetOwner()->SetPosition(mOwner->GetPosition() + ((mForwardSpeed * deltaTime) * mMoveDirection));
 
-	int xPos = GetOwner()->GetPosition().x;
-	int yPos = GetOwner()->GetPosition().y;
+	float xPos = GetOwner()->GetPosition().x;
+	float yPos = GetOwner()->GetPosition().y;
 	Game* game = GetGame();
 
 	if (xPos < 0)
 	{
-		Vector2 wrapPos(game->WIDTH, yPos);
+		Vector2 wrapPos(static_cast<float>(game->WIDTH), yPos);
 		GetOwner()->SetPosition(wrapPos);
 	}
 
 	if (xPos > game->WIDTH)
 	{
-		Vector2 wrapPos(0, yPos);
+		Vector2 wrapPos(0.0f, yPos);
 		GetOwner()->SetPosition(wrapPos);
 	}
 }
