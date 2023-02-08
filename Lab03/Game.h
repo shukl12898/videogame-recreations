@@ -30,6 +30,9 @@ public:
 	static const int LEVEL_BLOCK_WIDTH = WIDTH / 14;
 	static const int HEIGHT = 1024;
 	static const int LEVEL_BLOCK_HEIGHT = HEIGHT / 16;
+	const float GOAL_BUFFER = 1.5;
+	static const int LEVEL_SIZE = 13;
+	static const int GOAL_SIZE = 64;
 
 private:
 	Uint32 mPreviousMS = 0;
@@ -41,8 +44,8 @@ private:
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	std::vector<class Vehicle*> mVehicles;
 	std::vector<class Log*> mLogs;
-	class Frog* mFrog = nullptr;
-	class Actor* mGoal = nullptr;
+	class Frog* mFrog;
+	class Actor* mGoal;
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();

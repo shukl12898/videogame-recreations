@@ -110,7 +110,7 @@ void Frog::OnProcessInput(const Uint8* keyState)
 	{
 		Vector2 newPosition(0, 64);
 		Vector2 possiblePosition = GetPosition() + newPosition;
-		if (possiblePosition.y <= (mGame->HEIGHT) - (64 * 4))
+		if (possiblePosition.y <= (mGame->HEIGHT) - (64))
 		{
 			mPosition = possiblePosition;
 		}
@@ -135,4 +135,9 @@ void Frog::OnProcessInput(const Uint8* keyState)
 			mPosition = possiblePosition;
 		}
 	}
+
+	mLastKeyFrame[SDL_SCANCODE_A] = keyState[SDL_SCANCODE_A];
+	mLastKeyFrame[SDL_SCANCODE_W] = keyState[SDL_SCANCODE_W];
+	mLastKeyFrame[SDL_SCANCODE_S] = keyState[SDL_SCANCODE_S];
+	mLastKeyFrame[SDL_SCANCODE_D] = keyState[SDL_SCANCODE_D];
 }

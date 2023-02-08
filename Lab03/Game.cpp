@@ -123,15 +123,16 @@ void Game::LoadData()
 	backgroundSC->SetTexture(GetTexture("Assets/Background.png"));
 
 	char val = ' ';
-	int initialRow = static_cast<int>(1.5 * LEVEL_BLOCK_HEIGHT);
+	int initialRow = static_cast<int>(GOAL_BUFFER * LEVEL_BLOCK_HEIGHT);
 	int row = 1;
 	int col = 1;
 	std::ifstream levelFile;
 
 	levelFile.open("Assets/Level.txt");
-	while (row <= 13)
+	while (row <= LEVEL_SIZE)
 	{
 		levelFile >> val;
+		SDL_Log("%c", val);
 		Vector2 position(col * LEVEL_BLOCK_WIDTH, LEVEL_BLOCK_HEIGHT * row + initialRow);
 		bool even = false;
 		Vector2 oddDirection(-1, 0);
@@ -141,7 +142,7 @@ void Game::LoadData()
 			even = true;
 		}
 
-		if (col == 13)
+		if (col == LEVEL_SIZE)
 		{
 			col = 0;
 			row++;
@@ -150,7 +151,7 @@ void Game::LoadData()
 		{
 			mGoal = new Actor(this);
 			mGoal->SetPosition(position);
-			(new CollisionComponent(mGoal))->SetSize(64, 64);
+			(new CollisionComponent(mGoal))->SetSize(GOAL_SIZE, GOAL_SIZE);
 		}
 		else if (val == 'X' || val == 'Y' || val == 'Z')
 		{
