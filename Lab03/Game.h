@@ -44,8 +44,8 @@ private:
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	std::vector<class Vehicle*> mVehicles;
 	std::vector<class Log*> mLogs;
-	class Frog* mFrog;
-	class Actor* mGoal;
+	class Frog* mFrog = nullptr;
+	class Actor* mGoal = nullptr;
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
