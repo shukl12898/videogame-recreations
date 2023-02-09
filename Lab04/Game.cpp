@@ -8,6 +8,7 @@
 
 #include "Game.h"
 #include "Actor.h"
+#include "Player.h"
 #include "Block.h"
 #include "Random.h"
 #include "SpriteComponent.h"
@@ -125,21 +126,27 @@ void Game::LoadData()
 	std::string allColumns;
 
 	Vector2 initialPosition(16, 16);
-	Vector2 position(0, 0);
+	Vector2 position(16, 16);
 
-	levelFile.open("Assets/Level0.txt");
+	levelFile.open("Assets/Level1.txt");
 	while (std::getline(levelFile, allColumns))
 	{
 
 		for (int colPos = 0; colPos < allColumns.size(); colPos++)
 		{
 			Vector2 newPosition(colPos * COLUMN_SIZE, rowPos * ROW_SIZE);
-			position += newPosition;
+			position = newPosition + initialPosition;
+			val = allColumns[colPos];
 			if (val == 'A' | val == 'B' | val == 'C' | val == 'D' | val == 'E' | val == 'F' |
 				val == 'G' | val == 'H' | val == 'I')
 			{
 				Block* block = new Block(this, val);
 				block->SetPosition(position);
+			}
+			else if (val == 'P')
+			{
+				Player* player = new Player(this);
+				player->SetPosition(position);
 			}
 
 			if (val == 'G')

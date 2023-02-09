@@ -20,6 +20,7 @@ public:
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
 	SDL_Texture* GetTexture(std::string filename);
+	std::vector<class Block*> GetBlocks() { return mBlocks; };
 	Actor* GetGoal() { return mGoal; };
 	static const int WIDTH = 600;
 	static const int HEIGHT = 448;
