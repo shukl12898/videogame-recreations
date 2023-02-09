@@ -9,7 +9,9 @@
 #include "Game.h"
 #include "Actor.h"
 #include "Player.h"
+#include "Spawner.h"
 #include "Block.h"
+#include "Goomba.h"
 #include "Random.h"
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
@@ -30,6 +32,8 @@ bool Game::Initialize()
 
 	mGameisActive = (mRenderer != nullptr) && (mWindow != nullptr);
 	IMG_Init(IMG_INIT_PNG);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
 	LoadData();
 
 	return mGameisActive;
@@ -120,6 +124,9 @@ void Game::LoadData()
 	SpriteComponent* backgroundSC = new SpriteComponent(background);
 	backgroundSC->SetTexture(GetTexture("Assets/Background.png"));
 
+	Mix_Chunk* backgroundMusic = GetSound("Assets/Sounds/Music.ogg");
+	mBackgroundMusic = Mix_PlayChannel(-1, backgroundMusic, -1);
+
 	char val = ' ';
 	int rowPos = 0;
 	std::ifstream levelFile;
@@ -145,8 +152,13 @@ void Game::LoadData()
 			}
 			else if (val == 'P')
 			{
-				Player* player = new Player(this);
-				player->SetPosition(position);
+				mPlayer = new Player(this);
+				mPlayer->SetPosition(position);
+			}
+			else if (val == 'Y')
+			{
+				Spawner* spawner = new Spawner(this);
+				spawner->SetPosition(position);
 			}
 
 			if (val == 'G')
@@ -175,6 +187,11 @@ void Game::UnloadData()
 		SDL_DestroyTexture(it.second);
 	}
 
+	for (auto it : mSounds)
+	{
+		Mix_FreeChunk(it.second);
+	}
+
 	mTextures.clear();
 }
 
@@ -192,8 +209,28 @@ void Game::GenerateOutput()
 	SDL_RenderPresent(mRenderer);
 }
 
+Mix_Chunk* Game::GetSound(const std::string& filename)
+{
+	if (mSounds.find(filename) == mSounds.end())
+	{
+		Mix_Chunk* sound = Mix_LoadWAV(filename.c_str());
+		if (sound == nullptr)
+		{
+			SDL_Log("Tried to load %s but failed.", filename.c_str());
+		}
+		else
+		{
+			Mix_Chunk* sound = Mix_LoadWAV(filename.c_str());
+			mSounds[filename] = sound;
+		}
+	}
+
+	return mSounds[filename];
+}
+
 void Game::Shutdown()
 {
+	Mix_CloseAudio();
 	UnloadData();
 	IMG_Quit();
 	SDL_DestroyRenderer(mRenderer);
@@ -221,6 +258,17 @@ void Game::RemoveBlock(Block* block)
 {
 	auto toDelete = std::find(mBlocks.begin(), mBlocks.end(), block);
 	mBlocks.erase(toDelete);
+}
+
+void Game::AddGoomba(Goomba* goomba)
+{
+	mGoombas.push_back(goomba);
+}
+
+void Game::RemoveGoomba(Goomba* goomba)
+{
+	auto toDelete = std::find(mGoombas.begin(), mGoombas.end(), goomba);
+	mGoombas.erase(toDelete);
 }
 
 void Game::AddSprite(SpriteComponent* sprite)

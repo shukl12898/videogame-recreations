@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "SDL2/SDL.h"
 #include "Math.h"
+#include "SDL2/SDL_mixer.h"
 
 class Game
 {
@@ -17,11 +18,18 @@ public:
 	void RemoveActor(class Actor* actor);
 	void AddBlock(class Block* block);
 	void RemoveBlock(class Block* block);
+	void AddGoomba(class Goomba* goomba);
+	void RemoveGoomba(class Goomba* goomba);
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
+	Mix_Chunk* GetSound(const std::string& filename);
+	Vector2& GetCameraPos() { return camera; };
 	SDL_Texture* GetTexture(std::string filename);
 	std::vector<class Block*> GetBlocks() { return mBlocks; };
-	Actor* GetGoal() { return mGoal; };
+	std::vector<class Goomba*> GetGoombas() { return mGoombas; };
+	class Actor* GetGoal() { return mGoal; };
+	class Player* GetPlayer() { return mPlayer; };
+	int GetBackgroundMusicChannel() { return mBackgroundMusic; };
 	static const int WIDTH = 600;
 	static const int HEIGHT = 448;
 	static const int BACKGROUND_X_POS = 3392;
@@ -34,11 +42,16 @@ private:
 	SDL_Window* mWindow = nullptr;
 	SDL_Renderer* mRenderer = nullptr;
 	bool mGameisActive = false;
+	int mBackgroundMusic = 0;
+	Vector2 camera;
 	std::vector<class Actor*> mActors;
 	std::vector<class Block*> mBlocks;
+	std::vector<class Goomba*> mGoombas;
 	std::vector<class SpriteComponent*> mSprites;
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
+	std::unordered_map<std::string, Mix_Chunk*> mSounds;
 	class Actor* mGoal;
+	class Player* mPlayer;
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();

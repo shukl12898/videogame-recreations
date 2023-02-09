@@ -1,5 +1,6 @@
 #include "MoveComponent.h"
 #include "Math.h"
+#include <string>
 
 class PlayerMove : public MoveComponent
 {
@@ -12,6 +13,7 @@ public:
 	const float GRAVITY = 2000.0f;
 
 protected:
+	std::string DetermineAnimation(bool mInAir);
 	float mYSpeed = 0.0f;
 	Game* mGame = nullptr;
 	class Player* mOwner = nullptr;
