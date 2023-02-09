@@ -144,8 +144,8 @@ void Game::LoadData()
 			Vector2 newPosition(colPos * COLUMN_SIZE, rowPos * ROW_SIZE);
 			position = newPosition + initialPosition;
 			val = allColumns[colPos];
-			if (val == 'A' | val == 'B' | val == 'C' | val == 'D' | val == 'E' | val == 'F' |
-				val == 'G' | val == 'H' | val == 'I')
+			if (val == 'A' || val == 'B' || val == 'C' || val == 'D' || val == 'E' || val == 'F' ||
+				val == 'G' || val == 'H' || val == 'I')
 			{
 				Block* block = new Block(this, val);
 				block->SetPosition(position);
@@ -220,7 +220,7 @@ Mix_Chunk* Game::GetSound(const std::string& filename)
 		}
 		else
 		{
-			Mix_Chunk* sound = Mix_LoadWAV(filename.c_str());
+			sound = Mix_LoadWAV(filename.c_str());
 			mSounds[filename] = sound;
 		}
 	}

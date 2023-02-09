@@ -24,6 +24,19 @@ Goomba::Goomba(Game* game)
 	mGame->AddGoomba(this);
 }
 
+void Goomba::OnUpdate(float deltaTime)
+{
+	if (mStomped)
+	{
+		mDeathTime += deltaTime;
+	}
+
+	if (mDeathTime >= 0.25)
+	{
+		SetState(ActorState::Destroy);
+	}
+}
+
 Goomba::~Goomba()
 {
 	mGame->RemoveGoomba(this);

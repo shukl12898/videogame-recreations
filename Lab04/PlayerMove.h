@@ -13,7 +13,7 @@ public:
 	const float GRAVITY = 2000.0f;
 
 protected:
-	std::string DetermineAnimation(bool mInAir);
+	std::string DetermineAnimation(bool jump);
 	float mYSpeed = 0.0f;
 	Game* mGame = nullptr;
 	class Player* mOwner = nullptr;

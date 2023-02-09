@@ -86,20 +86,10 @@ void GoombaMove::Update(float deltaTime)
 		}
 	}
 
-	if (mOwner->GetStomped() && deathTime == 0.0f)
+	if (mOwner->GetStomped())
 	{
 		mOwner->GetAnimatedSprite()->SetAnimation("dead");
-		mOwner->SetState(ActorState::Paused);
-		deathTime += deltaTime;
-	}
-	else if (mOwner->GetStomped() && deathTime != 0.0f)
-	{
-		deathTime += deltaTime;
-	}
-
-	if (deathTime > 0.25)
-	{
-		mOwner->SetState(ActorState::Destroy);
+		mForwardSpeed = 0;
 	}
 
 	mYSpeed += GRAVITY * deltaTime;

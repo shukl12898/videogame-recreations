@@ -74,7 +74,7 @@ void PlayerMove::Update(float deltaTime)
 		}
 	}
 
-	if (collision == false)
+	if (!collision)
 	{
 		mInAir = true;
 	}
@@ -112,7 +112,6 @@ void PlayerMove::Update(float deltaTime)
 			if (result != CollSide::None)
 			{
 				mOwner->SetPosition(mOwner->GetPosition() + offset);
-				collision = true;
 			}
 		}
 	}
@@ -147,12 +146,12 @@ void PlayerMove::Update(float deltaTime)
 	mOwner->GetAnimatedSprite()->SetAnimation(animation);
 }
 
-std::string PlayerMove::DetermineAnimation(bool mInAir)
+std::string PlayerMove::DetermineAnimation(bool jump)
 {
-	std::string animation = "";
+	std::string animation;
 
 	//mario on ground
-	if (!mInAir)
+	if (!jump)
 	{
 		//moving right
 		if (mForwardSpeed > 0)

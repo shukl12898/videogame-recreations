@@ -18,7 +18,7 @@ void AnimatedSprite::Update(float deltaTime)
 			mAnimTimer -= mAnims.size();
 		}
 
-		SetTexture(mAnims[mAnimName].at(std::floor(mAnimTimer)));
+		SetTexture(mAnims[mAnimName].at(static_cast<unsigned>(std::floor(mAnimTimer))));
 	}
 }
 

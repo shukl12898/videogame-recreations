@@ -6,14 +6,17 @@ public:
 	Goomba(class Game* game);
 	class CollisionComponent* GetCollisionComponent() { return mCollisionComponent; };
 	class AnimatedSprite* GetAnimatedSprite() { return mASC; };
-	void SetStomped() { stomped = true; };
-	bool GetStomped() { return stomped; };
+	void SetStomped() { mStomped = true; };
+	bool GetStomped() const { return mStomped; };
+	void OnUpdate(float deltaTime) override;
+
 	~Goomba();
 
 protected:
 	class Game* mGame;
 	class CollisionComponent* mCollisionComponent;
 	class AnimatedSprite* mASC;
+	float mDeathTime = 0.0f;
 	class GoombaMove* mGoombaMove;
-	bool stomped = false;
+	bool mStomped = false;
 };
