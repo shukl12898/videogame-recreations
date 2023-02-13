@@ -25,8 +25,8 @@ public:
 	Mix_Chunk* GetSound(const std::string& filename);
 	Vector2& GetCameraPos() { return mCamera; };
 	SDL_Texture* GetTexture(std::string filename);
-	std::vector<class Block*> GetBlocks() { return mBlocks; };
-	std::vector<class Goomba*> GetGoombas() { return mGoombas; };
+	std::vector<class Block*>& GetBlocks() { return mBlocks; };
+	std::vector<class Goomba*>& GetGoombas() { return mGoombas; };
 	class Actor* GetGoal() { return mGoal; };
 	class Player* GetPlayer() { return mPlayer; };
 	int GetBackgroundMusicChannel() const { return mBackgroundMusic; };

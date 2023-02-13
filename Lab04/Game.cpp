@@ -160,13 +160,6 @@ void Game::LoadData()
 				Spawner* spawner = new Spawner(this);
 				spawner->SetPosition(position);
 			}
-
-			if (val == 'G')
-			{
-				mGoal = new Actor(this);
-				// mGoal->SetPosition(position);
-				(new CollisionComponent(mGoal))->SetSize(64, 64);
-			}
 		}
 
 		rowPos++;

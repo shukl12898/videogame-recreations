@@ -15,13 +15,14 @@ GoombaMove::GoombaMove(Goomba* owner)
 	mGame = owner->GetGame();
 	mOwner = owner;
 	mForwardSpeed = -100;
-	// Vector2 initialDirection(1, 0);
 }
 
 void GoombaMove::Update(float deltaTime)
 {
 	Vector2 newPos(mOwner->GetPosition().x + mForwardSpeed * deltaTime,
 				   mOwner->GetPosition().y + mYSpeed * deltaTime);
+
+	CollisionComponent* collComponent = mOwner->GetCollisionComponent();
 
 	if (newPos.y > 448.0f)
 	{
@@ -33,8 +34,7 @@ void GoombaMove::Update(float deltaTime)
 	for (Block* block : mGame->GetBlocks())
 	{
 		Vector2 offset(0, 0);
-		CollSide result =
-			mOwner->GetCollisionComponent()->GetMinOverlap(block->GetCollisionComponent(), offset);
+		CollSide result = collComponent->GetMinOverlap(block->GetCollisionComponent(), offset);
 
 		if (result == CollSide::Top && (mYSpeed) > 0.0f)
 		{
@@ -46,20 +46,19 @@ void GoombaMove::Update(float deltaTime)
 	for (Block* block : mGame->GetBlocks())
 	{
 		Vector2 offset(0, 0);
-		CollSide result =
-			mOwner->GetCollisionComponent()->GetMinOverlap(block->GetCollisionComponent(), offset);
+		CollSide result = collComponent->GetMinOverlap(block->GetCollisionComponent(), offset);
 
 		if (result == CollSide::Left &&
 			(abs(block->GetPosition().y - mOwner->GetPosition().y) <= 3))
 		{
-			mForwardSpeed = -100;
+			mForwardSpeed = -GOOMBA_SPEED;
 			mOwner->SetPosition(mOwner->GetPosition() + offset);
 		}
 
 		if (result == CollSide::Right &&
 			(abs(block->GetPosition().y - mOwner->GetPosition().y) <= 3))
 		{
-			mForwardSpeed = 100;
+			mForwardSpeed = GOOMBA_SPEED;
 			mOwner->SetPosition(mOwner->GetPosition() + offset);
 		}
 	}
@@ -70,17 +69,16 @@ void GoombaMove::Update(float deltaTime)
 		{
 
 			Vector2 offset(0, 0);
-			CollSide result = mOwner->GetCollisionComponent()->GetMinOverlap(
-				goomba->GetCollisionComponent(), offset);
+			CollSide result = collComponent->GetMinOverlap(goomba->GetCollisionComponent(), offset);
 
 			if (result == CollSide::Right)
 			{
-				mForwardSpeed = 100;
+				mForwardSpeed = GOOMBA_SPEED;
 				mOwner->SetPosition(mOwner->GetPosition() + offset);
 			}
 			else if (result == CollSide::Left)
 			{
-				mForwardSpeed = -100;
+				mForwardSpeed = -GOOMBA_SPEED;
 				mOwner->SetPosition(mOwner->GetPosition() + offset);
 			}
 		}

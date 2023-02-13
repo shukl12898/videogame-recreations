@@ -16,7 +16,6 @@ PlayerMove::PlayerMove(Player* owner)
 
 	mGame = owner->GetGame();
 	mOwner = owner;
-	// Vector2 initialDirection(1, 0);
 }
 
 void PlayerMove::Update(float deltaTime)
@@ -33,14 +32,15 @@ void PlayerMove::Update(float deltaTime)
 		newPos.x = mGame->GetCameraPos().x;
 	}
 
-	if (newPos.x > 6368)
+	if (newPos.x > WIN_LOCATION)
 	{
 		won = true;
 	}
 
-	if (newPos.y > 448.0f)
+	if (newPos.y >= IN_DITCH)
 	{
 		dead = true;
+		newPos.y = FALL_THROUGH;
 		mOwner->SetState(ActorState::Paused);
 		mInAir = false;
 	}
@@ -48,11 +48,12 @@ void PlayerMove::Update(float deltaTime)
 	mOwner->SetPosition(newPos);
 
 	bool collision = false;
+	CollisionComponent* collComponent = mOwner->GetCollisionComponent();
+
 	for (Block* block : mGame->GetBlocks())
 	{
 		Vector2 offset(0, 0);
-		CollSide result =
-			mOwner->GetCollisionComponent()->GetMinOverlap(block->GetCollisionComponent(), offset);
+		CollSide result = collComponent->GetMinOverlap(block->GetCollisionComponent(), offset);
 		Mix_Chunk* bump = mGame->GetSound("Assets/Sounds/Bump.wav");
 
 		if (result == CollSide::Top && mYSpeed > 0.0f)
@@ -83,8 +84,7 @@ void PlayerMove::Update(float deltaTime)
 	{
 
 		Vector2 offset(0, 0);
-		CollSide result =
-			mOwner->GetCollisionComponent()->GetMinOverlap(goomba->GetCollisionComponent(), offset);
+		CollSide result = collComponent->GetMinOverlap(goomba->GetCollisionComponent(), offset);
 		Mix_Chunk* stomp = mGame->GetSound("Assets/Sounds/Stomp.wav");
 
 		if (!goomba->GetStomped())
@@ -93,14 +93,14 @@ void PlayerMove::Update(float deltaTime)
 			{
 				Mix_PlayChannel(-1, stomp, 0);
 				goomba->SetStomped();
-				mYSpeed = -350.0f;
+				mYSpeed = -HALF_JUMP;
 				mInAir = true;
 			}
 			else if ((result == CollSide::Left || result == CollSide::Right) && mInAir)
 			{
 				Mix_PlayChannel(-1, stomp, 0);
 				goomba->SetStomped();
-				mYSpeed = -350.0f;
+				mYSpeed = -HALF_JUMP;
 				mInAir = true;
 			}
 			else if (result != CollSide::None)
@@ -208,18 +208,18 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 		{
 			Mix_Chunk* jump = mGame->GetSound("Assets/Sounds/Jump.wav");
 			Mix_PlayChannel(-1, jump, 0);
-			mYSpeed = -700.0f;
+			mYSpeed = -NORMAL_JUMP;
 		}
 		mInAir = true;
 	}
 
 	if (keyState[SDL_SCANCODE_A])
 	{
-		mForwardSpeed = -300.0f;
+		mForwardSpeed = -MARIO_SPEED;
 	}
 	else if (keyState[SDL_SCANCODE_D])
 	{
-		mForwardSpeed = 300.0f;
+		mForwardSpeed = MARIO_SPEED;
 	}
 	else
 	{
