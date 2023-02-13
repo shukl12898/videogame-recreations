@@ -28,7 +28,10 @@ void GhostAI::Frighten()
 
 void GhostAI::Start(PathNode* startNode)
 {
-	// TODO: Implement
+	mOwner->SetPosition(startNode->GetPosition());
+	mState = Scatter;
+	mPrevNode = nullptr;
+	mNextNode = startNode;
 }
 
 void GhostAI::Die()

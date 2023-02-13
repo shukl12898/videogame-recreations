@@ -28,7 +28,7 @@ public:
 	void SetScale(float scale) { mScale = scale; }
 	float GetRotation() const { return mRotation; }
 	void SetRotation(float rotation) { mRotation = rotation; }
-
+	class Vector2 GetForward() const;
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }
 
@@ -70,5 +70,7 @@ protected:
 
 private:
 	friend class Component;
+	// Adds component to Actor (this is automatically called
+	// in the component constructor)
 	void AddComponent(class Component* c);
 };

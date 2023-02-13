@@ -9,7 +9,17 @@ AnimatedSprite::AnimatedSprite(Actor* owner, int drawOrder)
 
 void AnimatedSprite::Update(float deltaTime)
 {
-	// TODO: Implement
+	if (!mAnims[mAnimName].empty())
+	{
+		mAnimTimer += mAnimFPS * deltaTime;
+
+		while (mAnimTimer >= mAnims[mAnimName].size())
+		{
+			mAnimTimer -= mAnims.size();
+		}
+
+		SetTexture(mAnims[mAnimName].at(static_cast<unsigned>(std::floor(mAnimTimer))));
+	}
 }
 
 void AnimatedSprite::AddAnimation(const std::string& name, const std::vector<SDL_Texture*>& images)

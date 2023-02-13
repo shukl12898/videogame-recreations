@@ -15,7 +15,7 @@
 
 class Game
 {
-	static const int GHOST_COUNT = 4;
+	static const int GHOST_COUNT = 1;
 
 public:
 	Game();
@@ -65,7 +65,7 @@ private:
 	class PathNode* mTunnelRight = nullptr;
 	class PathNode* mGhostPen = nullptr;
 
-	std::array<class Ghost*, GHOST_COUNT> mGhosts = {nullptr, nullptr, nullptr, nullptr};
+	std::array<class Ghost*, GHOST_COUNT> mGhosts = {};
 
 	void ProcessInput();
 	void UpdateGame();
