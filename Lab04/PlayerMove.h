@@ -14,8 +14,8 @@ public:
 	const float HALF_JUMP = 350.0f;
 	const float MARIO_SPEED = 300.0f;
 	const int WIN_LOCATION = 6368;
-	const int IN_DITCH = 448;
-	const int FALL_THROUGH = 500;
+	const float IN_DITCH = 448;
+	const float FALL_THROUGH = 500;
 
 protected:
 	std::string DetermineAnimation(bool jump);
