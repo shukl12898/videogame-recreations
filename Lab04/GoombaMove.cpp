@@ -65,7 +65,7 @@ void GoombaMove::Update(float deltaTime)
 
 	for (Goomba* goomba : mGame->GetGoombas())
 	{
-		if (goomba != this->mOwner)
+		if (goomba != mOwner)
 		{
 
 			Vector2 offset(0, 0);
