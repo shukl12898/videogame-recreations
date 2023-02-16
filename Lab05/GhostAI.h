@@ -9,9 +9,14 @@ public:
 	// Used to track the four different GhostAI states
 	enum State
 	{
+
+		// Ghost paths from current position to home node ('scatter node'), then continues circling around scatter node until state change
 		Scatter,
+		// Ghost paths to a designated target node, typically relative to pacman position
 		Chase,
+		// Ghost turns blue and picks random node to turn to at every intersection
 		Frightened,
+		// Ghost turns into eyes and paths back to home pen area, at which point it will come back to life
 		Dead
 	};
 
@@ -37,6 +42,11 @@ public:
 
 private:
 	// Member data for pathfinding
+	const int SCATTER_SPEED = 90;
+	const int FRIGHTENED_SPEED = 65;
+	const int DEAD_SPEED = 125;
+
+	float mTimeSpent = 0.0f;
 
 	// TargetNode is our current goal node
 	class PathNode* mTargetNode = nullptr;
@@ -51,6 +61,13 @@ private:
 
 	// Save the owning actor (cast to a Ghost*)
 	class Ghost* mGhost;
+	class CollisionComponent* mCollisionComponent;
 
 	// TODO: Add any member data/helper functions here!
+	Vector2 mDirection;
+
+	void UpdateTargetNode();
+	void UpdateDirection();
+	void UpdateOtherNodes();
+	class CollisionComponent* GetCollisionComponent() const { return mCollisionComponent; }
 };

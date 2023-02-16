@@ -80,7 +80,9 @@
         "functional": "cpp",
         "iterator": "cpp",
         "utility": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "filesystem": "cpp",
+        "__functional_base_03": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

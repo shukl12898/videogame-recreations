@@ -15,7 +15,7 @@
 
 class Game
 {
-	static const int GHOST_COUNT = 1;
+	static const int GHOST_COUNT = 4;
 
 public:
 	Game();

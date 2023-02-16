@@ -9,21 +9,193 @@
 #include "Ghost.h"
 #include "PacMan.h"
 #include "Random.h"
+#include "Math.h"
+#include <unordered_set>
 
 GhostAI::GhostAI(class Actor* owner)
 : Component(owner, 50)
 {
 	mGhost = static_cast<Ghost*>(owner);
+	mCollisionComponent = new CollisionComponent(mOwner);
+	mCollisionComponent->SetSize(1.0f, 1.0f);
+}
+
+void GhostAI::UpdateDirection()
+{
+	mDirection = (mNextNode->GetPosition() - mPrevNode->GetPosition());
+	mDirection.Normalize();
+
+	//Moving right
+	if (mDirection.x > 0)
+	{
+		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("right");
+	}
+	//Moving left
+	if (mDirection.x < 0)
+	{
+		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("left");
+	}
+	//Moving down
+	if (mDirection.y > 0)
+	{
+		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("down");
+	}
+	//Moving up
+	if (mDirection.y < 0)
+	{
+		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("up");
+	}
 }
 
 void GhostAI::Update(float deltaTime)
 {
-	// TODO: Implement
+
+	mTimeSpent += deltaTime;
+
+	if (mState == Scatter || mState == Chase)
+	{
+		Vector2 newPos(mOwner->GetPosition() + SCATTER_SPEED * mDirection * deltaTime);
+		mOwner->SetPosition(newPos);
+	}
+	else if (mState == Frightened)
+	{
+		Vector2 newPos(mOwner->GetPosition() + FRIGHTENED_SPEED * mDirection * deltaTime);
+		mOwner->SetPosition(newPos);
+	}
+	else if (mState == Dead)
+	{
+		Vector2 newPos(mOwner->GetPosition() + DEAD_SPEED * mDirection * deltaTime);
+		mOwner->SetPosition(newPos);
+	}
+
+	// check if ghost intersects with nxet node
+	if (mCollisionComponent->Intersect(mNextNode->GetComponent<CollisionComponent>()))
+	{
+		//Set the ghost's position to mNextNode's position
+		mOwner->SetPosition(mNextNode->GetPosition());
+
+		//Check if you need to change the state (not necessary for now)
+
+		//Update target node as needed (seperate function)
+		UpdateTargetNode();
+
+		//Updated mPrevNode and mNextNode (seperate function)
+		UpdateOtherNodes();
+		UpdateDirection();
+	}
+}
+
+void GhostAI::UpdateTargetNode()
+{
+	if (mState == Scatter)
+	{
+		mTargetNode = mGhost->GetScatterNode();
+	}
+	else if (mState == Frightened)
+	{
+		std::unordered_set<PathNode*> firstPriorityNodes;
+		std::unordered_set<PathNode*> secondPriorityNodes;
+
+		for (auto adjNode : mNextNode->mAdjacent)
+		{
+			PathNode::Type nodeType = adjNode->GetType();
+			if (adjNode != mPrevNode && nodeType != PathNode::Ghost && nodeType != PathNode::Tunnel)
+			{
+				firstPriorityNodes.insert(adjNode);
+			}
+			if (adjNode != mPrevNode && nodeType != PathNode::Tunnel)
+			{
+				secondPriorityNodes.insert(adjNode);
+			}
+		}
+
+		if 
+
+	}
+}
+
+void GhostAI::UpdateOtherNodes()
+{
+
+	//select a node adjacent to mNextNode closest to mTargetNode (loop through mAdjacent vector)
+	//cant pick mPrevNode
+	//any node with GetType() PathNode::Ghost
+	//any node with GetType() PathNode::Tunnel
+
+	float minDist = INFINITY;
+	PathNode* selectedNode = nullptr;
+
+	for (auto adjNode : mNextNode->mAdjacent)
+	{
+		PathNode::Type nodeType = adjNode->GetType();
+		if ((adjNode != mPrevNode) && (nodeType != PathNode::Ghost) &&
+			(nodeType != PathNode::Tunnel))
+		{
+			float currDist =
+				adjNode->GetPosition().Distance(adjNode->GetPosition(), mTargetNode->GetPosition());
+			if (currDist <= minDist)
+			{
+				selectedNode = adjNode;
+				minDist = currDist;
+			}
+		}
+	}
+
+	if (selectedNode == nullptr)
+	{
+		for (auto adjNode : mNextNode->mAdjacent)
+		{
+			PathNode::Type nodeType = adjNode->GetType();
+			if ((adjNode != mPrevNode) && (nodeType != PathNode::Tunnel))
+			{
+				float currDist = adjNode->GetPosition().Distance(adjNode->GetPosition(),
+																 mTargetNode->GetPosition());
+				if (currDist <= minDist)
+				{
+					selectedNode = adjNode;
+					minDist = currDist;
+				}
+			}
+		}
+	}
+
+	if (selectedNode == nullptr)
+	{
+		for (auto adjNode : mNextNode->mAdjacent)
+		{
+			PathNode::Type nodeType = adjNode->GetType();
+			if (nodeType != PathNode::Tunnel)
+			{
+				float currDist = adjNode->GetPosition().Distance(adjNode->GetPosition(),
+																 mTargetNode->GetPosition());
+				if (currDist <= minDist)
+				{
+					selectedNode = adjNode;
+					minDist = currDist;
+				}
+			}
+		}
+	}
+
+	mPrevNode = mNextNode;
+	mNextNode = selectedNode;
 }
 
 void GhostAI::Frighten()
 {
-	// TODO: Implement
+	if (mState != Dead)
+	{
+		mTimeSpent = 0.0f;
+		if (mState != Frightened)
+		{
+			mState = Frightened;
+			PathNode* temp = mPrevNode;
+			mPrevNode = mNextNode;
+			mNextNode = temp;
+			UpdateDirection();
+			mTargetNode = nullptr;
+		}
+	}
 }
 
 void GhostAI::Start(PathNode* startNode)
@@ -32,6 +204,8 @@ void GhostAI::Start(PathNode* startNode)
 	mState = Scatter;
 	mPrevNode = nullptr;
 	mNextNode = startNode;
+	//Make sure to reset to 0.0f for every time state changes
+	mTimeSpent = 0.0f;
 }
 
 void GhostAI::Die()
