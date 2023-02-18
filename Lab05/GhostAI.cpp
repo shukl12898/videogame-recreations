@@ -75,6 +75,7 @@ void GhostAI::Update(float deltaTime)
 		mOwner->SetPosition(mNextNode->GetPosition());
 
 		//Check if you need to change the state (not necessary for now)
+		StateChange();
 
 		//Update target node as needed (seperate function)
 		UpdateTargetNode();
@@ -82,6 +83,28 @@ void GhostAI::Update(float deltaTime)
 		//Updated mPrevNode and mNextNode (seperate function)
 		UpdateOtherNodes();
 		UpdateDirection();
+	}
+
+	if (mState == Frightened)
+	{
+		AnimatedSprite* animatedSprite = mOwner->GetComponent<AnimatedSprite>();
+		if (mTimeSpent <= 5)
+		{
+			animatedSprite->SetAnimation("scared0");
+		}
+		else
+		{
+			animatedSprite->SetAnimation("scared1");
+		}
+	}
+}
+
+void GhostAI::StateChange()
+{
+	if (mTimeSpent >= 7 && mState == Frightened)
+	{
+		mState = Scatter;
+		mTimeSpent = 0.0f;
 	}
 }
 
@@ -109,8 +132,23 @@ void GhostAI::UpdateTargetNode()
 			}
 		}
 
-		if 
+		PathNode* selectedNode = nullptr;
 
+		if (!firstPriorityNodes.empty())
+		{
+			selectedNode = *(firstPriorityNodes.begin());
+		}
+		else if (!secondPriorityNodes.empty())
+		{
+			selectedNode = *(secondPriorityNodes.begin());
+		}
+		else
+		{
+			int index = Random::GetIntRange(0, mNextNode->mAdjacent.size() - 1);
+			selectedNode = mNextNode->mAdjacent.at(index);
+		}
+
+		mTargetNode = selectedNode;
 	}
 }
 

@@ -67,6 +67,7 @@ private:
 	Vector2 mDirection;
 
 	void UpdateTargetNode();
+	void StateChange();
 	void UpdateDirection();
 	void UpdateOtherNodes();
 	class CollisionComponent* GetCollisionComponent() const { return mCollisionComponent; }
