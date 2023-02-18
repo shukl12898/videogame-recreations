@@ -7,19 +7,38 @@
 // (Defaults to 8 channels)
 AudioSystem::AudioSystem(int numChannels)
 {
-	// TODO: Implement
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+	Mix_AllocateChannels(numChannels);
+	mChannels.resize(numChannels);
 }
 
 // Destroy the AudioSystem
 AudioSystem::~AudioSystem()
 {
-	// TODO: Implement
+	for (auto sound : mSounds)
+	{
+		Mix_FreeChunk(sound.second);
+	}
+
+	mSounds.clear();
+	Mix_CloseAudio();
 }
 
 // Updates the status of all the active sounds every frame
 void AudioSystem::Update(float deltaTime)
 {
-	// TODO: Implement
+	for (int i = 0; i < mChannels.size(); i++)
+	{
+		if (mChannels[i] != 0)
+		{
+			bool playing = Mix_Playing(i);
+			if (!playing)
+			{
+				mHandleMap.erase(i);
+				mChannels[i] = 0;
+			}
+		}
+	}
 }
 
 // Plays the sound with the specified name and loops if looping is true
@@ -30,39 +49,176 @@ void AudioSystem::Update(float deltaTime)
 //       "Assets/Sounds/ChompLoop.wav".
 SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping)
 {
-	// TODO: Implement
-	return 0;
+	Mix_Chunk* sound = GetSound(soundName);
+	if (sound == nullptr)
+	{
+		SDL_Log("[AudioSystem] PlaySound couldn't find sound for %s", soundName.c_str());
+		return 0;
+	}
+
+	int channel = -1;
+
+	for (int i = 0; i < mChannels.size(); i++)
+	{
+		if (mChannels[i] == 0)
+		{
+			channel = i;
+			break;
+		}
+	}
+
+	bool overwrote = false;
+	SoundHandle overwroteHandle;
+	std::string overwroteName;
+
+	if (channel == -1)
+	{
+		for (auto prioritize : mHandleMap)
+		{
+			if (prioritize.second.mSoundName == soundName)
+			{
+				channel = prioritize.second.mChannel;
+				overwroteHandle = prioritize.first;
+				overwroteName = prioritize.second.mSoundName;
+				overwrote = true;
+			}
+		}
+	}
+
+	if (channel == -1)
+	{
+		for (auto prioritize : mHandleMap)
+		{
+			if (!prioritize.second.mIsLooping)
+			{
+				channel = prioritize.second.mChannel;
+				overwroteHandle = prioritize.first;
+				overwroteName = prioritize.second.mSoundName;
+				overwrote = true;
+			}
+		}
+	}
+
+	if (channel == -1)
+	{
+		channel = mHandleMap.begin()->second.mChannel;
+		overwroteHandle = mHandleMap.begin()->first;
+		overwroteName = mHandleMap.begin()->second.mSoundName;
+		overwrote = true;
+	}
+
+	if (overwrote)
+	{
+		mHandleMap.erase(overwroteHandle);
+		SDL_Log("[AudioSystem] PlaySound ran out of channels playing %s! Stopping %s",
+				soundName.c_str(), overwroteName.c_str());
+	}
+
+	mLastHandle++;
+
+	HandleInfo curr;
+	curr.mSoundName = soundName;
+	curr.mIsLooping = looping;
+	curr.mIsPaused = false;
+	curr.mChannel = channel;
+
+	mHandleMap[mLastHandle] = curr;
+	mChannels[channel] = mLastHandle;
+
+	int loops = 0;
+
+	if (looping)
+	{
+		loops = -1;
+	}
+
+	Mix_PlayChannel(channel, sound, loops);
+
+	return mLastHandle;
 }
 
 // Stops the sound if it is currently playing
 void AudioSystem::StopSound(SoundHandle sound)
 {
-	// TODO: Implement
+	auto val = mHandleMap.find(sound);
+	if (val == mHandleMap.end())
+	{
+		SDL_Log("[AudioSystem] StopSound couldn't find handle %u", sound);
+	}
+	else
+	{A
+		Mix_HaltChannel(val->second.mChannel);
+		mChannels[val->second.mChannel] = 0;
+		mHandleMap.erase(val->first);
+	}
 }
 
 // Pauses the sound if it is currently playing
 void AudioSystem::PauseSound(SoundHandle sound)
 {
-	// TODO: Implement
+	auto val = mHandleMap.find(sound);
+	if (val == mHandleMap.end())
+	{
+		SDL_Log("[AudioSystem] PauseSound couldn't find handle %u", sound);
+	}
+	else
+	{
+		if (!val->second.mIsPaused)
+		{
+			Mix_Pause(val->first);
+		}
+
+		val->second.mIsPaused = true;
+	}
 }
 
 // Resumes the sound if it is currently paused
 void AudioSystem::ResumeSound(SoundHandle sound)
 {
-	// TODO: Implement
+	auto val = mHandleMap.find(sound);
+	if (val == mHandleMap.end())
+	{
+		SDL_Log("[AudioSystem] ResumeSound couldn't find handle %u", sound);
+	}
+	else
+	{
+		if (val->second.mIsPaused)
+		{
+			Mix_Resume(val->first);
+		}
+
+		val->second.mIsPaused = false;
+	}
 }
 
 // Returns the current state of the sound
 SoundState AudioSystem::GetSoundState(SoundHandle sound)
 {
-	// TODO: Implement
-	return SoundState::Stopped;
+	auto val = mHandleMap.find(sound);
+	if (val == mHandleMap.end())
+	{
+		return SoundState::Stopped;
+	}
+	else
+	{
+		if (val->second.mIsPaused)
+		{
+			return SoundState::Paused;
+		}
+
+		return SoundState::Playing;
+	}
 }
 
 // Stops all sounds on all channels
 void AudioSystem::StopAllSounds()
 {
-	// TODO: Implement
+	Mix_HaltChannel(-1);
+	for (int i = 0; i < mChannels.size(); i++)
+	{
+		mChannels[i] = 0;
+	}
+	mHandleMap.clear();
 }
 
 // Cache all sounds under Assets/Sounds
