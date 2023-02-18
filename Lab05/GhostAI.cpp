@@ -400,6 +400,7 @@ void GhostAI::Start(PathNode* startNode)
 	mNextNode = startNode;
 	//Make sure to reset to 0.0f for every time state changes
 	mTimeSpent = 0.0f;
+	mDirection = Vector2(0.0f, 0.0f);
 }
 
 void GhostAI::Die()
