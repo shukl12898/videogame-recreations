@@ -146,7 +146,7 @@ void AudioSystem::StopSound(SoundHandle sound)
 		SDL_Log("[AudioSystem] StopSound couldn't find handle %u", sound);
 	}
 	else
-	{A
+	{
 		Mix_HaltChannel(val->second.mChannel);
 		mChannels[val->second.mChannel] = 0;
 		mHandleMap.erase(val->first);
