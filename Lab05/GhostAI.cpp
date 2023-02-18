@@ -24,26 +24,43 @@ void GhostAI::UpdateDirection()
 {
 	mDirection = (mNextNode->GetPosition() - mPrevNode->GetPosition());
 	mDirection.Normalize();
+	AnimatedSprite* animatedSprite = mOwner->GetComponent<AnimatedSprite>();
 
 	//Moving right
 	if (mDirection.x > 0)
 	{
-		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("right");
+		animatedSprite->SetAnimation("right");
+		if (mState == Dead)
+		{
+			animatedSprite->SetAnimation("deadright");
+		}
 	}
 	//Moving left
 	if (mDirection.x < 0)
 	{
-		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("left");
+		animatedSprite->SetAnimation("left");
+		if (mState == Dead)
+		{
+			animatedSprite->SetAnimation("deadleft");
+		}
 	}
 	//Moving down
 	if (mDirection.y > 0)
 	{
-		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("down");
+		animatedSprite->SetAnimation("down");
+		if (mState == Dead)
+		{
+			animatedSprite->SetAnimation("deaddown");
+		}
 	}
 	//Moving up
 	if (mDirection.y < 0)
 	{
-		mOwner->GetComponent<AnimatedSprite>()->SetAnimation("up");
+		animatedSprite->SetAnimation("up");
+		if (mState == Dead)
+		{
+			animatedSprite->SetAnimation("deadright");
+		}
 	}
 }
 
@@ -106,6 +123,27 @@ void GhostAI::StateChange()
 		mState = Scatter;
 		mTimeSpent = 0.0f;
 	}
+	if (mState == Dead)
+	{
+		Vector2 ghostPen = mOwner->GetGame()->GetGhostPen()->GetPosition();
+		bool xCoordinate = mOwner->GetPosition().x == ghostPen.x;
+		bool yCoordinate = mOwner->GetPosition().y == ghostPen.y;
+		if (xCoordinate && yCoordinate)
+		{
+			mState = Scatter;
+			mTimeSpent = 0.0f;
+		}
+	}
+	if (mState == Scatter && mTimeSpent >= 5)
+	{
+		mState = Chase;
+		mTimeSpent = 0.0f;
+	}
+	if (mState == Chase && mTimeSpent >= 20)
+	{
+		mState = Scatter;
+		mTimeSpent = 0.0f;
+	}
 }
 
 void GhostAI::UpdateTargetNode()
@@ -150,24 +188,142 @@ void GhostAI::UpdateTargetNode()
 
 		mTargetNode = selectedNode;
 	}
+	else if (mState == Dead)
+	{
+		mTargetNode = mOwner->GetGame()->GetGhostPen();
+	}
+	else if (mState == Chase)
+	{
+		//Blinky targets pacman's previous path node
+		if (mGhost->GetType() == Ghost::Type::Blinky)
+		{
+			PathNode* pacPrev = mOwner->GetGame()->GetPlayer()->GetPrevNode();
+			if (pacPrev->GetType() == PathNode::Tunnel)
+			{
+				float minDist = INFINITY;
+				PathNode* selectedNode = nullptr;
+
+				for (auto adjNode : pacPrev->mAdjacent)
+				{
+					if (adjNode->GetType() == PathNode::Default)
+					{
+						float currDist = adjNode->GetPosition().Distance(adjNode->GetPosition(),
+																		 pacPrev->GetPosition());
+						if (currDist <= minDist)
+						{
+							selectedNode = adjNode;
+							minDist = currDist;
+						}
+					}
+				}
+				mTargetNode = selectedNode;
+			}
+			else
+			{
+				mTargetNode = pacPrev;
+			}
+		}
+		//Pinky gets a point 80 units 'in front of pacman'
+		else if (mGhost->GetType() == Ghost::Type::Pinky)
+		{
+			Vector2 inFront = mOwner->GetGame()->GetPlayer()->GetPointInFrontOf(80);
+
+			float minDist = INFINITY;
+			PathNode* selectedNode = nullptr;
+
+			for (auto adjNode : mOwner->GetGame()->GetPathNodes())
+			{
+				if (adjNode->GetType() == PathNode::Default)
+				{
+					float currDist =
+						adjNode->GetPosition().Distance(adjNode->GetPosition(), inFront);
+					if (currDist <= minDist)
+					{
+						selectedNode = adjNode;
+						minDist = currDist;
+					}
+				}
+			}
+			mTargetNode = selectedNode;
+		}
+		//Inky gets a point 40 units 'in front of pacman'
+		else if (mGhost->GetType() == Ghost::Type::Inky)
+		{
+			Vector2 P = mOwner->GetGame()->GetPlayer()->GetPointInFrontOf(40);
+			Vector2 v = P - mOwner->GetGame()->GetGhosts().at(0)->GetPosition();
+			v *= 2;
+			Vector2 q = mOwner->GetGame()->GetGhosts().at(0)->GetPosition() + v;
+
+			float minDist = INFINITY;
+			PathNode* selectedNode = nullptr;
+
+			for (auto adjNode : mOwner->GetGame()->GetPathNodes())
+			{
+				if (adjNode->GetType() == PathNode::Default)
+				{
+					float currDist = adjNode->GetPosition().Distance(adjNode->GetPosition(), q);
+					if (currDist <= minDist)
+					{
+						selectedNode = adjNode;
+						minDist = currDist;
+					}
+				}
+			}
+			mTargetNode = selectedNode;
+		}
+		//Clyde gets distance between clyde and player (if distance > 150), targets pacman's previous or scatter
+		else if (mGhost->GetType() == Ghost::Type::Clyde)
+		{
+			float currDist = mOwner->GetPosition().Distance(
+				mOwner->GetPosition(), mOwner->GetGame()->GetPlayer()->GetPosition());
+
+			if (currDist > 150.0f)
+			{
+				PathNode* pacPrev = mOwner->GetGame()->GetPlayer()->GetPrevNode();
+				if (pacPrev->GetType() == PathNode::Tunnel)
+				{
+					float minDist = INFINITY;
+					PathNode* selectedNode = nullptr;
+
+					for (auto adjNode : pacPrev->mAdjacent)
+					{
+						if (adjNode->GetType() == PathNode::Default)
+						{
+							float currDist = adjNode->GetPosition().Distance(
+								adjNode->GetPosition(), pacPrev->GetPosition());
+							if (currDist <= minDist)
+							{
+								selectedNode = adjNode;
+								minDist = currDist;
+							}
+						}
+					}
+					mTargetNode = selectedNode;
+				}
+				else
+				{
+					mTargetNode = pacPrev;
+				}
+			}
+			else
+			{
+				mTargetNode = mGhost->GetScatterNode();
+			}
+		}
+	}
 }
 
 void GhostAI::UpdateOtherNodes()
 {
-
-	//select a node adjacent to mNextNode closest to mTargetNode (loop through mAdjacent vector)
-	//cant pick mPrevNode
-	//any node with GetType() PathNode::Ghost
-	//any node with GetType() PathNode::Tunnel
-
 	float minDist = INFINITY;
 	PathNode* selectedNode = nullptr;
 
 	for (auto adjNode : mNextNode->mAdjacent)
 	{
 		PathNode::Type nodeType = adjNode->GetType();
-		if ((adjNode != mPrevNode) && (nodeType != PathNode::Ghost) &&
-			(nodeType != PathNode::Tunnel))
+		if (((adjNode != mPrevNode) && (nodeType != PathNode::Ghost) &&
+			 (nodeType != PathNode::Tunnel)) ||
+			(nodeType == PathNode::Ghost && mState == Dead))
 		{
 			float currDist =
 				adjNode->GetPosition().Distance(adjNode->GetPosition(), mTargetNode->GetPosition());
@@ -248,7 +404,9 @@ void GhostAI::Start(PathNode* startNode)
 
 void GhostAI::Die()
 {
-	// TODO: Implement
+	mTimeSpent = 0.0f;
+	mState = Dead;
+	UpdateDirection();
 }
 
 void GhostAI::DebugDrawPath(SDL_Renderer* render)
