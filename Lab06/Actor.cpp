@@ -10,17 +10,35 @@ Actor::Actor(Game* game)
 , mScale(1.0f)
 , mRotation(0.0f)
 {
-	// TODO
+	mGame->AddActor(this);
 }
 
 Actor::~Actor()
 {
-	// TODO
+	mGame->RemoveActor(this);
+	for (auto i : mComponents)
+	{
+		delete i;
+	}
+	mComponents.clear();
 }
 
 void Actor::Update(float deltaTime)
 {
-	// TODO
+	if (mState == ActorState::Active)
+	{
+		for (auto i : mComponents)
+		{
+			i->Update(deltaTime);
+		}
+		OnUpdate(deltaTime);
+	}
+}
+
+Vector2 Actor::GetForward() const
+{
+	Vector2 forward(cos(mRotation), -sin(mRotation));
+	return forward;
 }
 
 void Actor::OnUpdate(float deltaTime)
@@ -29,7 +47,14 @@ void Actor::OnUpdate(float deltaTime)
 
 void Actor::ProcessInput(const Uint8* keyState)
 {
-	// TODO
+	if (mState == ActorState::Active)
+	{
+		for (auto i : mComponents)
+		{
+			i->ProcessInput(keyState);
+		}
+		OnProcessInput(keyState);
+	}
 }
 
 void Actor::OnProcessInput(const Uint8* keyState)
