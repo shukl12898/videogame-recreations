@@ -20,6 +20,8 @@ public:
 	// Set the current active animation
 	void SetAnimation(const std::string& name) { mAnimName = name; }
 
+	void LoadAnimations(const std::string& rootPath);
+
 	// Get the name of the currently-playing animation
 	const std::string& GetAnimName() const { return mAnimName; }
 

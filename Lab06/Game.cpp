@@ -9,9 +9,14 @@
 #include "Game.h"
 #include "Actor.h"
 #include "Player.h"
+#include "Soldier.h"
+#include "Bush.h"
+#include "Collider.h"
 #include "Random.h"
 #include "SpriteComponent.h"
+#include "CSVHelper.h"
 #include "CollisionComponent.h"
+#include "TiledBGComponent.h"
 #include <algorithm>
 #include <SDL2/SDL_image.h>
 #include <fstream>
@@ -115,6 +120,68 @@ void Game::UpdateGame()
 
 void Game::LoadData()
 {
+	Actor* actor = new Actor(this);
+	TiledBGComponent* tiledBGC = new TiledBGComponent(actor);
+	tiledBGC->LoadTileCSV("Assets/Map/Tiles.csv", TILE_WIDTH, TILE_HEIGHT);
+	tiledBGC->SetTexture(GetTexture("Assets/Map/Tiles.png"));
+
+	LoadDataHelper();
+}
+
+void Game::LoadDataHelper()
+{
+	std::ifstream levelFile;
+	levelFile.open("Assets/Map/ObjectsOneSoldier.csv");
+
+	std::string line;
+
+	std::getline(levelFile, line);
+
+	while (std::getline(levelFile, line))
+	{
+		std::vector<std::string> lineVec = CSVHelper::Split(line);
+		if (lineVec[0] == "Player")
+		{
+			mPlayer = new Player(this);
+			int xPos = std::stoi(lineVec[1]);
+			int yPos = std::stoi(lineVec[2]);
+			int width = std::stoi(lineVec[3]);
+			int height = std::stoi(lineVec[4]);
+			Vector2 pos(xPos + width / 2, yPos + height / 2);
+			mPlayer->SetPosition(pos);
+		}
+		if (lineVec[0] == "Collider")
+		{
+			int xPos = std::stoi(lineVec[1]);
+			int yPos = std::stoi(lineVec[2]);
+			int width = std::stoi(lineVec[3]);
+			int height = std::stoi(lineVec[4]);
+			Vector2 pos(xPos + width / 2, yPos + height / 2);
+			Collider* collider = new Collider(this, width, height);
+			collider->SetPosition(pos);
+			mColliders.push_back(collider);
+		}
+		if (lineVec[0] == "Soldier")
+		{
+			int xPos = std::stoi(lineVec[1]);
+			int yPos = std::stoi(lineVec[2]);
+			int width = std::stoi(lineVec[3]);
+			int height = std::stoi(lineVec[4]);
+			Vector2 pos(xPos + width / 2, yPos + height / 2);
+			Soldier* soldier = new Soldier(this);
+			soldier->SetPosition(pos);
+		}
+		if (lineVec[0] == "Bush")
+		{
+			int xPos = std::stoi(lineVec[1]);
+			int yPos = std::stoi(lineVec[2]);
+			int width = std::stoi(lineVec[3]);
+			int height = std::stoi(lineVec[4]);
+			Vector2 pos(xPos + width / 2, yPos + height / 2);
+			Bush* bush = new Bush(this);
+			bush->SetPosition(pos);
+		}
+	}
 }
 
 void Game::UnloadData()

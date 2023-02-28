@@ -9,7 +9,9 @@ Player::Player(Game* game)
 {
 	mGame = game;
 	mASC = new AnimatedSprite(this, 200);
+	mASC->LoadAnimations("Assets/Link");
+	mASC->SetAnimation("StandDown");
 	mCollisionComponent = new CollisionComponent(this);
-	mCollisionComponent->SetSize(32, 32);
+	mCollisionComponent->SetSize(20, 20);
 	mPlayerMove = new PlayerMove(this);
 }
