@@ -1,5 +1,6 @@
 #pragma once
 #include "Actor.h"
+#include <string>
 
 class Effect : public Actor
 {
