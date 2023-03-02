@@ -20,7 +20,8 @@ Bush::Bush(Game* game)
 	mEnemyComponent->SetOnDeath([this]() {
 		float x = this->GetPosition().x;
 		float y = this->GetPosition().y;
-		this->mGame->GetPathFinder()->SetIsBlocked(y / 32, x / 32, false);
+		this->mGame->GetPathFinder()->SetIsBlocked(static_cast<size_t>(y / 32),
+												   static_cast<size_t>(x / 32), false);
 		new Effect(mGame, GetPosition(), "BushDeath", "BushDie.wav");
 	});
 }

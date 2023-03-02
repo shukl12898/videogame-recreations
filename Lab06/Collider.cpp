@@ -4,7 +4,7 @@
 #include "CollisionComponent.h"
 #include "PlayerMove.h"
 
-Collider::Collider(Game* game, int width, int height)
+Collider::Collider(Game* game, float width, float height)
 : Actor(game)
 {
 	mGame = game;

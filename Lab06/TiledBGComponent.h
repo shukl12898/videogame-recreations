@@ -15,7 +15,7 @@ public:
 	void LoadTileCSV(const std::string& filename, int tileWidth, int tileHeight);
 
 protected:
-	int mTileWidth;
-	int mTileHeight;
+	int mTileWidth = 0;
+	int mTileHeight = 0;
 	std::vector<std::vector<int>> mCSVTiles;
 };

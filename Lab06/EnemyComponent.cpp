@@ -31,17 +31,17 @@ void EnemyComponent::TakeDamage()
 		mTakeDamageTime = 0.25;
 		if (mHitPoints == 0)
 		{
-			if (OnDeath)
+			if (mOnDeath)
 			{
-				OnDeath();
+				mOnDeath();
 			}
 			mOwner->SetState(ActorState::Destroy);
 		}
 		else
 		{
-			if (OnDamage)
+			if (mOnDamage)
 			{
-				OnDamage();
+				mOnDamage();
 			}
 		}
 	}

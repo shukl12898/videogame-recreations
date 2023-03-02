@@ -44,7 +44,7 @@ private:
 	bool mGameisActive = false;
 	int mBackgroundMusic = 0;
 	Vector2 mCamera;
-	class PathFinder* mPathFinder;
+	class PathFinder* mPathFinder = nullptr;
 	std::vector<class Actor*> mActors;
 	std::vector<class SpriteComponent*> mSprites;
 	std::vector<class Collider*> mColliders;
@@ -53,7 +53,7 @@ private:
 	class Actor* mGoal = nullptr;
 	class Player* mPlayer = nullptr;
 	class AudioSystem* mAudioSystem = nullptr;
-	int mStartSound;
+	int mStartSound = 0;
 	bool mBackMusic = false;
 	void ProcessInput();
 	void UpdateGame();

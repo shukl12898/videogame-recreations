@@ -10,6 +10,5 @@ public:
 
 protected:
 	class Game* mGame;
-	class CollisionComponent* mCollisionComponent;
 	float mLifetime;
 };

@@ -10,17 +10,17 @@ public:
 	void Update(float deltaTime) override;
 	class CollisionComponent* GetCollisionComponent() { return mCollisionComponent; };
 	void SetHitPoints(int points) { mHitPoints = points; };
-	int GetHitPoints() { return mHitPoints; };
-	void SetOnDeath(std::function<void()> death) { OnDeath = death; };
-	void SetOnDamage(std::function<void()> damage) { OnDamage = damage; };
+	const int GetHitPoints() { return mHitPoints; };
+	void SetOnDeath(std::function<void()> death) { mOnDeath = death; };
+	void SetOnDamage(std::function<void()> damage) { mOnDamage = damage; };
 	void TakeDamage();
 
 protected:
 	class CollisionComponent* mCollisionComponent;
 
 private:
-	int mHitPoints;
+	int mHitPoints = 0;
 	float mTakeDamageTime = 0.0f;
-	std::function<void()> OnDamage;
-	std::function<void()> OnDeath;
+	std::function<void()> mOnDamage;
+	std::function<void()> mOnDeath;
 };

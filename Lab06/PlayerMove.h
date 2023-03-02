@@ -20,7 +20,7 @@ public:
 	static const int MOVE_SPEED = 150;
 
 protected:
-	std::string DetermineAnimation();
+	const std::string DetermineAnimation();
 	void SwordUpdate();
 	Vector2 mDirection;
 	Game* mGame = nullptr;

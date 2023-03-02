@@ -59,7 +59,7 @@ SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping)
 	int channelNumber = -1;
 	bool overwritten = false;
 	std::string overwrittenName;
-	SoundHandle overwrittenHandle;
+	SoundHandle overwrittenHandle = 0;
 
 	for (int i = 0; i < mChannels.size(); i++)
 	{
