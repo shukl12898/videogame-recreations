@@ -107,7 +107,7 @@ void PlayerMove::SwordUpdate()
 	}
 }
 
-const std::string PlayerMove::DetermineAnimation()
+const std::string PlayerMove::DetermineAnimation() const
 {
 	std::string animName;
 

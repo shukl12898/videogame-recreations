@@ -170,7 +170,8 @@ void Game::LoadDataHelper()
 			int width = std::stoi(lineVec[3]);
 			int height = std::stoi(lineVec[4]);
 			Vector2 pos(xPos + width / 2, yPos + height / 2);
-			Collider* collider = new Collider(this, width, height);
+			Collider* collider =
+				new Collider(this, static_cast<float>(width), static_cast<float>(height));
 			collider->SetPosition(pos);
 			mColliders.push_back(collider);
 		}
