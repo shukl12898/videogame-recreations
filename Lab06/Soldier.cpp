@@ -1,10 +1,12 @@
 #include "Soldier.h"
 #include "Game.h"
 #include "AnimatedSprite.h"
+#include "PathNode.h"
 #include "CollisionComponent.h"
 #include "PlayerMove.h"
+#include "SoldierAI.h"
 
-Soldier::Soldier(Game* game)
+Soldier::Soldier(Game* game, PathNode* start, PathNode* end)
 : Actor(game)
 {
 	mGame = game;
@@ -14,4 +16,6 @@ Soldier::Soldier(Game* game)
 	mASC->LoadAnimations("Assets/Soldier");
 	mASC->SetAnimation("WalkDown");
 	mASC->SetAnimFPS(5.0f);
+	SoldierAI* soldierAI = new SoldierAI(this);
+	soldierAI->Setup(start, end);
 }

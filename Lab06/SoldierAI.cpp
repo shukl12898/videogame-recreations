@@ -9,17 +9,74 @@
 SoldierAI::SoldierAI(Actor* owner)
 : SpriteComponent(owner)
 {
-	SetIsVisible(false); // Uncomment to hide debug paths
+	SetIsVisible(true); // Uncomment to hide debug paths
 }
 
 void SoldierAI::Setup(PathNode* start, PathNode* end)
 {
-	// TODO: Implement
+	mPatrolStart = start;
+	mPatrolEnd = end;
+	if (GetOwner()->GetGame()->GetPathFinder()->CalculatePath(mPatrolStart, mPatrolEnd, mPath))
+	{
+		mPrev = mPatrolStart;
+		mNext = mPath.back();
+		mPath.pop_back();
+		UpdateDirection();
+	}
 }
 
 void SoldierAI::Update(float deltaTime)
 {
+
+	Vector2 newPos(mOwner->GetPosition() + SOLDIER_SPEED * mDirection * deltaTime);
+	mOwner->SetPosition(newPos);
+
+	if (Vector2::Distance(mNext->GetPosition(), mOwner->GetPosition()) <= 1.0f)
+	{
+		mOwner->SetPosition(mNext->GetPosition());
+
+		if (!mPath.empty())
+		{
+			mPrev = mNext;
+			mNext = mPath.back();
+			mPath.pop_back();
+			UpdateDirection();
+		}
+		else
+		{
+			Setup(mPatrolEnd, mPatrolStart);
+		}
+	}
+
 	// TODO: Implement
+}
+
+void SoldierAI::UpdateDirection()
+{
+	mDirection = (mNext->GetPosition() - mPrev->GetPosition());
+	mDirection.Normalize();
+	AnimatedSprite* animatedSprite = mOwner->GetComponent<AnimatedSprite>();
+
+	//Moving right
+	if (mDirection.x > 0)
+	{
+		animatedSprite->SetAnimation("WalkRight");
+	}
+	//Moving left
+	if (mDirection.x < 0)
+	{
+		animatedSprite->SetAnimation("WalkLeft");
+	}
+	//Moving down
+	if (mDirection.y > 0)
+	{
+		animatedSprite->SetAnimation("WalkDown");
+	}
+	//Moving up
+	if (mDirection.y < 0)
+	{
+		animatedSprite->SetAnimation("WalkUp");
+	}
 }
 
 // This helper is to just debug draw the soldier's path to visualize it

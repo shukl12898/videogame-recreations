@@ -6,6 +6,7 @@
 #include "SDL2/SDL.h"
 #include "CSVHelper.h"
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <algorithm>
 
@@ -13,6 +14,85 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 							   std::vector<class PathNode*>& outPath)
 {
 	// TODO: Implement A* algorithm
+	PathNode* currentNode = start;
+	std::unordered_map<PathNode*, PathNode::NodeInfo> info;
+	info[currentNode] = PathNode::NodeInfo();
+	info[currentNode].isClosed = true;
+
+	std::vector<PathNode*> openSet;
+
+	while (currentNode != end)
+	{
+		for (PathNode* n : currentNode->mAdjacent)
+		{
+			if (info.find(n) == info.end())
+			{
+				info[n] = PathNode::NodeInfo();
+			}
+
+			if (!(info[n].isClosed))
+			{
+				if (std::find(openSet.begin(), openSet.end(), n) != openSet.end())
+				{
+					float newG = info[currentNode].g +
+								 Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
+					;
+					if (newG < info[n].g)
+					{
+						info[n].parent = currentNode;
+						info[n].g = newG;
+						info[n].f = info[n].g + info[n].h;
+					}
+				}
+				else
+				{
+					info[n].parent = currentNode;
+					info[n].h = Vector2::Distance(end->GetPosition(), n->GetPosition());
+					info[n].g = info[currentNode].g +
+								Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
+					;
+					info[n].f = info[n].g + info[n].h;
+					openSet.push_back(n);
+				}
+			}
+		}
+
+		if (openSet.empty())
+		{
+			break;
+		}
+
+		float minF = INFINITY;
+		PathNode* minNode = nullptr;
+
+		for (PathNode* it : openSet)
+		{
+			if (info[it].f < minF)
+			{
+				minNode = it;
+				minF = info[it].f;
+			}
+		}
+
+		currentNode = minNode;
+		openSet.erase(std::find(openSet.begin(), openSet.end(), currentNode));
+		info[currentNode].isClosed = true;
+	}
+
+	PathNode* path = end;
+	while (path != start)
+	{
+		if (info[path].parent != nullptr)
+		{
+			outPath.push_back(path);
+			path = info[path].parent;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	return true;
 }
 

@@ -22,6 +22,7 @@ public:
 	void SetCameraPos(Vector2 pos) { mCamera = pos; };
 	SDL_Texture* GetTexture(std::string filename);
 	class Actor* GetGoal() { return mGoal; };
+	class PathFinder* GetPathFinder() { return mPathFinder; };
 	class Player* GetPlayer() { return mPlayer; };
 	const std::vector<class Collider*>& GetColliders() { return mColliders; }
 	int GetBackgroundMusicChannel() const { return mBackgroundMusic; };
@@ -41,6 +42,7 @@ private:
 	bool mGameisActive = false;
 	int mBackgroundMusic = 0;
 	Vector2 mCamera;
+	class PathFinder* mPathFinder;
 	std::vector<class Actor*> mActors;
 	std::vector<class SpriteComponent*> mSprites;
 	std::vector<class Collider*> mColliders;

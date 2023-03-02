@@ -4,7 +4,7 @@
 class Soldier : public Actor
 {
 public:
-	Soldier(class Game* game);
+	Soldier(class Game* game, class PathNode* start, class PathNode* end);
 	class CollisionComponent* GetCollisionComponent() { return mCollisionComponent; };
 
 protected:

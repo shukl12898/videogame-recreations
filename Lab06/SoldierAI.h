@@ -39,4 +39,6 @@ private:
 	const float STUN_DURATION = 1.0f;
 
 	// TODO: Add any private data/functions as needed
+	Vector2 mDirection = Vector2::Zero;
+	void UpdateDirection();
 };

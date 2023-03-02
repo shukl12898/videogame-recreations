@@ -12,6 +12,7 @@
 #include "Soldier.h"
 #include "Bush.h"
 #include "Collider.h"
+#include "PathFinder.h"
 #include "Random.h"
 #include "SpriteComponent.h"
 #include "CSVHelper.h"
@@ -131,11 +132,13 @@ void Game::LoadData()
 void Game::LoadDataHelper()
 {
 	std::ifstream levelFile;
-	levelFile.open("Assets/Map/ObjectsOneSoldier.csv");
+	levelFile.open("Assets/Map/Objects.csv");
 
 	std::string line;
 
 	std::getline(levelFile, line);
+
+	mPathFinder = new PathFinder(this);
 
 	while (std::getline(levelFile, line))
 	{
@@ -167,8 +170,16 @@ void Game::LoadDataHelper()
 			int yPos = std::stoi(lineVec[2]);
 			int width = std::stoi(lineVec[3]);
 			int height = std::stoi(lineVec[4]);
+			int rowStart = std::stoi(lineVec[5]);
+			int colStart = std::stoi(lineVec[6]);
+			int rowEnd = std::stoi(lineVec[7]);
+			int colEnd = std::stoi(lineVec[8]);
 			Vector2 pos(xPos + width / 2, yPos + height / 2);
-			Soldier* soldier = new Soldier(this);
+
+			PathNode* start = mPathFinder->GetPathNode(rowStart, colStart);
+			PathNode* end = mPathFinder->GetPathNode(rowEnd, colEnd);
+
+			Soldier* soldier = new Soldier(this, start, end);
 			soldier->SetPosition(pos);
 		}
 		if (lineVec[0] == "Bush")
