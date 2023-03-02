@@ -22,9 +22,11 @@ public:
 	void SetCameraPos(Vector2 pos) { mCamera = pos; };
 	SDL_Texture* GetTexture(std::string filename);
 	class Actor* GetGoal() { return mGoal; };
-	class PathFinder* GetPathFinder() { return mPathFinder; };
+	class PathFinder*& GetPathFinder() { return mPathFinder; };
 	class Player* GetPlayer() { return mPlayer; };
+	class AudioSystem* GetAudioSystem() { return mAudioSystem; };
 	const std::vector<class Collider*>& GetColliders() { return mColliders; }
+	std::vector<class EnemyComponent*>& GetEnemyComponents() { return mEnemyComponents; }
 	int GetBackgroundMusicChannel() const { return mBackgroundMusic; };
 	static const int WIDTH = 512;
 	static const int HEIGHT = 448;
@@ -46,9 +48,13 @@ private:
 	std::vector<class Actor*> mActors;
 	std::vector<class SpriteComponent*> mSprites;
 	std::vector<class Collider*> mColliders;
+	std::vector<class EnemyComponent*> mEnemyComponents;
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	class Actor* mGoal = nullptr;
 	class Player* mPlayer = nullptr;
+	class AudioSystem* mAudioSystem = nullptr;
+	int mStartSound;
+	bool mBackMusic = false;
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();

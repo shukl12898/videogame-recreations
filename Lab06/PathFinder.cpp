@@ -36,7 +36,6 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 				{
 					float newG = info[currentNode].g +
 								 Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
-					;
 					if (newG < info[n].g)
 					{
 						info[n].parent = currentNode;
@@ -92,7 +91,7 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 

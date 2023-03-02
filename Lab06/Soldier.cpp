@@ -5,6 +5,8 @@
 #include "CollisionComponent.h"
 #include "PlayerMove.h"
 #include "SoldierAI.h"
+#include "EnemyComponent.h"
+#include "Effect.h"
 
 Soldier::Soldier(Game* game, PathNode* start, PathNode* end)
 : Actor(game)
@@ -16,6 +18,15 @@ Soldier::Soldier(Game* game, PathNode* start, PathNode* end)
 	mASC->LoadAnimations("Assets/Soldier");
 	mASC->SetAnimation("WalkDown");
 	mASC->SetAnimFPS(5.0f);
-	SoldierAI* soldierAI = new SoldierAI(this);
-	soldierAI->Setup(start, end);
+	mSoldierAI = new SoldierAI(this);
+	mSoldierAI->Setup(start, end);
+	mEnemyComponent = new EnemyComponent(this);
+	mEnemyComponent->SetHitPoints(2);
+	mEnemyComponent->SetOnDamage([this]() {
+		this->mSoldierAI->Stunned();
+		new Effect(mGame, GetPosition(), "Hit", "EnemyHit.wav");
+	});
+	mEnemyComponent->SetOnDeath([this]() {
+		new Effect(mGame, GetPosition(), "Death", "EnemyDie.wav");
+	});
 }

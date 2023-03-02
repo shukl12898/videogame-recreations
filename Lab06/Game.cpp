@@ -17,6 +17,7 @@
 #include "SpriteComponent.h"
 #include "CSVHelper.h"
 #include "CollisionComponent.h"
+#include "AudioSystem.h"
 #include "TiledBGComponent.h"
 #include <algorithm>
 #include <SDL2/SDL_image.h>
@@ -35,7 +36,7 @@ bool Game::Initialize()
 
 	mGameisActive = (mRenderer != nullptr) && (mWindow != nullptr);
 	IMG_Init(IMG_INIT_PNG);
-	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+	mAudioSystem = new AudioSystem();
 
 	LoadData();
 
@@ -96,6 +97,14 @@ void Game::UpdateGame()
 		deltaTimeS = 0.033f;
 	}
 
+	if (!mBackMusic && mAudioSystem->GetSoundState(mStartSound) == SoundState::Stopped)
+	{
+		mAudioSystem->PlaySound("MusicLoop.ogg", true);
+		mBackMusic = true;
+	}
+
+	mAudioSystem->Update(deltaTimeS);
+
 	std::vector<Actor*> actorsCopy = mActors;
 
 	for (auto i : actorsCopy)
@@ -125,7 +134,8 @@ void Game::LoadData()
 	TiledBGComponent* tiledBGC = new TiledBGComponent(actor);
 	tiledBGC->LoadTileCSV("Assets/Map/Tiles.csv", TILE_WIDTH, TILE_HEIGHT);
 	tiledBGC->SetTexture(GetTexture("Assets/Map/Tiles.png"));
-
+	mAudioSystem->CacheAllSounds();
+	mStartSound = mAudioSystem->PlaySound("MusicStart.ogg");
 	LoadDataHelper();
 }
 
@@ -226,7 +236,7 @@ void Game::GenerateOutput()
 
 void Game::Shutdown()
 {
-	Mix_CloseAudio();
+	delete mAudioSystem;
 	UnloadData();
 	IMG_Quit();
 	SDL_DestroyRenderer(mRenderer);

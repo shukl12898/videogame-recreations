@@ -25,26 +25,46 @@ void SoldierAI::Setup(PathNode* start, PathNode* end)
 	}
 }
 
+void SoldierAI::Stunned()
+{
+	mStunned = true;
+	mStunTime = STUN_DURATION;
+}
+
 void SoldierAI::Update(float deltaTime)
 {
 
-	Vector2 newPos(mOwner->GetPosition() + SOLDIER_SPEED * mDirection * deltaTime);
-	mOwner->SetPosition(newPos);
-
-	if (Vector2::Distance(mNext->GetPosition(), mOwner->GetPosition()) <= 1.0f)
+	if (mStunned && mStunTime > 0)
 	{
-		mOwner->SetPosition(mNext->GetPosition());
+		mOwner->GetComponent<AnimatedSprite>()->SetIsPaused(true);
+		mStunTime -= deltaTime;
+	}
+	else if (mStunned && mStunTime <= 0)
+	{
+		mStunned = false;
+		mOwner->GetComponent<AnimatedSprite>()->SetIsPaused(false);
+	}
+	else if (!mStunned)
+	{
 
-		if (!mPath.empty())
+		Vector2 newPos(mOwner->GetPosition() + SOLDIER_SPEED * mDirection * deltaTime);
+		mOwner->SetPosition(newPos);
+
+		if (Vector2::Distance(mNext->GetPosition(), mOwner->GetPosition()) <= 1.0f)
 		{
-			mPrev = mNext;
-			mNext = mPath.back();
-			mPath.pop_back();
-			UpdateDirection();
-		}
-		else
-		{
-			Setup(mPatrolEnd, mPatrolStart);
+			mOwner->SetPosition(mNext->GetPosition());
+
+			if (!mPath.empty())
+			{
+				mPrev = mNext;
+				mNext = mPath.back();
+				mPath.pop_back();
+				UpdateDirection();
+			}
+			else
+			{
+				Setup(mPatrolEnd, mPatrolStart);
+			}
 		}
 	}
 

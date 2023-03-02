@@ -11,4 +11,5 @@ protected:
 	class Game* mGame;
 	class CollisionComponent* mCollisionComponent;
 	class SpriteComponent* mSpriteComponent;
+	class EnemyComponent* mEnemyComponent;
 };

@@ -21,10 +21,15 @@ public:
 
 protected:
 	std::string DetermineAnimation();
+	void SwordUpdate();
 	Vector2 mDirection;
 	Game* mGame = nullptr;
 	bool mMoving = false;
+	bool mAttack = false;
+	bool mLastFrame = false;
+	float mAttackTime = 0.0f;
 	int mDirectionState = DirectionState::Down;
 	class Player* mOwner = nullptr;
 	bool mSpacePressed = false;
+	class Sword* mSword;
 };

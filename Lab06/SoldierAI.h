@@ -19,6 +19,8 @@ public:
 
 	void Draw(SDL_Renderer* renderer) override;
 
+	void Stunned();
+
 	// TODO: Add any public functions as needed
 private:
 	// The start path node for the patrol path
@@ -40,5 +42,7 @@ private:
 
 	// TODO: Add any private data/functions as needed
 	Vector2 mDirection = Vector2::Zero;
+	bool mStunned = false;
+	float mStunTime = 0.0;
 	void UpdateDirection();
 };
