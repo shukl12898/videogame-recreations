@@ -2,6 +2,7 @@
 #include "SpriteComponent.h"
 #include "SDL2/SDL.h"
 #include <vector>
+#include <string>
 
 class TiledBGComponent : public SpriteComponent
 {
