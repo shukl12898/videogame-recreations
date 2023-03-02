@@ -9,11 +9,11 @@ public:
 
 	struct NodeInfo
 	{
-		PathNode* parent = nullptr;
-		float f = 0.0f;
-		float g = 0.0f;
-		float h = 0.0f;
-		bool isClosed = false;
+		PathNode* mParent = nullptr;
+		float mF = 0.0f;
+		float mG = 0.0f;
+		float mH = 0.0f;
+		bool mIsClosed = false;
 	};
 
 	bool IsBlocked() const { return mIsBlocked; }

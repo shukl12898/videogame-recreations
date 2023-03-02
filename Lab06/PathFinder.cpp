@@ -17,7 +17,7 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 	PathNode* currentNode = start;
 	std::unordered_map<PathNode*, PathNode::NodeInfo> info;
 	info[currentNode] = PathNode::NodeInfo();
-	info[currentNode].isClosed = true;
+	info[currentNode].mIsClosed = true;
 
 	std::vector<PathNode*> openSet;
 
@@ -30,27 +30,27 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 				info[n] = PathNode::NodeInfo();
 			}
 
-			if (!(info[n].isClosed))
+			if (!(info[n].mIsClosed))
 			{
 				if (std::find(openSet.begin(), openSet.end(), n) != openSet.end())
 				{
-					float newG = info[currentNode].g +
+					float newG = info[currentNode].mG +
 								 Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
-					if (newG < info[n].g)
+					if (newG < info[n].mG)
 					{
-						info[n].parent = currentNode;
-						info[n].g = newG;
-						info[n].f = info[n].g + info[n].h;
+						info[n].mParent = currentNode;
+						info[n].mG = newG;
+						info[n].mF = info[n].mG + info[n].mH;
 					}
 				}
 				else
 				{
-					info[n].parent = currentNode;
-					info[n].h = Vector2::Distance(end->GetPosition(), n->GetPosition());
-					info[n].g = info[currentNode].g +
+					info[n].mParent = currentNode;
+					info[n].mH = Vector2::Distance(end->GetPosition(), n->GetPosition());
+					info[n].mG = info[currentNode].mG +
 								Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
 					;
-					info[n].f = info[n].g + info[n].h;
+					info[n].mF = info[n].mG + info[n].mH;
 					openSet.push_back(n);
 				}
 			}
@@ -66,25 +66,25 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 
 		for (PathNode* it : openSet)
 		{
-			if (info[it].f < minF)
+			if (info[it].mF < minF)
 			{
 				minNode = it;
-				minF = info[it].f;
+				minF = info[it].mF;
 			}
 		}
 
 		currentNode = minNode;
 		openSet.erase(std::find(openSet.begin(), openSet.end(), currentNode));
-		info[currentNode].isClosed = true;
+		info[currentNode].mIsClosed = true;
 	}
 
 	PathNode* path = end;
 	while (path != start)
 	{
-		if (info[path].parent != nullptr)
+		if (info[path].mParent != nullptr)
 		{
 			outPath.push_back(path);
-			path = info[path].parent;
+			path = info[path].mParent;
 		}
 		else
 		{
