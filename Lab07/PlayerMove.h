@@ -14,4 +14,5 @@ public:
 
 protected:
 	Vector3 mVelocity;
+	int mBlocksEnd = 0;
 };

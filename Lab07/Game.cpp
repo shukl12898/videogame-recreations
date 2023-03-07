@@ -13,6 +13,7 @@
 #include "Renderer.h"
 #include "Random.h"
 #include "Player.h"
+#include "SideBlock.h"
 
 Game::Game()
 : mIsRunning(true)
@@ -143,6 +144,8 @@ void Game::LoadData()
 	Vector3 up = Vector3::UnitZ;
 	Matrix4 view = Matrix4::CreateLookAt(eye, target, up);
 	mRenderer->SetViewMatrix(view);
+
+	
 }
 
 void Game::UnloadData()
