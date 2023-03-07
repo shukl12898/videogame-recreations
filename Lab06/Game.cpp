@@ -153,23 +153,18 @@ void Game::LoadDataHelper()
 	while (std::getline(levelFile, line))
 	{
 		std::vector<std::string> lineVec = CSVHelper::Split(line);
+		int xPos = std::stoi(lineVec[1]);
+		int yPos = std::stoi(lineVec[2]);
+		int width = std::stoi(lineVec[3]);
+		int height = std::stoi(lineVec[4]);
+		Vector2 pos(xPos + width / 2, yPos + height / 2);
 		if (lineVec[0] == "Player")
 		{
 			mPlayer = new Player(this);
-			int xPos = std::stoi(lineVec[1]);
-			int yPos = std::stoi(lineVec[2]);
-			int width = std::stoi(lineVec[3]);
-			int height = std::stoi(lineVec[4]);
-			Vector2 pos(xPos + width / 2, yPos + height / 2);
 			mPlayer->SetPosition(pos);
 		}
 		if (lineVec[0] == "Collider")
 		{
-			int xPos = std::stoi(lineVec[1]);
-			int yPos = std::stoi(lineVec[2]);
-			int width = std::stoi(lineVec[3]);
-			int height = std::stoi(lineVec[4]);
-			Vector2 pos(xPos + width / 2, yPos + height / 2);
 			Collider* collider =
 				new Collider(this, static_cast<float>(width), static_cast<float>(height));
 			collider->SetPosition(pos);
@@ -177,16 +172,11 @@ void Game::LoadDataHelper()
 		}
 		if (lineVec[0] == "Soldier")
 		{
-			int xPos = std::stoi(lineVec[1]);
-			int yPos = std::stoi(lineVec[2]);
-			int width = std::stoi(lineVec[3]);
-			int height = std::stoi(lineVec[4]);
+
 			int rowStart = std::stoi(lineVec[5]);
 			int colStart = std::stoi(lineVec[6]);
 			int rowEnd = std::stoi(lineVec[7]);
 			int colEnd = std::stoi(lineVec[8]);
-			Vector2 pos(xPos + width / 2, yPos + height / 2);
-
 			PathNode* start = mPathFinder->GetPathNode(rowStart, colStart);
 			PathNode* end = mPathFinder->GetPathNode(rowEnd, colEnd);
 
@@ -195,11 +185,6 @@ void Game::LoadDataHelper()
 		}
 		if (lineVec[0] == "Bush")
 		{
-			int xPos = std::stoi(lineVec[1]);
-			int yPos = std::stoi(lineVec[2]);
-			int width = std::stoi(lineVec[3]);
-			int height = std::stoi(lineVec[4]);
-			Vector2 pos(xPos + width / 2, yPos + height / 2);
 			Bush* bush = new Bush(this);
 			bush->SetPosition(pos);
 		}

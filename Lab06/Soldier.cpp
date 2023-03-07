@@ -23,7 +23,7 @@ Soldier::Soldier(Game* game, PathNode* start, PathNode* end)
 	mEnemyComponent = new EnemyComponent(this);
 	mEnemyComponent->SetHitPoints(2);
 	mEnemyComponent->SetOnDamage([this]() {
-		this->mSoldierAI->Stunned();
+		mSoldierAI->Stunned();
 		new Effect(mGame, GetPosition(), "Hit", "EnemyHit.wav");
 	});
 	mEnemyComponent->SetOnDeath([this]() {

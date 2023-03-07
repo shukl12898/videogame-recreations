@@ -15,9 +15,9 @@ void TiledBGComponent::Draw(SDL_Renderer* renderer)
 {
 
 	//draw image PER SQUARE IN THE GRID
-	for (int i = 0; i < mCSVTiles.size(); i++)
+	for (size_t i = 0; i < mCSVTiles.size(); i++)
 	{
-		for (int j = 0; j < mCSVTiles[0].size(); j++)
+		for (size_t j = 0; j < mCSVTiles[0].size(); j++)
 		{
 			//draws single image
 			if (mCSVTiles[i][j] != -1)
@@ -44,8 +44,6 @@ void TiledBGComponent::Draw(SDL_Renderer* renderer)
 
 				// Draw (have to convert angle from radians to degrees, and clockwise to counter)
 				SDL_RenderCopyEx(renderer, mTexture, &srcRect, &r, 0.0, nullptr, SDL_FLIP_NONE);
-				// SDL_Log("%d", tileNumber);
-				// break;
 			}
 		}
 		// break;
@@ -80,13 +78,4 @@ void TiledBGComponent::LoadTileCSV(const std::string& fileName, int tileWidth, i
 			rowNum++;
 		}
 	}
-
-	// for (int i = 0; i < mCSVTiles.size(); i++)
-	// {
-	// 	for (int j = 0; j < mCSVTiles[0].size(); j++)
-	// 	{
-	// 		SDL_Log("%d ", mCSVTiles[i][j]);
-	// 	}
-	// 	SDL_Log("\n");
-	// }
 }
