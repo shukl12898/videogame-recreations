@@ -12,6 +12,7 @@
 #include <fstream>
 #include "Renderer.h"
 #include "Random.h"
+#include "Player.h"
 
 Game::Game()
 : mIsRunning(true)
@@ -28,7 +29,13 @@ bool Game::Initialize()
 		return false;
 	}
 
-	// TODO: Create renderer
+	mRenderer = new Renderer(this);
+	bool result = mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	if (!result)
+	{
+		SDL_Log("Failed to initialize");
+		return false;
+	}
 
 	mAudio = new AudioSystem();
 
@@ -121,12 +128,21 @@ void Game::UpdateGame()
 
 void Game::GenerateOutput()
 {
-	// TODO: tell renderer to draw
+	mRenderer->Draw();
 }
 
 void Game::LoadData()
 {
-	// TODO: Implement
+	mPlayer = new Player(this);
+	Matrix4 projection =
+		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
+	mRenderer->SetProjectionMatrix(projection);
+
+	Vector3 eye(-300, 0, 0);
+	Vector3 target(20, 0, 0);
+	Vector3 up = Vector3::UnitZ;
+	Matrix4 view = Matrix4::CreateLookAt(eye, target, up);
+	mRenderer->SetViewMatrix(view);
 }
 
 void Game::UnloadData()
@@ -143,7 +159,8 @@ void Game::Shutdown()
 {
 	UnloadData();
 	delete mAudio;
-	// TODO: Shutdown/delete renderer
+	mRenderer->Shutdown();
+	delete mRenderer;
 	SDL_Quit();
 }
 

@@ -4,7 +4,7 @@
 #include "Game.h"
 #include "Renderer.h"
 #include "Actor.h"
-#include "Player.h"
+// #include "Player.h"
 
 HUD::HUD(Actor* owner)
 : UIComponent(owner)

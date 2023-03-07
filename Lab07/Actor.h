@@ -21,16 +21,20 @@ public:
 	// ProcessInput function called from Game (not overridable)
 	void ProcessInput(const Uint8* keyState);
 
+	void CalcWorldTransform();
+
 	// Getters/setters
-	const Vector2& GetPosition() const { return mPosition; }
-	void SetPosition(const Vector2& pos) { mPosition = pos; }
-	float GetScale() const { return mScale; }
-	void SetScale(float scale) { mScale = scale; }
+	const Vector3& GetPosition() const { return mPosition; }
+	void SetPosition(const Vector3& pos) { mPosition = pos; }
+	const Vector3& GetScale() const { return mScale; }
+	void SetScale(float scale);
+	void SetScale(Vector3 scale) { mScale = scale; }
 	float GetRotation() const { return mRotation; }
 	void SetRotation(float rotation) { mRotation = rotation; }
-
+	class Vector3 GetForward() const;
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }
+	const Matrix4& GetWorldTransform() const { return mWorldTransform; }
 
 	class Game* GetGame() { return mGame; }
 
@@ -61,14 +65,17 @@ protected:
 	ActorState mState;
 
 	// Transform
-	Vector2 mPosition;
-	float mScale;
+	Vector3 mPosition;
+	Vector3 mScale;
 	float mRotation;
+	Matrix4 mWorldTransform;
 
 	// Components
 	std::vector<class Component*> mComponents;
 
 private:
 	friend class Component;
+	// Adds component to Actor (this is automatically called
+	// in the component constructor)
 	void AddComponent(class Component* c);
 };
