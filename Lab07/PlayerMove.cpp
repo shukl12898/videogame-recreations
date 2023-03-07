@@ -21,23 +21,51 @@ void PlayerMove::Update(float deltaTime)
 	position.z = Math::Clamp<float>(position.z, -225, 225);
 
 	Game* game = mOwner->GetGame();
-	int i = 0;
-	while (mBlocksEnd - mOwner->GetPosition().x < 3500)
+	while (mBlocksEnd - mOwner->GetPosition().x < 4000)
 	{
-		SideBlock* block1 = new SideBlock(game, 0);
-		block1->SetPosition(Vector3(mBlocksEnd + (i * 500), 500, 0));
+		int sideText = 0;
+		int topText = 0;
+
+		if (mBlockNum % 4 == 0)
+		{
+			sideText = 0;
+		}
+		else if (mBlockNum % 4 == 1)
+		{
+			sideText = 1;
+		}
+		else if (mBlockNum % 4 == 2)
+		{
+			sideText = 2;
+		}
+		else if (mBlockNum % 4 == 3)
+		{
+			sideText = 0;
+		}
+
+		if (mBlockNum % 2 == 0)
+		{
+			topText = 6;
+		}
+		else
+		{
+			topText = 7;
+		}
+
+		SideBlock* block1 = new SideBlock(game, sideText);
+		block1->SetPosition(Vector3(mBlocksEnd + (500), 500, 0));
 		block1->SetRotation(Math::Pi);
 
-		SideBlock* block2 = new SideBlock(game, 0);
-		block2->SetPosition(Vector3(mBlocksEnd + (i * 500), -500, 0));
+		SideBlock* block2 = new SideBlock(game, sideText);
+		block2->SetPosition(Vector3(mBlocksEnd + (500), -500, 0));
 
 		SideBlock* block3 = new SideBlock(game, 5);
-		block3->SetPosition(Vector3(mBlocksEnd + (i * 500), 0, -500));
+		block3->SetPosition(Vector3(mBlocksEnd + (500), 0, -500));
 
-		SideBlock* block4 = new SideBlock(game, 6);
-		block4->SetPosition(Vector3(mBlocksEnd + (i * 500), 0, 500));
-		mBlocksEnd += i * 500;
-		i++;
+		SideBlock* block4 = new SideBlock(game, topText);
+		block4->SetPosition(Vector3(mBlocksEnd + (500), 0, 500));
+		mBlocksEnd += 500;
+		mBlockNum++;
 	}
 
 	mOwner->SetPosition(position);
