@@ -144,8 +144,11 @@ void Game::LoadData()
 	Vector3 up = Vector3::UnitZ;
 	Matrix4 view = Matrix4::CreateLookAt(eye, target, up);
 	mRenderer->SetViewMatrix(view);
+}
 
-	
+void Game::LoadBlocks(std::string fileName)
+{
+	//TODO
 }
 
 void Game::UnloadData()

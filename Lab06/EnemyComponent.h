@@ -15,6 +15,8 @@ public:
 	void SetOnDamage(std::function<void()> damage) { mOnDamage = damage; };
 	void TakeDamage();
 
+	const float DAMAGE_TIME_MAX = 0.25f;
+
 protected:
 	class CollisionComponent* mCollisionComponent;
 

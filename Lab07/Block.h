@@ -1,13 +1,14 @@
 #pragma once
 #include "Actor.h"
 
-class Sword : public Actor
+class Block : public Actor
 {
 public:
-	Sword(class Game* game);
-	static const int SWORD_SIZE = 28;
+	Block(class Game* game, size_t textureIndex);
+	~Block();
 
 protected:
 	class Game* mGame;
+	class MeshComponent* mMeshComponent;
 	class CollisionComponent* mCollisionComponent;
 };

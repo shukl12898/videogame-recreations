@@ -28,7 +28,7 @@ void EnemyComponent::TakeDamage()
 	if (mTakeDamageTime <= 0)
 	{
 		mHitPoints -= 1;
-		mTakeDamageTime = 0.25;
+		mTakeDamageTime = DAMAGE_TIME_MAX;
 		if (mHitPoints == 0)
 		{
 			if (mOnDeath)

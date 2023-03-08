@@ -12,6 +12,6 @@ Player::Player(Game* game)
 	mASC->LoadAnimations("Assets/Link");
 	mASC->SetAnimation("StandDown");
 	mCollisionComponent = new CollisionComponent(this);
-	mCollisionComponent->SetSize(20, 20);
+	mCollisionComponent->SetSize(PLAYER_SIZE, PLAYER_SIZE);
 	mPlayerMove = new PlayerMove(this);
 }

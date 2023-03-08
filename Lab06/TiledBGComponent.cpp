@@ -23,27 +23,27 @@ void TiledBGComponent::Draw(SDL_Renderer* renderer)
 			if (mCSVTiles[i][j] != -1)
 			{
 				SDL_Rect r;
-				r.w = 32;
-				r.h = 32;
+				r.w = TILE_DIMENSION;
+				r.h = TILE_DIMENSION;
 
 				// Center the rectangle around the position of the owner
-				r.x = j * 32;
-				r.y = i * 32;
+				r.x = j * TILE_DIMENSION;
+				r.y = i * TILE_DIMENSION;
 				r.x -= static_cast<int>(mOwner->GetGame()->GetCameraPos().x);
 				r.y -= static_cast<int>(mOwner->GetGame()->GetCameraPos().y);
 
 				SDL_Rect srcRect;
 				int tileNumber = mCSVTiles[i][j];
-				int numTilesRow = GetTexWidth() / 32;
+				int numTilesRow = GetTexWidth() / TILE_DIMENSION;
 
-				srcRect.w = 32;
-				srcRect.h = 32;
+				srcRect.w = TILE_DIMENSION;
+				srcRect.h = TILE_DIMENSION;
 
-				srcRect.x = tileNumber % numTilesRow * 32;
-				srcRect.y = tileNumber / numTilesRow * 32;
+				srcRect.x = tileNumber % numTilesRow * TILE_DIMENSION;
+				srcRect.y = tileNumber / numTilesRow * TILE_DIMENSION;
 
 				// Draw (have to convert angle from radians to degrees, and clockwise to counter)
-				SDL_RenderCopyEx(renderer, mTexture, &srcRect, &r, 0.0, nullptr, SDL_FLIP_NONE);
+				SDL_RenderCopyEx(renderer, mTexture, &srcRect, &r, 0.0f, nullptr, SDL_FLIP_NONE);
 			}
 		}
 		// break;

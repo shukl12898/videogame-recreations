@@ -33,6 +33,7 @@ public:
 	void AddActor(class Actor* actor);
 	void RemoveActor(class Actor* actor);
 	class Player* GetPlayer() { return mPlayer; };
+	std::vector<class Block*>& GetBlocks() { return mBlocks; };
 
 	AudioSystem* GetAudio() { return mAudio; }
 
@@ -46,11 +47,13 @@ private:
 	void UpdateGame();
 	void GenerateOutput();
 	void LoadData();
+	void LoadBlocks(std::string fileName);
 	void UnloadData();
 
 	// All the actors in the game
 	std::vector<class Actor*> mActors;
 	class Player* mPlayer = nullptr;
+	std::vector<class Block*> mBlocks;
 
 	class Renderer* mRenderer = nullptr;
 	AudioSystem* mAudio = nullptr;

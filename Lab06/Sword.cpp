@@ -8,5 +8,5 @@ Sword::Sword(Game* game)
 {
 	mGame = game;
 	mCollisionComponent = new CollisionComponent(this);
-	mCollisionComponent->SetSize(28, 28);
+	mCollisionComponent->SetSize(SWORD_SIZE, SWORD_SIZE);
 }

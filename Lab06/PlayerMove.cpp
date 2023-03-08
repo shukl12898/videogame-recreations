@@ -40,6 +40,7 @@ void PlayerMove::Update(float deltaTime)
 	mOwner->GetAnimatedSprite()->SetAnimation(DetermineAnimation());
 
 	CollisionComponent* cc = mOwner->GetCollisionComponent();
+	CollisionComponent* swordCC = mSword->GetComponent<CollisionComponent>();
 
 	for (EnemyComponent* enemy : mGame->GetEnemyComponents())
 	{
@@ -47,7 +48,6 @@ void PlayerMove::Update(float deltaTime)
 
 		if (mAttack)
 		{
-			CollisionComponent* swordCC = mSword->GetComponent<CollisionComponent>();
 			if (swordCC->Intersect(enemy->GetCollisionComponent()))
 			{
 				enemy->TakeDamage();
@@ -73,8 +73,7 @@ void PlayerMove::Update(float deltaTime)
 		}
 	}
 
-	Vector2 offset(-256.0f, -224.0f);
-	mGame->SetCameraPos(mOwner->GetPosition() + offset);
+	mGame->SetCameraPos(mOwner->GetPosition() + CAMERA_OFFSET);
 }
 
 void PlayerMove::SwordUpdate()
@@ -83,26 +82,30 @@ void PlayerMove::SwordUpdate()
 
 	if (mDirectionState == DirectionState::Up)
 	{
-		Vector2 offset(0, -40);
-		mSword->GetComponent<CollisionComponent>()->SetSize(20, 28);
+		Vector2 offset(0, SWORD_UP_OFFSET);
+		mSword->GetComponent<CollisionComponent>()->SetSize(SWORD_VERTICAL_WIDTH,
+															SWORD_VERTICAL_HEIGHT);
 		mSword->SetPosition(ownerPos + offset);
 	}
 	else if (mDirectionState == DirectionState::Down)
 	{
-		Vector2 offset(0, 40);
-		mSword->GetComponent<CollisionComponent>()->SetSize(20, 28);
+		Vector2 offset(0, SWORD_DOWN_OFFSET);
+		mSword->GetComponent<CollisionComponent>()->SetSize(SWORD_VERTICAL_WIDTH,
+															SWORD_VERTICAL_HEIGHT);
 		mSword->SetPosition(ownerPos + offset);
 	}
 	else if (mDirectionState == DirectionState::Left)
 	{
-		Vector2 offset(-32, 0);
-		mSword->GetComponent<CollisionComponent>()->SetSize(28, 20);
+		Vector2 offset(SWORD_LEFT_OFFSET, 0);
+		mSword->GetComponent<CollisionComponent>()->SetSize(SWORD_HORIZONTAL_WIDTH,
+															SWORD_HORIZONTAL_HEIGHT);
 		mSword->SetPosition(ownerPos + offset);
 	}
 	else if (mDirectionState == DirectionState::Right)
 	{
-		Vector2 offset(32, 0);
-		mSword->GetComponent<CollisionComponent>()->SetSize(28, 20);
+		Vector2 offset(SWORD_RIGHT_OFFSET, 0);
+		mSword->GetComponent<CollisionComponent>()->SetSize(SWORD_HORIZONTAL_WIDTH,
+															SWORD_HORIZONTAL_HEIGHT);
 		mSword->SetPosition(ownerPos + offset);
 	}
 }
@@ -113,58 +116,43 @@ const std::string PlayerMove::DetermineAnimation() const
 
 	if (mMoving)
 	{
-		if (mDirectionState == DirectionState::Up)
+		switch (mDirectionState)
 		{
+		case DirectionState::Up:
 			animName = "WalkUp";
-		}
-		else if (mDirectionState == DirectionState::Down)
-		{
+		case DirectionState::Down:
 			animName = "WalkDown";
-		}
-		else if (mDirectionState == DirectionState::Left)
-		{
+		case DirectionState::Left:
 			animName = "WalkLeft";
-		}
-		else if (mDirectionState == DirectionState::Right)
-		{
+		case DirectionState::Right:
 			animName = "WalkRight";
 		}
 	}
 	else if (mAttack)
 	{
-		if (mDirectionState == DirectionState::Up)
+		switch (mDirectionState)
 		{
+		case DirectionState::Up:
 			animName = "AttackUp";
-		}
-		else if (mDirectionState == DirectionState::Down)
-		{
+		case DirectionState::Down:
 			animName = "AttackDown";
-		}
-		else if (mDirectionState == DirectionState::Left)
-		{
+		case DirectionState::Left:
 			animName = "AttackLeft";
-		}
-		else if (mDirectionState == DirectionState::Right)
-		{
+		case DirectionState::Right:
 			animName = "AttackRight";
 		}
 	}
 	else
 	{
-		if (mDirectionState == DirectionState::Up)
+		switch (mDirectionState)
 		{
+		case DirectionState::Up:
 			animName = "StandUp";
-		}
-		else if (mDirectionState == DirectionState::Down)
-		{
+		case DirectionState::Down:
 			animName = "StandDown";
-		}
-		else if (mDirectionState == DirectionState::Left)
-		{
+		case DirectionState::Left:
 			animName = "StandLeft";
-		}
-		else if (mDirectionState == DirectionState::Right)
-		{
+		case DirectionState::Right:
 			animName = "StandRight";
 		}
 	}
@@ -179,39 +167,39 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 	if (!mLastFrame && keyState[SDL_SCANCODE_SPACE] && mAttackTime <= 0)
 	{
 		mAttack = true;
-		mAttackTime = 0.25;
+		mAttackTime = 0.25f;
 		mOwner->GetAnimatedSprite()->ResetAnimTimer();
 	}
-	else if (keyState[SDL_SCANCODE_W])
+	if (keyState[SDL_SCANCODE_W])
 	{
-		mDirection = Vector2(0, -1);
+		mDirection = Vector2::NegUnitY;
 		mDirectionState = DirectionState::Up;
 		mMoving = true;
 	}
 	//facing and moving down
-	else if (keyState[SDL_SCANCODE_S])
+	if (keyState[SDL_SCANCODE_S])
 	{
-		mDirection = Vector2(0, 1);
+		mDirection = Vector2::UnitY;
 		mDirectionState = DirectionState::Down;
 		mMoving = true;
 	}
 	//facing and moving left
-	else if (keyState[SDL_SCANCODE_A])
+	if (keyState[SDL_SCANCODE_A])
 	{
-		mDirection = Vector2(-1, 0);
+		mDirection = Vector2::NegUnitX;
 		mDirectionState = DirectionState::Left;
 		mMoving = true;
 	}
 	//facing and moving right
-	else if (keyState[SDL_SCANCODE_D])
+	if (keyState[SDL_SCANCODE_D])
 	{
-		mDirection = Vector2(1, 0);
+		mDirection = Vector2::UnitX;
 		mDirectionState = DirectionState::Right;
 		mMoving = true;
 	}
 	else
 	{
-		mDirection = Vector2(0, 0);
+		mDirection = Vector2::Zero;
 		mMoving = false;
 	}
 

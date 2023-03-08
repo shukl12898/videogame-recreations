@@ -13,6 +13,7 @@ public:
 	// Draw this sprite
 	void Draw(SDL_Renderer* renderer) override;
 	void LoadTileCSV(const std::string& filename, int tileWidth, int tileHeight);
+	static const int TILE_DIMENSION = 32;
 
 protected:
 	int mTileWidth = 0;

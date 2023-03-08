@@ -13,7 +13,7 @@ Soldier::Soldier(Game* game, PathNode* start, PathNode* end)
 {
 	mGame = game;
 	mCollisionComponent = new CollisionComponent(this);
-	mCollisionComponent->SetSize(32, 32);
+	mCollisionComponent->SetSize(SOLDIER_SIZE, SOLDIER_SIZE);
 	mASC = new AnimatedSprite(this);
 	mASC->LoadAnimations("Assets/Soldier");
 	mASC->SetAnimation("WalkDown");
@@ -21,7 +21,7 @@ Soldier::Soldier(Game* game, PathNode* start, PathNode* end)
 	mSoldierAI = new SoldierAI(this);
 	mSoldierAI->Setup(start, end);
 	mEnemyComponent = new EnemyComponent(this);
-	mEnemyComponent->SetHitPoints(2);
+	mEnemyComponent->SetHitPoints(SOLDIER_HIT_POINTS);
 	mEnemyComponent->SetOnDamage([this]() {
 		mSoldierAI->Stunned();
 		new Effect(mGame, GetPosition(), "Hit", "EnemyHit.wav");

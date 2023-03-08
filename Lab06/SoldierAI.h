@@ -21,6 +21,11 @@ public:
 
 	void Stunned();
 
+	// How many pixels/s the soldier movies
+	const float SOLDIER_SPEED = 75.0f;
+	// How long the soldier gets stunned when hit
+	const float STUN_DURATION = 1.0f;
+
 	// TODO: Add any public functions as needed
 private:
 	// The start path node for the patrol path
@@ -35,14 +40,9 @@ private:
 	// The rest of the path after next to target
 	std::vector<PathNode*> mPath;
 
-	// How many pixels/s the soldier movies
-	const float SOLDIER_SPEED = 75.0f;
-	// How long the soldier gets stunned when hit
-	const float STUN_DURATION = 1.0f;
-
 	// TODO: Add any private data/functions as needed
 	Vector2 mDirection = Vector2::Zero;
 	bool mStunned = false;
-	float mStunTime = 0.0;
+	float mStunTime = 0.0f;
 	void UpdateDirection();
 };

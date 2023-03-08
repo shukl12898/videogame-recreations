@@ -12,16 +12,16 @@ Bush::Bush(Game* game)
 {
 	mGame = game;
 	mCollisionComponent = new CollisionComponent(this);
-	mCollisionComponent->SetSize(32, 32);
+	mCollisionComponent->SetSize(BUSH_SIZE, BUSH_SIZE);
 	mSpriteComponent = new SpriteComponent(this);
 	mSpriteComponent->SetTexture(mGame->GetTexture("Assets/Bush.png"));
 	mEnemyComponent = new EnemyComponent(this);
-	mEnemyComponent->SetHitPoints(1);
+	mEnemyComponent->SetHitPoints(BUSH_HIT_POINTS);
 	mEnemyComponent->SetOnDeath([this]() {
 		float x = GetPosition().x;
 		float y = GetPosition().y;
-		mGame->GetPathFinder()->SetIsBlocked(static_cast<size_t>(y / 32),
-											 static_cast<size_t>(x / 32), false);
+		mGame->GetPathFinder()->SetIsBlocked(static_cast<size_t>(y / BUSH_SIZE),
+											 static_cast<size_t>(x / BUSH_SIZE), false);
 		new Effect(mGame, GetPosition(), "BushDeath", "BushDie.wav");
 	});
 }
