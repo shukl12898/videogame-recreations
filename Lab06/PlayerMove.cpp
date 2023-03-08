@@ -19,6 +19,7 @@ PlayerMove::PlayerMove(Player* owner)
 	mGame = owner->GetGame();
 	mOwner = owner;
 	mSword = new Sword(mOwner->GetGame());
+	mDirectionState = DirectionState::Down;
 }
 
 void PlayerMove::Update(float deltaTime)
@@ -29,14 +30,23 @@ void PlayerMove::Update(float deltaTime)
 
 		SwordUpdate();
 		mAttackTime -= deltaTime;
-		mGame->GetAudioSystem()->PlaySound("SwordSlash.wav", false);
+		if (!mSwordSound)
+		{
+			mGame->GetAudioSystem()->PlaySound("SwordSlash.wav", false);
+			mSwordSound = true;
+		}
 	}
 	else
 	{
 		mAttack = false;
+		mSwordSound = false;
 	}
 
-	mOwner->SetPosition(mOwner->GetPosition() + mDirection * deltaTime * MOVE_SPEED);
+	if (mMoving)
+	{
+		mOwner->SetPosition(mOwner->GetPosition() + mDirection * deltaTime * MOVE_SPEED);
+	}
+
 	mOwner->GetAnimatedSprite()->SetAnimation(DetermineAnimation());
 
 	CollisionComponent* cc = mOwner->GetCollisionComponent();
@@ -120,40 +130,54 @@ const std::string PlayerMove::DetermineAnimation() const
 		{
 		case DirectionState::Up:
 			animName = "WalkUp";
+			break;
 		case DirectionState::Down:
 			animName = "WalkDown";
+			break;
 		case DirectionState::Left:
 			animName = "WalkLeft";
+			break;
 		case DirectionState::Right:
 			animName = "WalkRight";
+			break;
 		}
 	}
-	else if (mAttack)
+
+	if (mAttack)
 	{
 		switch (mDirectionState)
 		{
 		case DirectionState::Up:
 			animName = "AttackUp";
+			break;
 		case DirectionState::Down:
 			animName = "AttackDown";
+			break;
 		case DirectionState::Left:
 			animName = "AttackLeft";
+			break;
 		case DirectionState::Right:
 			animName = "AttackRight";
+			break;
 		}
 	}
-	else
+
+	if (!mMoving && !mAttack)
 	{
 		switch (mDirectionState)
 		{
 		case DirectionState::Up:
 			animName = "StandUp";
+			break;
 		case DirectionState::Down:
 			animName = "StandDown";
+			break;
 		case DirectionState::Left:
 			animName = "StandLeft";
+			break;
 		case DirectionState::Right:
 			animName = "StandRight";
+			break;
 		}
 	}
 
@@ -162,42 +186,47 @@ const std::string PlayerMove::DetermineAnimation() const
 
 void PlayerMove::ProcessInput(const Uint8* keyState)
 {
-	//facing and moving up
 
+	//attack
 	if (!mLastFrame && keyState[SDL_SCANCODE_SPACE] && mAttackTime <= 0)
 	{
 		mAttack = true;
-		mAttackTime = 0.25f;
+		mMoving = false;
+		mAttackTime = ATTACK_DURATION;
 		mOwner->GetAnimatedSprite()->ResetAnimTimer();
 	}
-	if (keyState[SDL_SCANCODE_W])
+
+	//facing and moving up
+	if (keyState[SDL_SCANCODE_W] && !mAttack)
 	{
 		mDirection = Vector2::NegUnitY;
 		mDirectionState = DirectionState::Up;
 		mMoving = true;
 	}
 	//facing and moving down
-	if (keyState[SDL_SCANCODE_S])
+	if (keyState[SDL_SCANCODE_S] && !mAttack)
 	{
 		mDirection = Vector2::UnitY;
 		mDirectionState = DirectionState::Down;
 		mMoving = true;
 	}
 	//facing and moving left
-	if (keyState[SDL_SCANCODE_A])
+	if (keyState[SDL_SCANCODE_A] && !mAttack)
 	{
 		mDirection = Vector2::NegUnitX;
 		mDirectionState = DirectionState::Left;
 		mMoving = true;
 	}
 	//facing and moving right
-	if (keyState[SDL_SCANCODE_D])
+	if (keyState[SDL_SCANCODE_D] && !mAttack)
 	{
 		mDirection = Vector2::UnitX;
 		mDirectionState = DirectionState::Right;
 		mMoving = true;
 	}
-	else
+
+	if (!(keyState[SDL_SCANCODE_W] || keyState[SDL_SCANCODE_S] || keyState[SDL_SCANCODE_A] ||
+		  keyState[SDL_SCANCODE_D]))
 	{
 		mDirection = Vector2::Zero;
 		mMoving = false;

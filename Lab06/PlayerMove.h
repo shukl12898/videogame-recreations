@@ -26,6 +26,7 @@ public:
 	static const int SWORD_VERTICAL_HEIGHT = 28;
 	static const int SWORD_HORIZONTAL_WIDTH = 28;
 	static const int SWORD_HORIZONTAL_HEIGHT = 20;
+	const float ATTACK_DURATION = 0.25f;
 	const Vector2 CAMERA_OFFSET = Vector2(-256.0f, -224.0f);
 
 protected:
@@ -40,5 +41,6 @@ protected:
 	int mDirectionState = DirectionState::Down;
 	class Player* mOwner = nullptr;
 	bool mSpacePressed = false;
-	class Sword* mSword;
+	class Sword* mSword = nullptr;
+	bool mSwordSound = false;
 };
