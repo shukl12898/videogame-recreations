@@ -48,8 +48,7 @@ bool PathFinder::CalculatePath(class PathNode* start, class PathNode* end,
 					info[n].mParent = currentNode;
 					info[n].mH = Vector2::Distance(end->GetPosition(), n->GetPosition());
 					info[n].mG = info[currentNode].mG +
-								Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
-					;
+								 Vector2::Distance(currentNode->GetPosition(), n->GetPosition());
 					info[n].mF = info[n].mG + info[n].mH;
 					openSet.push_back(n);
 				}

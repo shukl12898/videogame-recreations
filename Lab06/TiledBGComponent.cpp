@@ -27,8 +27,8 @@ void TiledBGComponent::Draw(SDL_Renderer* renderer)
 				r.h = TILE_DIMENSION;
 
 				// Center the rectangle around the position of the owner
-				r.x = j * TILE_DIMENSION;
-				r.y = i * TILE_DIMENSION;
+				r.x = static_cast<int>(j * TILE_DIMENSION);
+				r.y = static_cast<int>(i * TILE_DIMENSION);
 				r.x -= static_cast<int>(mOwner->GetGame()->GetCameraPos().x);
 				r.y -= static_cast<int>(mOwner->GetGame()->GetCameraPos().y);
 
