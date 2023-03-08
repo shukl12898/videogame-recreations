@@ -9,7 +9,7 @@
 SoldierAI::SoldierAI(Actor* owner)
 : SpriteComponent(owner)
 {
-	SetIsVisible(true); // Uncomment to hide debug paths
+	SetIsVisible(false); // Uncomment to hide debug paths
 }
 
 void SoldierAI::Setup(PathNode* start, PathNode* end)
