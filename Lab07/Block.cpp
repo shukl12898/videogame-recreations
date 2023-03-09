@@ -17,6 +17,11 @@ Block::Block(Game* game, size_t textureIndex)
 	mCollisionComponent = new CollisionComponent(this);
 	mCollisionComponent->SetSize(1, 1, 1);
 	mGame->GetBlocks().push_back(this);
+
+	if (textureIndex == 4)
+	{
+		mIsExploding = true;
+	}
 }
 
 Block::~Block()
@@ -29,4 +34,12 @@ Block::~Block()
 		delete i;
 	}
 	mComponents.clear();
+}
+
+void Block::OnUpdate(float deltaTime)
+{
+	if (mGame->GetPlayer()->GetPosition().x - GetPosition().x > 2000)
+	{
+		SetState(ActorState::Destroy);
+	}
 }

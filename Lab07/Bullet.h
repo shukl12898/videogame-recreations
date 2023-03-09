@@ -1,17 +1,18 @@
 #pragma once
 #include "Actor.h"
 
-class Block : public Actor
+class Bullet : public Actor
 {
 public:
-	Block(class Game* game, size_t textureIndex);
-	~Block();
+	Bullet(class Game* game);
+	~Bullet();
 	void OnUpdate(float deltaTime) override;
-	bool GetIsExploding() const { return mIsExploding; };
+	void Explosion();
 
 protected:
 	class Game* mGame;
 	class MeshComponent* mMeshComponent;
 	class CollisionComponent* mCollisionComponent;
-	bool mIsExploding = false;
+	class MoveComponent* mMoveComponent;
+	float mLifetime = 1.0f;
 };

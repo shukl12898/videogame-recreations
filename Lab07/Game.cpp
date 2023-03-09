@@ -14,6 +14,8 @@
 #include "Random.h"
 #include "Player.h"
 #include "SideBlock.h"
+#include "Block.h"
+#include <string>
 
 Game::Game()
 : mIsRunning(true)
@@ -146,9 +148,41 @@ void Game::LoadData()
 	mRenderer->SetViewMatrix(view);
 }
 
-void Game::LoadBlocks(std::string fileName)
+void Game::LoadBlocks(std::string fileName, float x)
 {
-	//TODO
+	char val = ' ';
+	int rowPos = 0;
+	std::ifstream levelFile;
+	std::string allColumns;
+
+	Vector3 initialPosition(x, -237.5f, 237.5f);
+	Vector3 position(x, -237.5f, 237.5f);
+
+	levelFile.open(fileName);
+	while (std::getline(levelFile, allColumns))
+	{
+
+		for (int colPos = 0; colPos < allColumns.size(); colPos++)
+		{
+			Vector3 newPosition(0.0f, colPos * COLUMN_SIZE, rowPos * ROW_SIZE);
+			position = newPosition + initialPosition;
+			val = allColumns[colPos];
+			if (val == 'A')
+			{
+				Block* block = new Block(this, 3);
+				block->SetPosition(position);
+			}
+			else if (val == 'B')
+			{
+				Block* block = new Block(this, 4);
+				block->SetPosition(position);
+			}
+		}
+
+		rowPos++;
+	}
+
+	levelFile.close();
 }
 
 void Game::UnloadData()

@@ -34,6 +34,7 @@ public:
 	void RemoveActor(class Actor* actor);
 	class Player* GetPlayer() { return mPlayer; };
 	std::vector<class Block*>& GetBlocks() { return mBlocks; };
+	void LoadBlocks(std::string fileName, float x);
 
 	AudioSystem* GetAudio() { return mAudio; }
 
@@ -41,13 +42,14 @@ public:
 
 	const float WINDOW_WIDTH = 1024.0f;
 	const float WINDOW_HEIGHT = 768.0f;
+	const float COLUMN_SIZE = 25;
+	const float ROW_SIZE = -25;
 
 private:
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
 	void LoadData();
-	void LoadBlocks(std::string fileName);
 	void UnloadData();
 
 	// All the actors in the game

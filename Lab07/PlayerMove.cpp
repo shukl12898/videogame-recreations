@@ -4,6 +4,11 @@
 #include "Game.h"
 #include "Renderer.h"
 #include "SideBlock.h"
+#include "Random.h"
+#include "CollisionComponent.h"
+#include "Block.h"
+#include "Bullet.h"
+#include "Player.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
@@ -15,6 +20,20 @@ PlayerMove::PlayerMove(Actor* owner)
 
 void PlayerMove::Update(float deltaTime)
 {
+
+	if (mDamage && mDamageTime > 0)
+	{
+		mDamageTime -= deltaTime;
+	}
+	if (mDamage && mDamageTime <= 0)
+	{
+		mDamage = false;
+		mDamageTime = 1.0f;
+	}
+	if (mShieldLevel == 0)
+	{
+		mOwner->SetState(ActorState::Paused);
+	}
 
 	Vector3 position = mOwner->GetPosition() + (mVelocity * deltaTime);
 	position.y = Math::Clamp<float>(position.y, -180, 180);
@@ -68,6 +87,26 @@ void PlayerMove::Update(float deltaTime)
 		mBlockNum++;
 	}
 
+	while (mObstaclesEnd - mOwner->GetPosition().x < 4000)
+	{
+		std::string fileNumber;
+
+		if (mObstacleNum <= 20)
+		{
+			fileNumber = std::to_string(mObstaclesEnd / 1000);
+		}
+		else
+		{
+			fileNumber = std::to_string(Random::GetIntRange(1, 20));
+		}
+
+		std::string fileName = "Assets/Blocks/" + fileNumber + ".txt";
+
+		mOwner->GetGame()->LoadBlocks(fileName, mObstaclesEnd);
+		mObstaclesEnd += 1000;
+		mObstacleNum++;
+	}
+
 	mOwner->SetPosition(position);
 
 	Vector3 eye = mOwner->GetPosition() - (mOwner->GetForward() * 300);
@@ -77,6 +116,27 @@ void PlayerMove::Update(float deltaTime)
 
 	Matrix4 view = Matrix4::CreateLookAt(eye, target, Vector3::UnitZ);
 	mOwner->GetGame()->GetRenderer()->SetViewMatrix(view);
+
+	CollisionComponent* cc = mOwner->GetComponent<CollisionComponent>();
+	std::vector<Block*> blocks = mOwner->GetGame()->GetBlocks();
+
+	if (!mDamage)
+	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			if (cc->Intersect(blocks[i]->GetComponent<CollisionComponent>()))
+			{
+				blocks[i]->SetState(ActorState::Destroy);
+				// Explosion();
+				mDamage = true;
+			}
+		}
+	}
+
+	if (mDamage&& mDamageTime == 1.0f)
+	{
+		mShieldLevel--;
+	}
 }
 
 void PlayerMove::ProcessInput(const Uint8* keyState)
@@ -84,6 +144,12 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 
 	float forwardSpeed = 0.0f;
 	float sideSpeed = 0.0f;
+
+	if (!mLastFrame && keyState[SDL_SCANCODE_SPACE])
+	{
+		Bullet* bullet = new Bullet(mOwner->GetGame());
+		bullet->SetPosition(mOwner->GetGame()->GetPlayer()->GetPosition());
+	}
 
 	if (keyState[SDL_SCANCODE_W])
 	{
@@ -105,4 +171,6 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 
 	Vector3 velocity(400.0f, sideSpeed, forwardSpeed);
 	mVelocity = velocity;
+
+	mLastFrame = keyState[SDL_SCANCODE_SPACE];
 }

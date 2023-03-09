@@ -64,7 +64,7 @@ void Actor::OnUpdate(float deltaTime)
 
 void Actor::ProcessInput(const Uint8* keyState)
 {
-	if (mState == ActorState::Active)
+ 	if (mState == ActorState::Active)
 	{
 		for (auto i : mComponents)
 		{
