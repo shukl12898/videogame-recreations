@@ -9,6 +9,7 @@ Actor::Actor(Game* game)
 , mPosition(Vector3::Zero)
 , mScale(1.0f)
 , mRotation(0.0f)
+, mRollAngle(0.0f)
 {
 	mGame->AddActor(this);
 }
@@ -40,10 +41,11 @@ void Actor::Update(float deltaTime)
 void Actor::CalcWorldTransform()
 {
 	Matrix4 scaleMatrix = Matrix4::CreateScale(mScale);
-	Matrix4 rotationMatrix = Matrix4::CreateRotationZ(mRotation);
+	Matrix4 rotationMatrixZ = Matrix4::CreateRotationZ(mRotation);
 	Matrix4 translationMatrix = Matrix4::CreateTranslation(mPosition);
+	Matrix4 rotationMatrixX = Matrix4::CreateRotationX(mRollAngle);
 
-	mWorldTransform = scaleMatrix * rotationMatrix * translationMatrix;
+	mWorldTransform = scaleMatrix * rotationMatrixZ * rotationMatrixX * translationMatrix;
 }
 
 void Actor::SetScale(float scale)
@@ -64,7 +66,7 @@ void Actor::OnUpdate(float deltaTime)
 
 void Actor::ProcessInput(const Uint8* keyState)
 {
- 	if (mState == ActorState::Active)
+	if (mState == ActorState::Active)
 	{
 		for (auto i : mComponents)
 		{

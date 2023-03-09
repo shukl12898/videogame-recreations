@@ -31,6 +31,8 @@ public:
 	void SetScale(Vector3 scale) { mScale = scale; }
 	float GetRotation() const { return mRotation; }
 	void SetRotation(float rotation) { mRotation = rotation; }
+	float GetRollAngle() const { return mRollAngle; }
+	void SetRollAngle(float rotation) { mRollAngle = rotation; }
 	class Vector3 GetForward() const;
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }
@@ -69,6 +71,7 @@ protected:
 	Vector3 mScale;
 	float mRotation;
 	Matrix4 mWorldTransform;
+	float mRollAngle;
 
 	// Components
 	std::vector<class Component*> mComponents;

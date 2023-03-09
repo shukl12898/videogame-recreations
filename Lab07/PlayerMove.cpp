@@ -21,21 +21,61 @@ PlayerMove::PlayerMove(Actor* owner)
 void PlayerMove::Update(float deltaTime)
 {
 
-	if (mDamage && mDamageTime > 0)
+	if (mShieldLevel == 1 && !mDamageSound)
 	{
-		mDamageTime -= deltaTime;
+		mDamageHandle = mOwner->GetGame()->GetAudio()->PlaySound("DamageAlert.ogg", true);
+		mDamageSound = true;
 	}
-	if (mDamage && mDamageTime <= 0)
+
+	if (mDamageSound && mShieldLevel > 1)
 	{
-		mDamage = false;
-		mDamageTime = 1.0f;
+		mOwner->GetGame()->GetAudio()->StopSound(mDamageHandle);
+		mDamageSound = false;
 	}
+
+	if (mSpeedTimer >= 10.0f)
+	{
+		mSpeedMultiplier += 0.15f;
+		mSpeedTimer = 0.0f;
+	}
+
+	if (mRoll)
+	{
+		if (mRollTimer > 0)
+		{
+			mRollTimer -= deltaTime;
+			mOwner->SetRollAngle(mOwner->GetRollAngle() + (8.0f * Math::Pi * deltaTime));
+		}
+		else
+		{
+			mRoll = false;
+			mRollTimer = 0.5f;
+			mOwner->SetRollAngle(0.0f);
+		}
+	}
+
+	if (mDamage)
+	{
+		if (mDamageTime > 0)
+		{
+			mDamageTime -= deltaTime;
+		}
+		else
+		{
+			mDamage = false;
+			mDamageTime = 1.0f;
+		}
+	}
+
 	if (mShieldLevel == 0)
 	{
 		mOwner->SetState(ActorState::Paused);
+		mOwner->GetGame()->GetAudio()->PlaySound("ShipDie.wav", false);
+		mOwner->GetGame()->GetAudio()->StopSound(mOwner->GetGame()->GetShipHandle());
+		mOwner->GetGame()->GetAudio()->StopSound(mDamageHandle);
 	}
 
-	Vector3 position = mOwner->GetPosition() + (mVelocity * deltaTime);
+	Vector3 position = mOwner->GetPosition() + (mVelocity * mSpeedMultiplier * deltaTime);
 	position.y = Math::Clamp<float>(position.y, -180, 180);
 	position.z = Math::Clamp<float>(position.z, -225, 225);
 
@@ -133,9 +173,10 @@ void PlayerMove::Update(float deltaTime)
 		}
 	}
 
-	if (mDamage&& mDamageTime == 1.0f)
+	if (mDamage && mDamageTime == 1.0f)
 	{
 		mShieldLevel--;
+		mOwner->GetGame()->GetAudio()->PlaySound("ShipHit.wav", false);
 	}
 }
 
@@ -145,10 +186,23 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 	float forwardSpeed = 0.0f;
 	float sideSpeed = 0.0f;
 
-	if (!mLastFrame && keyState[SDL_SCANCODE_SPACE])
+	if (!mLastFrameQ && keyState[SDL_SCANCODE_Q] && !mRoll)
+	{
+		if (mShieldLevel < 3)
+		{
+			mShieldLevel++;
+		}
+		mOwner->GetGame()->GetAudio()->PlaySound("Boost.wav", false);
+		mOwner->SetRollAngle(8.0f * Math::Pi);
+		mRoll = true;
+	}
+
+	if (!mLastFrameSpace && keyState[SDL_SCANCODE_SPACE])
 	{
 		Bullet* bullet = new Bullet(mOwner->GetGame());
 		bullet->SetPosition(mOwner->GetGame()->GetPlayer()->GetPosition());
+		bullet->SetSpeed(bullet->GetSpeed() * mSpeedMultiplier);
+		mOwner->GetGame()->GetAudio()->PlaySound("Shoot.wav", false);
 	}
 
 	if (keyState[SDL_SCANCODE_W])
@@ -172,5 +226,6 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 	Vector3 velocity(400.0f, sideSpeed, forwardSpeed);
 	mVelocity = velocity;
 
-	mLastFrame = keyState[SDL_SCANCODE_SPACE];
+	mLastFrameSpace = keyState[SDL_SCANCODE_SPACE];
+	mLastFrameQ = keyState[SDL_SCANCODE_Q];
 }

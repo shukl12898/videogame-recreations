@@ -37,6 +37,7 @@ public:
 	void LoadBlocks(std::string fileName, float x);
 
 	AudioSystem* GetAudio() { return mAudio; }
+	int GetShipHandle() const { return mShipHandle; }
 
 	class Renderer* GetRenderer() { return mRenderer; }
 
@@ -62,4 +63,5 @@ private:
 
 	Uint32 mTicksCount = 0;
 	bool mIsRunning;
+	int mShipHandle = 0;
 };

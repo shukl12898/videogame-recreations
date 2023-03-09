@@ -146,6 +146,8 @@ void Game::LoadData()
 	Vector3 up = Vector3::UnitZ;
 	Matrix4 view = Matrix4::CreateLookAt(eye, target, up);
 	mRenderer->SetViewMatrix(view);
+	mAudio->PlaySound("Music.ogg", true);
+	mShipHandle = mAudio->PlaySound("ShipLoop.ogg", true);
 }
 
 void Game::LoadBlocks(std::string fileName, float x)

@@ -43,7 +43,8 @@ void Bullet::OnUpdate(float deltaTime)
 			if (blocks[i]->GetIsExploding())
 			{
 				blocks[i]->SetState(ActorState::Destroy);
-				Explosion();
+				mGame->GetAudio()->PlaySound("BlockExplode.wav", false);
+				Explosion(blocks[i]);
 			}
 
 			SetState(ActorState::Destroy);
@@ -51,21 +52,27 @@ void Bullet::OnUpdate(float deltaTime)
 	}
 }
 
-void Bullet::Explosion()
+void Bullet::Explosion(Block* block)
 {
-	std::vector<Block*> blocks = mGame->GetBlocks();
 
-	for (int i = 0; i < blocks.size(); i++)
+	std::vector<Block*> inRadius;
+
+	for (int i = 0; i < mGame->GetBlocks().size(); i++)
 	{
-		float distance = mPosition.Distance(mPosition, blocks[i]->GetPosition());
-		if (distance < 50)
+		float distance = block->GetPosition().Distance(block->GetPosition(),
+													   mGame->GetBlocks()[i]->GetPosition());
+		if (distance <= 50 && mGame->GetBlocks()[i]->GetState() == ActorState::Active)
 		{
-			if (blocks[i]->GetIsExploding())
-			{
-				blocks[i]->SetState(ActorState::Destroy);
-				//figure out recursion thing here
-				// Explosion();
-			}
+			inRadius.push_back(mGame->GetBlocks()[i]);
+		}
+	}
+
+	for (int i = 0; i < inRadius.size(); i++)
+	{
+		inRadius[i]->SetState(ActorState::Destroy);
+		if (inRadius[i]->GetIsExploding())
+		{
+			Explosion(inRadius[i]);
 		}
 	}
 }
