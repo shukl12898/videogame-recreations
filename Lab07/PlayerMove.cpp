@@ -142,7 +142,7 @@ void PlayerMove::Update(float deltaTime)
 
 		std::string fileName = "Assets/Blocks/" + fileNumber + ".txt";
 
-		mOwner->GetGame()->LoadBlocks(fileName, mObstaclesEnd);
+		mOwner->GetGame()->LoadBlocks(fileName, static_cast<float>(mObstaclesEnd));
 		mObstaclesEnd += 1000;
 		mObstacleNum++;
 	}
