@@ -1,5 +1,5 @@
 #include "PlayerMove.h"
-#include "MoveComponent.h"
+#include "VehicleMove.h"
 #include "Actor.h"
 #include "Game.h"
 #include "Renderer.h"
@@ -8,23 +8,50 @@
 #include "Player.h"
 
 PlayerMove::PlayerMove(Actor* owner)
-: MoveComponent(owner)
+: VehicleMove(owner)
 {
 	mOwner = owner;
-	Vector3 velocity(400.0f, 0.0f, 0.0f);
-	mVelocity = velocity;
 }
 
 void PlayerMove::Update(float deltaTime)
 {
+
+	VehicleMove::Update(deltaTime);
+
 	Vector3 eye = mOwner->GetPosition() - (mOwner->GetForward() * HDIST) + (Vector3::UnitZ * VDIST);
 	Vector3 target = mOwner->GetPosition() + (mOwner->GetForward() * TARGET_DIST);
 
 	Matrix4 view = Matrix4::CreateLookAt(eye, target, Vector3::UnitZ);
 	mOwner->GetGame()->GetRenderer()->SetViewMatrix(view);
-
 }
 
 void PlayerMove::ProcessInput(const Uint8* keyState)
 {
+	//w OR up arrow key sets pedal to true (else pedal is false)
+	if (keyState[SDL_SCANCODE_W] || keyState[SDL_SCANCODE_UP])
+	{
+		SetPedal(true);
+	}
+	else
+	{
+		SetPedal(false);
+	}
+
+	//a OR left should turn enum to left
+	if ((keyState[SDL_SCANCODE_A] || keyState[SDL_SCANCODE_LEFT]) &&
+		!(keyState[SDL_SCANCODE_D] || keyState[SDL_SCANCODE_RIGHT]))
+	{
+		SetTurn(Turn::Left);
+	}
+	//ELSE if d or right should turn enum to right
+	else if ((keyState[SDL_SCANCODE_D] || keyState[SDL_SCANCODE_RIGHT]) && !(
+				 keyState[SDL_SCANCODE_A] || keyState[SDL_SCANCODE_LEFT]))
+	{
+		SetTurn(Turn::Right);
+	}
+	//if none pressed (or both) then turn enum to none
+	else
+	{
+		SetTurn(Turn::None);
+	}
 }

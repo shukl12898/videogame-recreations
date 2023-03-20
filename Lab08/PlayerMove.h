@@ -1,12 +1,11 @@
 #pragma once
-#include "MoveComponent.h"
+#include "VehicleMove.h"
 #include "Math.h"
 
-class PlayerMove : public MoveComponent
+class PlayerMove : public VehicleMove
 {
 public:
 	PlayerMove(class Actor* owner);
-	const Vector3& GetVelocity() { return mVelocity; };
 	void Update(float deltaTime) override;
 	void ProcessInput(const Uint8* keyState) override;
 
@@ -15,6 +14,4 @@ public:
 	static const int VDIST = 70;
 	static const int TARGET_DIST = 50;
 
-protected:
-	Vector3 mVelocity;
 };
