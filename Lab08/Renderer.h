@@ -63,6 +63,7 @@ private:
 
 	// Window
 	SDL_Window* mWindow;
+
 	// OpenGL context
 	SDL_GLContext mContext;
 

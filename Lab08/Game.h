@@ -32,13 +32,18 @@ public:
 
 	void AddActor(class Actor* actor);
 	void RemoveActor(class Actor* actor);
+	class Player* GetPlayer() { return mPlayer; };
+	void LoadBlocks(std::string fileName, float x);
 
 	AudioSystem* GetAudio() { return mAudio; }
+	int GetShipHandle() const { return mShipHandle; }
 
 	class Renderer* GetRenderer() { return mRenderer; }
 
 	const float WINDOW_WIDTH = 1024.0f;
 	const float WINDOW_HEIGHT = 768.0f;
+	const float COLUMN_SIZE = 25;
+	const float ROW_SIZE = -25;
 
 private:
 	void ProcessInput();
@@ -49,10 +54,13 @@ private:
 
 	// All the actors in the game
 	std::vector<class Actor*> mActors;
+	class Player* mPlayer = nullptr;
+	class Actor* mTrack = nullptr;
 
 	class Renderer* mRenderer = nullptr;
 	AudioSystem* mAudio = nullptr;
 
 	Uint32 mTicksCount = 0;
 	bool mIsRunning;
+	int mShipHandle = 0;
 };
