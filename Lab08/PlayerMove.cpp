@@ -18,11 +18,6 @@ void PlayerMove::Update(float deltaTime)
 
 	VehicleMove::Update(deltaTime);
 
-	Vector3 eye = mOwner->GetPosition() - (mOwner->GetForward() * HDIST) + (Vector3::UnitZ * VDIST);
-	Vector3 target = mOwner->GetPosition() + (mOwner->GetForward() * TARGET_DIST);
-
-	Matrix4 view = Matrix4::CreateLookAt(eye, target, Vector3::UnitZ);
-	mOwner->GetGame()->GetRenderer()->SetViewMatrix(view);
 }
 
 void PlayerMove::ProcessInput(const Uint8* keyState)
