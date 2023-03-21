@@ -18,9 +18,8 @@ PlayerMove::PlayerMove(Actor* owner)
 	mVelocity = velocity;
 }
 
-void PlayerMove::Update(float deltaTime)
+void PlayerMove::ShieldUpdate(float deltaTime)
 {
-
 	if (mShieldLevel == 1 && !mDamageSound)
 	{
 		mDamageHandle = mOwner->GetGame()->GetAudio()->PlaySound("DamageAlert.ogg", true);
@@ -32,6 +31,26 @@ void PlayerMove::Update(float deltaTime)
 		mOwner->GetGame()->GetAudio()->StopSound(mDamageHandle);
 		mDamageSound = false;
 	}
+
+	if (mShieldLevel == 0)
+	{
+		mOwner->SetState(ActorState::Paused);
+		mOwner->GetGame()->GetAudio()->PlaySound("ShipDie.wav", false);
+		mOwner->GetGame()->GetAudio()->StopSound(mOwner->GetGame()->GetShipHandle());
+		mOwner->GetGame()->GetAudio()->StopSound(mDamageHandle);
+	}
+
+	if (mDamage && mDamageTime == 1.0f)
+	{
+		mShieldLevel--;
+		mOwner->GetGame()->GetAudio()->PlaySound("ShipHit.wav", false);
+	}
+}
+
+void PlayerMove::Update(float deltaTime)
+{
+
+	ShieldUpdate(deltaTime);
 
 	if (mSpeedTimer >= 10.0f)
 	{
@@ -67,49 +86,31 @@ void PlayerMove::Update(float deltaTime)
 		}
 	}
 
-	if (mShieldLevel == 0)
-	{
-		mOwner->SetState(ActorState::Paused);
-		mOwner->GetGame()->GetAudio()->PlaySound("ShipDie.wav", false);
-		mOwner->GetGame()->GetAudio()->StopSound(mOwner->GetGame()->GetShipHandle());
-		mOwner->GetGame()->GetAudio()->StopSound(mDamageHandle);
-	}
-
 	Vector3 position = mOwner->GetPosition() + (mVelocity * mSpeedMultiplier * deltaTime);
 	position.y = Math::Clamp<float>(position.y, -180, 180);
 	position.z = Math::Clamp<float>(position.z, -225, 225);
 
 	Game* game = mOwner->GetGame();
+	int i = 0;
+	int j = 0;
+
 	while (mBlocksEnd - mOwner->GetPosition().x < 4000)
 	{
 		int sideText = 0;
 		int topText = 0;
 
-		if (mBlockNum % 4 == 0)
+		while (i >= mSidePattern.size())
 		{
-			sideText = 0;
-		}
-		else if (mBlockNum % 4 == 1)
-		{
-			sideText = 1;
-		}
-		else if (mBlockNum % 4 == 2)
-		{
-			sideText = 2;
-		}
-		else if (mBlockNum % 4 == 3)
-		{
-			sideText = 0;
+			i -= mSidePattern.size();
 		}
 
-		if (mBlockNum % 2 == 0)
+		while (j >= mTopPattern.size())
 		{
-			topText = 6;
+			j -= mSidePattern.size();
 		}
-		else
-		{
-			topText = 7;
-		}
+
+		sideText = mSidePattern[i];
+		topText = mTopPattern[j];
 
 		SideBlock* block1 = new SideBlock(game, sideText);
 		block1->SetPosition(Vector3(mBlocksEnd + (500), 500, 0));
@@ -123,6 +124,7 @@ void PlayerMove::Update(float deltaTime)
 
 		SideBlock* block4 = new SideBlock(game, topText);
 		block4->SetPosition(Vector3(mBlocksEnd + (500), 0, 500));
+
 		mBlocksEnd += 500;
 		mBlockNum++;
 	}
@@ -167,16 +169,9 @@ void PlayerMove::Update(float deltaTime)
 			if (cc->Intersect(blocks[i]->GetComponent<CollisionComponent>()))
 			{
 				blocks[i]->SetState(ActorState::Destroy);
-				// Explosion();
 				mDamage = true;
 			}
 		}
-	}
-
-	if (mDamage && mDamageTime == 1.0f)
-	{
-		mShieldLevel--;
-		mOwner->GetGame()->GetAudio()->PlaySound("ShipHit.wav", false);
 	}
 }
 

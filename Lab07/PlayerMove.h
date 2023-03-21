@@ -1,6 +1,7 @@
 #pragma once
 #include "MoveComponent.h"
 #include "Math.h"
+#include <vector>
 
 class PlayerMove : public MoveComponent
 {
@@ -14,7 +15,11 @@ public:
 	static const int SHIP_SPEED = 300;
 
 protected:
+	void ShieldUpdate(float deltaTime);
+
 	Vector3 mVelocity;
+	std::vector<int> mSidePattern{0, 1, 2, 0};
+	std::vector<int> mTopPattern{6, 7};
 	int mBlocksEnd = 0;
 	int mBlockNum = 0;
 	int mObstaclesEnd = 1000;
