@@ -3,6 +3,8 @@
 #include "Actor.h"
 #include "Math.h"
 #include "PlayerMove.h"
+#include "Game.h"
+#include "HeightMap.h"
 
 VehicleMove::VehicleMove(Actor* owner)
 : Component(owner, 50)
@@ -32,6 +34,13 @@ void VehicleMove::Update(float deltaTime)
 
 	//euler integrate position
 	mOwner->SetPosition(mOwner->GetPosition() + (mVelocity * deltaTime));
+	Vector2 position(mOwner->GetPosition().x, mOwner->GetPosition().y);
+	if (mOwner->GetGame()->GetHeightMap()->IsOnTrack(position))
+	{
+		float zPos = Math::Lerp(mOwner->GetPosition().z,
+								mOwner->GetGame()->GetHeightMap()->GetHeight(position), 0.1f);
+		mOwner->SetPosition(Vector3(position.x, position.y, zPos));
+	}
 
 	//apply linear drag to velocity (depends on pedal press)
 	if (mAcceleratorPressed)

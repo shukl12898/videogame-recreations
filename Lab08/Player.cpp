@@ -6,6 +6,7 @@
 #include "MeshComponent.h"
 #include "PlayerMove.h"
 #include "Random.h"
+#include "CameraComponent.h"
 
 Player::Player(Game* game)
 : Actor(game)
@@ -15,6 +16,8 @@ Player::Player(Game* game)
 	mMeshComp = new MeshComponent(this);
 	mMeshComp->SetMesh(mGame->GetRenderer()->GetMesh("Assets/Kart.gpmesh"));
 	mPlayerMove = new PlayerMove(this);
+	mCameraComponent = new CameraComponent(this);
+	mCameraComponent->SnapToIdeal();
 }
 
 void Player::OnUpdate(float deltaTime)

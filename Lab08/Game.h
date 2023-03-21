@@ -33,10 +33,10 @@ public:
 	void AddActor(class Actor* actor);
 	void RemoveActor(class Actor* actor);
 	class Player* GetPlayer() { return mPlayer; };
+	class HeightMap* GetHeightMap() { return mHeightMap; };
 	void LoadBlocks(std::string fileName, float x);
 
 	AudioSystem* GetAudio() { return mAudio; }
-	int GetShipHandle() const { return mShipHandle; }
 
 	class Renderer* GetRenderer() { return mRenderer; }
 
@@ -56,11 +56,11 @@ private:
 	std::vector<class Actor*> mActors;
 	class Player* mPlayer = nullptr;
 	class Actor* mTrack = nullptr;
+	class HeightMap* mHeightMap = nullptr;
 
 	class Renderer* mRenderer = nullptr;
 	AudioSystem* mAudio = nullptr;
 
 	Uint32 mTicksCount = 0;
 	bool mIsRunning;
-	int mShipHandle = 0;
 };

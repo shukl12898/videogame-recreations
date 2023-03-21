@@ -6,11 +6,13 @@
 #include "Random.h"
 #include "CollisionComponent.h"
 #include "Player.h"
+#include "HeightMap.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : VehicleMove(owner)
 {
 	mOwner = owner;
+	mOwner->SetPosition(mOwner->GetGame()->GetHeightMap()->CellToWorld(39, 58));
 }
 
 void PlayerMove::Update(float deltaTime)

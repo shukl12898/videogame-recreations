@@ -11,4 +11,5 @@ protected:
 	class Game* mGame;
 	class MeshComponent* mMeshComp;
 	class PlayerMove* mPlayerMove;
+	class CameraComponent* mCameraComponent;
 };

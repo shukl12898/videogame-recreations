@@ -6,6 +6,8 @@ class CameraComponent : public Component
 public:
 	CameraComponent(class Actor* owner);
 	void Update(float deltaTime) override;
+	Vector3 Ideal();
+	void SnapToIdeal();
 	static const int HDIST = 60;
 	static const int VDIST = 70;
 	static const int TARGET_DIST = 50;

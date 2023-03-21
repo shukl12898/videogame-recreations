@@ -14,6 +14,7 @@
 #include "MeshComponent.h"
 #include "Random.h"
 #include "Player.h"
+#include "HeightMap.h"
 #include <string>
 
 Game::Game()
@@ -135,6 +136,7 @@ void Game::GenerateOutput()
 
 void Game::LoadData()
 {
+	mHeightMap = new HeightMap();
 	mPlayer = new Player(this);
 	Matrix4 projection =
 		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
@@ -143,14 +145,6 @@ void Game::LoadData()
 	mTrack->SetRotation(Math::Pi);
 	MeshComponent* trackMesh = new MeshComponent(mTrack);
 	trackMesh->SetMesh(mRenderer->GetMesh("Assets/Track.gpmesh"));
-
-	Vector3 eye(-300, 0, 0);
-	Vector3 target(20, 0, 0);
-	Vector3 up = Vector3::UnitZ;
-	Matrix4 view = Matrix4::CreateLookAt(eye, target, up);
-	mRenderer->SetViewMatrix(view);
-	mAudio->PlaySound("Music.ogg", true);
-	mShipHandle = mAudio->PlaySound("ShipLoop.ogg", true);
 }
 
 void Game::UnloadData()
