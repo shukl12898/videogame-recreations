@@ -37,10 +37,10 @@ public:
 	// NOTE: The soundName is without the "Assets/Sounds/" part of the file
 	//       For example, pass in "ChompLoop.wav" rather than
 	//       "Assets/Sounds/ChompLoop.wav".
-	SoundHandle PlaySound(const std::string& soundName, bool looping = false);
+	SoundHandle PlaySound(const std::string& soundName, bool looping = false, int fadeTimeMS = 0);
 
 	// Stops the sound if it is currently playing
-	void StopSound(SoundHandle sound);
+	void StopSound(SoundHandle sound, int fadeTimeMS = 0);
 
 	// Pauses the sound if it is currently playing
 	void PauseSound(SoundHandle sound);

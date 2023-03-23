@@ -33,11 +33,12 @@ public:
 	void AddActor(class Actor* actor);
 	void RemoveActor(class Actor* actor);
 	class Player* GetPlayer() { return mPlayer; };
+	class Enemy* GetEnemy() { return mEnemy; };
 	class HeightMap* GetHeightMap() { return mHeightMap; };
 	void LoadBlocks(std::string fileName, float x);
 
-	AudioSystem* GetAudio() { return mAudio; }
-
+	AudioSystem* GetAudio() { return mAudio; };
+	int GetSoundHandle() { return mSound; };
 	class Renderer* GetRenderer() { return mRenderer; }
 
 	const float WINDOW_WIDTH = 1024.0f;
@@ -55,6 +56,7 @@ private:
 	// All the actors in the game
 	std::vector<class Actor*> mActors;
 	class Player* mPlayer = nullptr;
+	class Enemy* mEnemy = nullptr;
 	class Actor* mTrack = nullptr;
 	class HeightMap* mHeightMap = nullptr;
 
@@ -62,5 +64,7 @@ private:
 	AudioSystem* mAudio = nullptr;
 
 	Uint32 mTicksCount = 0;
+	float mStartTimer = 8.5f;
+	int mSound = 0;
 	bool mIsRunning;
 };

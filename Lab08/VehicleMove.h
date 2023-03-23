@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Math.h"
+#include <vector>
 
 class VehicleMove : public Component
 {
@@ -13,9 +14,13 @@ public:
 	};
 
 	VehicleMove(class Actor* owner);
+	virtual void OnLapChange(int newLap) {}
 	void Update(float deltaTime) override;
 	void SetPedal(bool value) { mAcceleratorPressed = value; };
 	void SetTurn(int value) { mTurnDirection = value; };
+	int GetLap() { return mCurrLap; };
+	int GetCheck() { return mLastCheck; };
+	int GetDistCheck();
 
 	const float MIN_ACCELERATION = 1000.0f;
 	const float MAX_ACCELERATION = 2500.0f;
@@ -31,5 +36,10 @@ private:
 	float mAccelerationTime = RAMP_TIME;
 	float mAccelerationMag = 1000.0f;
 	float mAngularVelocity = 0.0f;
+	class HeightMap* mHeightMap = nullptr;
 	Vector3 mVelocity = Vector3::Zero;
+	std::vector<std::vector<Vector2>> mCheckpoints;
+	int mCurrLap = 0;
+	int mLastCheck = -1;
+	bool mStart = true;
 };

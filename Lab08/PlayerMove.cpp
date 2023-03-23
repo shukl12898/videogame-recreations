@@ -7,6 +7,8 @@
 #include "CollisionComponent.h"
 #include "Player.h"
 #include "HeightMap.h"
+#include "PlayerUI.h"
+#include "Enemy.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : VehicleMove(owner)
@@ -17,9 +19,36 @@ PlayerMove::PlayerMove(Actor* owner)
 
 void PlayerMove::Update(float deltaTime)
 {
-
 	VehicleMove::Update(deltaTime);
+}
 
+void PlayerMove::OnLapChange(int newLap)
+{
+	if (newLap == 3)
+	{
+		mOwner->SetState(ActorState::Paused);
+		mOwner->GetGame()->GetEnemy()->SetState(ActorState::Paused);
+		mOwner->GetGame()->GetAudio()->StopSound(mSound, 250);
+
+		if (mOwner->GetComponent<VehicleMove>()->GetLap() >
+			mOwner->GetGame()->GetEnemy()->GetComponent<VehicleMove>()->GetLap())
+		{
+			mOwner->GetComponent<PlayerUI>()->SetRaceState(PlayerUI::Won);
+			mOwner->GetGame()->GetAudio()->PlaySound("Won");
+		}
+		else
+		{
+			mOwner->GetComponent<PlayerUI>()->SetRaceState(PlayerUI::Lost);
+			mOwner->GetGame()->GetAudio()->PlaySound("Lost");
+		}
+	}
+	else if (newLap == 2)
+	{
+		mOwner->GetGame()->GetAudio()->StopSound(mOwner->GetGame()->GetSoundHandle());
+		mOwner->GetGame()->GetAudio()->PlaySound("FinalLap.wav");
+		mSound = mOwner->GetGame()->GetAudio()->PlaySound("MusicFast.ogg", true, 4000);
+	}
+	mOwner->GetComponent<PlayerUI>()->OnLapChange(newLap);
 }
 
 void PlayerMove::ProcessInput(const Uint8* keyState)
@@ -41,8 +70,8 @@ void PlayerMove::ProcessInput(const Uint8* keyState)
 		SetTurn(Turn::Left);
 	}
 	//ELSE if d or right should turn enum to right
-	else if ((keyState[SDL_SCANCODE_D] || keyState[SDL_SCANCODE_RIGHT]) && !(
-				 keyState[SDL_SCANCODE_A] || keyState[SDL_SCANCODE_LEFT]))
+	else if ((keyState[SDL_SCANCODE_D] || keyState[SDL_SCANCODE_RIGHT]) &&
+			 !(keyState[SDL_SCANCODE_A] || keyState[SDL_SCANCODE_LEFT]))
 	{
 		SetTurn(Turn::Right);
 	}

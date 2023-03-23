@@ -5,11 +5,47 @@
 #include "PlayerMove.h"
 #include "Game.h"
 #include "HeightMap.h"
+#include <fstream>
+#include "CSVHelper.h"
+#include <vector>
 
 VehicleMove::VehicleMove(Actor* owner)
 : Component(owner, 50)
 {
 	mOwner = owner;
+	mHeightMap = mOwner->GetGame()->GetHeightMap();
+
+	std::ifstream levelFile;
+	levelFile.open("Assets/HeightMap/Checkpoints.csv");
+
+	std::string line;
+
+	std::getline(levelFile, line);
+
+	int rowNum = 0;
+
+	while (std::getline(levelFile, line))
+	{
+		std::vector<std::string> rowString;
+		std::vector<int> rowActual;
+
+		if (!line.empty())
+		{
+			rowString = (CSVHelper::Split(line));
+
+			int minX = stoi(rowString[1]);
+			int maxX = stoi(rowString[2]);
+			int minY = stoi(rowString[3]);
+			int maxY = stoi(rowString[4]);
+			Vector2 minVal(minX, minY);
+			Vector2 maxVal(maxX, maxY);
+
+			mCheckpoints.push_back(std::vector<Vector2>());
+			mCheckpoints[rowNum].push_back(minVal);
+			mCheckpoints[rowNum].push_back(maxVal);
+			rowNum++;
+		}
+	}
 }
 
 void VehicleMove::Update(float deltaTime)
@@ -70,4 +106,56 @@ void VehicleMove::Update(float deltaTime)
 		//apply angular drag
 		mAngularVelocity *= ANGULAR_DRAG;
 	}
+
+	//figure out if you made it to the "next" checkpoint (increment last checkpoint index)
+	int index = mLastCheck + 1;
+	if (index >= mCheckpoints.size())
+	{
+		index = 0;
+	}
+
+	Vector2 minPos = mCheckpoints[index][0];
+	Vector2 maxPos = mCheckpoints[index][1];
+	Vector2 currCoordinates(mOwner->GetPosition().x, mOwner->GetPosition().y);
+	Vector2 currCoordinatesCell = mHeightMap->WorldToCell(currCoordinates);
+	Vector2 currPos(static_cast<int>(currCoordinatesCell.x),
+					static_cast<int>(currCoordinatesCell.y));
+
+	if (((currPos.x >= minPos.x) && (currPos.x <= maxPos.x)) &&
+		((currPos.y >= minPos.y) && (currPos.y <= maxPos.y)))
+	{
+		mLastCheck++;
+		if (mLastCheck == mCheckpoints.size())
+		{
+			mLastCheck = 0;
+		}
+	}
+
+	//if lap completed (hit checkpoint 0), incremement lap count
+	if (mLastCheck == 0 && mStart)
+	{
+		mStart = false;
+		mCurrLap++;
+		mLastCheck = 0;
+		OnLapChange(mCurrLap);
+	}
+
+	if (mLastCheck == 1)
+	{
+		mStart = true;
+	}
+}
+
+int VehicleMove::GetDistCheck()
+{
+	if (mLastCheck > 0 && mLastCheck < mCheckpoints.size())
+	{
+		Vector2 xyPos(mOwner->GetPosition().x, mOwner->GetPosition().y);
+		Vector2 cellPos = mOwner->GetGame()->GetHeightMap()->WorldToCell(xyPos);
+
+		Vector2 checkPos = mCheckpoints[mLastCheck][0];
+		return cellPos.Distance(cellPos, checkPos);
+	}
+
+	return 0;
 }

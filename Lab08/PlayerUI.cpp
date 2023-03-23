@@ -4,6 +4,9 @@
 #include "Game.h"
 #include "Renderer.h"
 #include "Actor.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "VehicleMove.h"
 
 PlayerUI::PlayerUI(Actor* owner)
 : UIComponent(owner)
@@ -78,6 +81,41 @@ void PlayerUI::OnLapChange(int lapNum)
 
 bool PlayerUI::IsPlayerInFirst() const
 {
-	// TODO: Implement correctly!!
-	return false;
+	Game* game = mOwner->GetGame();
+	VehicleMove* playerMove = game->GetPlayer()->GetComponent<VehicleMove>();
+	VehicleMove* enemyMove = game->GetEnemy()->GetComponent<VehicleMove>();
+
+	//compare lap numbers
+	if (playerMove->GetLap() == enemyMove->GetLap())
+	{
+		//if same lap, compare checkpoint numbers
+		if (playerMove->GetCheck() == enemyMove->GetCheck())
+		{
+			//if same checkpoint, compare both vehicles distance to checkpoint (whoever is closer is ahead)
+			if (playerMove->GetDistCheck() >= enemyMove->GetCheck())
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else if (playerMove->GetCheck() > enemyMove->GetCheck())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (playerMove->GetLap() > enemyMove->GetLap())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

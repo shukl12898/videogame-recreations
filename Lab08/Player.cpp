@@ -7,6 +7,7 @@
 #include "PlayerMove.h"
 #include "Random.h"
 #include "CameraComponent.h"
+#include "PlayerUI.h"
 
 Player::Player(Game* game)
 : Actor(game)
@@ -18,6 +19,7 @@ Player::Player(Game* game)
 	mPlayerMove = new PlayerMove(this);
 	mCameraComponent = new CameraComponent(this);
 	mCameraComponent->SnapToIdeal();
+	mPlayerUI = new PlayerUI(this);
 }
 
 void Player::OnUpdate(float deltaTime)

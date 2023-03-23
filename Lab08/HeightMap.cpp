@@ -11,8 +11,6 @@ HeightMap::HeightMap()
 
 	std::string line;
 
-	std::getline(levelFile, line);
-
 	int rowNum = 0;
 
 	while (std::getline(levelFile, line))

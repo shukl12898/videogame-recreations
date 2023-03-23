@@ -47,7 +47,7 @@ void AudioSystem::Update(float deltaTime)
 // NOTE: The soundName is without the "Assets/Sounds/" part of the file
 //       For example, pass in "ChompLoop.wav" rather than
 //       "Assets/Sounds/ChompLoop.wav".
-SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping)
+SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping, int fadeTimeMS)
 {
 	Mix_Chunk* currentSound = GetSound(soundName);
 	if (currentSound == nullptr)
@@ -130,13 +130,20 @@ SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping)
 		isLooping = -1;
 	}
 
-	Mix_PlayChannel(channelNumber, currentSound, isLooping);
+	if (fadeTimeMS > 0)
+	{
+		Mix_FadeInChannel(channelNumber, currentSound, isLooping, fadeTimeMS);
+	}
+	else
+	{
+		Mix_PlayChannel(channelNumber, currentSound, isLooping);
+	}
 
 	return mLastHandle;
 }
 
 // Stops the sound if it is currently playing
-void AudioSystem::StopSound(SoundHandle sound)
+void AudioSystem::StopSound(SoundHandle sound, int fadeTimeMS)
 {
 	auto it = mHandleMap.find(sound);
 	if (it == mHandleMap.end())
@@ -145,9 +152,16 @@ void AudioSystem::StopSound(SoundHandle sound)
 	}
 	else
 	{
-		Mix_HaltChannel(it->second.mChannel);
-		mChannels[it->second.mChannel] = 0;
-		mHandleMap.erase(it->first);
+		if (fadeTimeMS > 0)
+		{
+			Mix_FadeOutChannel(it->second.mChannel, fadeTimeMS);
+		}
+		else
+		{
+			Mix_HaltChannel(it->second.mChannel);
+			mChannels[it->second.mChannel] = 0;
+			mHandleMap.erase(it->first);
+		}
 	}
 }
 

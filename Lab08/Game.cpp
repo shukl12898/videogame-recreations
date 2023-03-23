@@ -16,6 +16,7 @@
 #include "Player.h"
 #include "HeightMap.h"
 #include <string>
+#include "Enemy.h"
 
 Game::Game()
 : mIsRunning(true)
@@ -127,6 +128,14 @@ void Game::UpdateGame()
 	{
 		delete actor;
 	}
+
+	mStartTimer -= deltaTime;
+	if (mStartTimer <= 0.0f && mPlayer->GetState() == ActorState::Paused)
+	{
+		mPlayer->SetState(ActorState::Active);
+		mEnemy->SetState(ActorState::Active);
+		mSound = mAudio->PlaySound("Music.ogg");
+	}
 }
 
 void Game::GenerateOutput()
@@ -136,8 +145,10 @@ void Game::GenerateOutput()
 
 void Game::LoadData()
 {
+	mAudio->PlaySound("RaceStart.wav");
 	mHeightMap = new HeightMap();
 	mPlayer = new Player(this);
+	mEnemy = new Enemy(this);
 	Matrix4 projection =
 		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
 	mRenderer->SetProjectionMatrix(projection);
@@ -145,6 +156,8 @@ void Game::LoadData()
 	mTrack->SetRotation(Math::Pi);
 	MeshComponent* trackMesh = new MeshComponent(mTrack);
 	trackMesh->SetMesh(mRenderer->GetMesh("Assets/Track.gpmesh"));
+	mPlayer->SetState(ActorState::Paused);
+	mEnemy->SetState(ActorState::Paused);
 }
 
 void Game::UnloadData()
