@@ -78,13 +78,13 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 
 	if (minDist == topDist)
 	{
-		offset.z = -topDist;
+		offset.z = topDist;
 		result = CollSide::Top;
 	}
 
 	if (minDist == bottomDist)
 	{
-		offset.z = bottomDist;
+		offset.z = -bottomDist;
 		result = CollSide::Bottom;
 	}
 
@@ -102,13 +102,13 @@ CollSide CollisionComponent::GetMinOverlap(const CollisionComponent* other, Vect
 
 	if (minDist == frontDist)
 	{
-		offset.x = -frontDist;
+		offset.x = frontDist;
 		result = CollSide::Front;
 	}
 
 	if (minDist == backDist)
 	{
-		offset.x = backDist;
+		offset.x = -backDist;
 		result = CollSide::Back;
 	}
 
