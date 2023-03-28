@@ -11,7 +11,11 @@
 #include "Actor.h"
 #include <fstream>
 #include "Renderer.h"
+#include "MeshComponent.h"
 #include "Random.h"
+#include "Player.h"
+#include <string>
+#include "LevelLoader.h"
 
 Game::Game()
 : mIsRunning(true)
@@ -28,7 +32,19 @@ bool Game::Initialize()
 		return false;
 	}
 
-	// TODO: Create renderer
+	mRenderer = new Renderer(this);
+	// On Mac, tell SDL that CTRL+Click should generate a Right Click event
+	SDL_SetHint(SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK, "1");
+	// Enable relative mouse mode
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+	// Clear any saved values
+	SDL_GetRelativeMouseState(nullptr, nullptr);
+	bool result = mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	if (!result)
+	{
+		SDL_Log("Failed to initialize");
+		return false;
+	}
 
 	mAudio = new AudioSystem();
 
@@ -68,9 +84,14 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
+	int x = 0;
+	int y = 0;
+	Uint32 mouseButtons = SDL_GetRelativeMouseState(&x, &y);
+	Vector2 relativeMouse(x, y);
+
 	for (auto actor : mActors)
 	{
-		actor->ProcessInput(state);
+		actor->ProcessInput(state, mouseButtons, relativeMouse);
 	}
 
 	mAudio->ProcessInput(state);
@@ -121,12 +142,16 @@ void Game::UpdateGame()
 
 void Game::GenerateOutput()
 {
-	// TODO: tell renderer to draw
+	mRenderer->Draw();
 }
 
 void Game::LoadData()
 {
-	// TODO: Implement
+	Matrix4 projection =
+		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
+	mRenderer->SetProjectionMatrix(projection);
+	mAudio->CacheAllSounds();
+	LevelLoader::Load(this, "Assets/Lab09.json");
 }
 
 void Game::UnloadData()
@@ -143,7 +168,8 @@ void Game::Shutdown()
 {
 	UnloadData();
 	delete mAudio;
-	// TODO: Shutdown/delete renderer
+	mRenderer->Shutdown();
+	delete mRenderer;
 	SDL_Quit();
 }
 
@@ -158,5 +184,19 @@ void Game::RemoveActor(Actor* actor)
 	if (iter != mActors.end())
 	{
 		mActors.erase(iter);
+	}
+}
+
+void Game::AddCollider(Actor* collider)
+{
+	mColliders.emplace_back(collider);
+}
+
+void Game::RemoveCollider(Actor* collider)
+{
+	auto iter = std::find(mColliders.begin(), mColliders.end(), collider);
+	if (iter != mColliders.end())
+	{
+		mColliders.erase(iter);
 	}
 }

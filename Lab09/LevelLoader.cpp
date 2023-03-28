@@ -10,6 +10,7 @@
 #include "MeshComponent.h"
 #include "Block.h"
 #include "Player.h"
+#include "Prop.h"
 #include "Game.h"
 
 namespace
@@ -44,9 +45,25 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		}
 		else if (type == "Player")
 		{
-			// TODO: Handle construction of a player!
+			Player* player = new Player(game);
+			actor = player;
+			game->SetPlayer(player);
 		}
-		// TODO: Add else ifs for other actor types
+		else if (type == "Prop")
+		{
+			std::string mesh = "none";
+			GetStringFromJSON(actorValue, "mesh", mesh);
+
+			bool usesAlpha = false;
+			GetBoolFromJSON(actorValue, "alpha", usesAlpha);
+
+			bool hasCollisions = false;
+			GetBoolFromJSON(actorValue, "collision", hasCollisions);
+			std::string hi = "break";
+
+			Prop* prop = new Prop(mesh, usesAlpha, hasCollisions, game);
+			actor = prop;
+		}
 
 		// Set properties of actor
 		if (actor)
