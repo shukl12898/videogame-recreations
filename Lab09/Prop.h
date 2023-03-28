@@ -1,4 +1,5 @@
 #include "Actor.h"
+#include <string>
 
 class Prop : public Actor
 {

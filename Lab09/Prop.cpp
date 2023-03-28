@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "CollisionComponent.h"
 #include "MeshComponent.h"
+#include <string>
 
 Prop::Prop(std::string mesh, bool usesAlpha, bool hasCollisions, Game* game):Actor(game)
 {
