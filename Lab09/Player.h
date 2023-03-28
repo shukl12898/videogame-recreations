@@ -8,6 +8,7 @@ public:
 	void OnUpdate(float deltaTime) override;
 	bool HasGun();
 	class PlayerUI* GetPlayerUI() { return mPlayerUI; };
+	void GiveGun();
 	class CameraComponent* GetCamera() { return mCameraComponent; };
 
 protected:
@@ -17,4 +18,5 @@ protected:
 	class CameraComponent* mCameraComponent;
 	class CollisionComponent* mCollisionComponent;
 	class PlayerUI* mPlayerUI;
+	bool mHasGun = false;
 };

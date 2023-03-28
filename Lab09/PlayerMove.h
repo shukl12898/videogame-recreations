@@ -25,6 +25,7 @@ private:
 	void UpdateOnGround(float deltaTime);
 	void UpdateJump(float deltaTime);
 	void UpdateFalling(float deltaTime);
+	void CreatePortal(bool isBlue);
 
 	void PhysicsUpdate(float deltaTime);
 	void FixXYVelocity();
@@ -39,6 +40,9 @@ private:
 	float mMass = 1.0f;
 
 	int mSound = 0;
-	bool mLastFrame = false;
+	bool mLastFrameSpace = false;
 	int mCurrentState;
+	class Crosshair* mCrosshair = nullptr;
+	bool mLastFrameLeft = false;
+	bool mLastFrameRight = false;
 };

@@ -7,6 +7,10 @@
 #include "CollisionComponent.h"
 #include "CameraComponent.h"
 #include "Player.h"
+#include "Crosshair.h"
+#include "SegmentCast.h"
+#include "Portal.h"
+#include "MeshComponent.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
@@ -15,6 +19,7 @@ PlayerMove::PlayerMove(Actor* owner)
 	ChangeState(Falling);
 	mGravity = Vector3(0.0f, 0.0f, -980.0f);
 	mJumpForce = Vector3(0.0f, 0.0f, 35000.0f);
+	mCrosshair = new Crosshair(mOwner);
 }
 
 void PlayerMove::Update(float deltaTime)
@@ -30,6 +35,50 @@ void PlayerMove::Update(float deltaTime)
 	case Falling:
 		UpdateFalling(deltaTime);
 		break;
+	}
+}
+
+void PlayerMove::CreatePortal(bool isBlue)
+{
+	Vector3 start = mOwner->GetGame()->GetRenderer()->Unproject(Vector3(0.0f, 0.0f, 0.0f));
+	Vector3 end = mOwner->GetGame()->GetRenderer()->Unproject(Vector3(0.0f, 0.0f, 0.9f));
+	Vector3 segmentDirection = (end - start).Normalize(end - start);
+	LineSegment segment = LineSegment(start, start + 1000 * segmentDirection);
+	CastInfo castInfo;
+
+	bool segmentCastResult = SegmentCast(mOwner->GetGame()->GetColliders(), segment, castInfo);
+
+	if (segmentCastResult)
+	{
+
+
+		//Not a block
+		if (castInfo.mActor)
+		{
+		}
+		//A block
+		else
+		{
+			Portal* portal = new Portal(mOwner->GetGame());
+			portal->SetPosition(castInfo.mPoint);
+			if (!isBlue)
+			{
+				if (mOwner->GetGame()->GetOrangePortal() != nullptr)
+				{
+					mOwner->GetGame()->GetOrangePortal()->SetState(ActorState::Destroy);
+				}
+				portal->GetComponent<MeshComponent>()->SetTextureIndex(1);
+				mOwner->GetGame()->SetOrangePortal(portal);
+			}
+			else
+			{
+				if (mOwner->GetGame()->GetBluePortal() != nullptr)
+				{
+					mOwner->GetGame()->GetBluePortal()->SetState(ActorState::Destroy);
+				}
+				mOwner->GetGame()->SetBluePortal(portal);
+			}
+		}
 	}
 }
 
@@ -148,10 +197,22 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 							  const Vector2& relativeMouse)
 {
 
-	if (!mLastFrame && keyState[SDL_SCANCODE_SPACE] && mCurrentState == OnGround)
+	if (!mLastFrameSpace && keyState[SDL_SCANCODE_SPACE] && mCurrentState == OnGround)
 	{
 		AddForce(mJumpForce);
 		ChangeState(Jump);
+	}
+
+	if (mOwner->GetGame()->GetPlayer()->HasGun())
+	{
+		if (!mLastFrameLeft && (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)))
+		{
+			CreatePortal(true);
+		}
+		if (!mLastFrameRight && (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)))
+		{
+			CreatePortal(false);
+		}
 	}
 
 	//w sets adds force in owner's forward
@@ -179,7 +240,7 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 	float pitchSpeed = relativeMouse.y / 500.0f * Math::Pi * 10.0f;
 	SetAngularSpeed(angularSpeed);
 	mOwner->GetComponent<CameraComponent>()->SetPitchSpeed(pitchSpeed);
-	mLastFrame = keyState[SDL_SCANCODE_SPACE];
+	mLastFrameSpace = keyState[SDL_SCANCODE_SPACE];
 }
 
 CollSide PlayerMove::FixCollision(CollisionComponent* self, CollisionComponent* collider)

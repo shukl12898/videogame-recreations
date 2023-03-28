@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "Prop.h"
 #include "Game.h"
+#include "PortalGun.h"
 
 namespace
 {
@@ -63,6 +64,11 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 
 			Prop* prop = new Prop(mesh, usesAlpha, hasCollisions, game);
 			actor = prop;
+		}
+		else if (type == "PortalGun")
+		{
+			PortalGun* portalGun = new PortalGun(game);
+			actor = portalGun;
 		}
 
 		// Set properties of actor

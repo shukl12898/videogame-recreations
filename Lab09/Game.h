@@ -43,6 +43,11 @@ public:
 	int GetSoundHandle() { return mSound; };
 	class Renderer* GetRenderer() { return mRenderer; }
 
+	void SetBluePortal(class Portal* portal) { mBluePortal = portal; };
+	void SetOrangePortal(class Portal* portal) { mOrangePortal = portal; };
+	class Portal* GetBluePortal() { return mBluePortal; };
+	class Portal* GetOrangePortal() { return mOrangePortal; };
+
 	const float WINDOW_WIDTH = 1024.0f;
 	const float WINDOW_HEIGHT = 768.0f;
 	const float COLUMN_SIZE = 25;
@@ -62,6 +67,9 @@ private:
 
 	class Renderer* mRenderer = nullptr;
 	AudioSystem* mAudio = nullptr;
+
+	class Portal* mBluePortal = nullptr;
+	class Portal* mOrangePortal = nullptr;
 
 	Uint32 mTicksCount = 0;
 	float mStartTimer = 8.5f;

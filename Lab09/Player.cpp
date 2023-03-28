@@ -6,6 +6,7 @@
 #include "MeshComponent.h"
 #include "PlayerMove.h"
 #include "Random.h"
+#include "PlayerMesh.h"
 #include "CameraComponent.h"
 
 Player::Player(Game* game)
@@ -18,9 +19,15 @@ Player::Player(Game* game)
 	mCollisionComponent->SetSize(50, 100, 50);
 }
 
+void Player::GiveGun()
+{
+	mHasGun = true;
+	new PlayerMesh(mGame);
+}
+
 bool Player::HasGun()
 {
-	return false;
+	return mHasGun;
 }
 
 void Player::OnUpdate(float deltaTime)
