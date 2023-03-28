@@ -8,8 +8,8 @@ public:
 	void Update(float deltaTime) override;
 	Vector3 Ideal();
 	void SetPitchSpeed(float speed) { mPitchSpeed = speed; };
-	float GetPitchSpeed() { return mPitchSpeed; };
-	float GetPitchAngle() { return mPitchAngle; };
+	float GetPitchSpeed() const { return mPitchSpeed; };
+	float GetPitchAngle() const { return mPitchAngle; };
 	void SnapToIdeal();
 	static const int HDIST = 60;
 	static const int VDIST = 70;

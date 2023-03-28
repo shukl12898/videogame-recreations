@@ -5,11 +5,35 @@
 class PlayerMove : public MoveComponent
 {
 public:
+	enum MoveState
+	{
+		OnGround,
+		Jump,
+		Falling
+	};
+
 	PlayerMove(class Actor* owner);
 	void Update(float deltaTime) override;
 	void ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 					  const Vector2& relativeMouse) override;
+	const float MAX_SPEED = 400.0f;
 
 private:
+	void ChangeState(MoveState state) { mCurrentState = state; };
+	void UpdateOnGround(float deltaTime);
+	void UpdateJump(float deltaTime);
+	void UpdateFalling(float deltaTime);
+
+	void PhysicsUpdate(float deltaTime);
+	void FixXYVelocity();
+	void AddForce(const Vector3& force) { mPendingForces += force; };
+
+	Vector3 mVelocity;
+	Vector3 mAcceleration;
+	Vector3 mPendingForces;
+	Vector3 mGravity;
+	float mMass = 1.0f;
+
 	int mSound = 0;
+	int mCurrentState;
 };
