@@ -14,6 +14,7 @@ PlayerMove::PlayerMove(Actor* owner)
 	mOwner = owner;
 	ChangeState(Falling);
 	mGravity = Vector3(0.0f, 0.0f, -980.0f);
+	mJumpForce = Vector3(0.0f, 0.0f, 35000.0f);
 }
 
 void PlayerMove::Update(float deltaTime)
@@ -45,17 +46,74 @@ void PlayerMove::PhysicsUpdate(float deltaTime)
 void PlayerMove::UpdateOnGround(float deltaTime)
 {
 	PhysicsUpdate(deltaTime);
+	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
+	bool falling = false;
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		CollSide result = FixCollision(mOwner->GetComponent<CollisionComponent>(),
+									   colliders[i]->GetComponent<CollisionComponent>());
+
+		if (result == CollSide::Top)
+		{
+			falling = true;
+		}
+	}
+
+	if (falling)
+	{
+		ChangeState(Falling);
+	}
 }
 
 void PlayerMove::UpdateJump(float deltaTime)
 {
+	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
+	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
+	bool hitHead = false;
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		CollSide result = FixCollision(mOwner->GetComponent<CollisionComponent>(),
+									   colliders[i]->GetComponent<CollisionComponent>());
+
+		if (result == CollSide::Bottom)
+		{
+			hitHead = true;
+		}
+	}
+
+	if (mVelocity.z <= 0.0f)
+	{
+		ChangeState(Falling);
+	}
+
+	if (hitHead)
+	{
+		mVelocity.z = 0.0f;
+	}
 }
 
 void PlayerMove::UpdateFalling(float deltaTime)
 {
 	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
+	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
+	bool landed = false;
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		CollSide result = FixCollision(mOwner->GetComponent<CollisionComponent>(),
+									   colliders[i]->GetComponent<CollisionComponent>());
+
+		if ((result == CollSide::Top) && (mVelocity.z <= 0.0f))
+		{
+			landed = true;
+		}
+	}
+	if (landed)
+	{
+		mVelocity.z = 0;
+		ChangeState(OnGround);
+	}
 }
 
 void PlayerMove::FixXYVelocity()
@@ -90,6 +148,12 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 							  const Vector2& relativeMouse)
 {
 
+	if (!mLastFrame && keyState[SDL_SCANCODE_SPACE] && mCurrentState == OnGround)
+	{
+		AddForce(mJumpForce);
+		ChangeState(Jump);
+	}
+
 	//w sets adds force in owner's forward
 	if (keyState[SDL_SCANCODE_W])
 	{
@@ -115,4 +179,39 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 	float pitchSpeed = relativeMouse.y / 500.0f * Math::Pi * 10.0f;
 	SetAngularSpeed(angularSpeed);
 	mOwner->GetComponent<CameraComponent>()->SetPitchSpeed(pitchSpeed);
+	mLastFrame = keyState[SDL_SCANCODE_SPACE];
+}
+
+CollSide PlayerMove::FixCollision(CollisionComponent* self, CollisionComponent* collider)
+{
+	Vector3 offset = Vector3::Zero;
+	CollSide collision = self->GetMinOverlap(collider, offset);
+
+	if (collision != CollSide::None)
+	{
+		mOwner->SetPosition(mOwner->GetPosition() + offset);
+	}
+
+	if (collision == CollSide::Left)
+	{
+		Vector3 normal(0, -1, 0);
+		AddForce(normal * NORMAL_FORCE);
+	}
+	else if (collision == CollSide::Right)
+	{
+		Vector3 normal(0, 1, 0);
+		AddForce(normal * NORMAL_FORCE);
+	}
+	else if (collision == CollSide::Front)
+	{
+		Vector3 normal(1, 0, 0);
+		AddForce(normal * NORMAL_FORCE);
+	}
+	else if (collision == CollSide::Back)
+	{
+		Vector3 normal(-1, 0, 0);
+		AddForce(normal * NORMAL_FORCE);
+	}
+
+	return collision;
 }

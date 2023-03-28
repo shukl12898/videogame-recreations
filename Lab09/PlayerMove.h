@@ -1,6 +1,7 @@
 #pragma once
 #include "MoveComponent.h"
 #include "Math.h"
+#include "CollisionComponent.h"
 
 class PlayerMove : public MoveComponent
 {
@@ -17,6 +18,7 @@ public:
 	void ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 					  const Vector2& relativeMouse) override;
 	const float MAX_SPEED = 400.0f;
+	const float NORMAL_FORCE = 700.0f;
 
 private:
 	void ChangeState(MoveState state) { mCurrentState = state; };
@@ -27,13 +29,16 @@ private:
 	void PhysicsUpdate(float deltaTime);
 	void FixXYVelocity();
 	void AddForce(const Vector3& force) { mPendingForces += force; };
+	CollSide FixCollision(CollisionComponent* self, CollisionComponent* collider);
 
 	Vector3 mVelocity;
 	Vector3 mAcceleration;
 	Vector3 mPendingForces;
+	Vector3 mJumpForce;
 	Vector3 mGravity;
 	float mMass = 1.0f;
 
 	int mSound = 0;
+	bool mLastFrame = false;
 	int mCurrentState;
 };
