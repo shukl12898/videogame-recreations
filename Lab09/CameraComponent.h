@@ -10,6 +10,7 @@ public:
 	void SetPitchSpeed(float speed) { mPitchSpeed = speed; };
 	float GetPitchSpeed() const { return mPitchSpeed; };
 	float GetPitchAngle() const { return mPitchAngle; };
+	void ResetPitchAngle() { mPitchAngle = 0; };
 	void SnapToIdeal();
 	static const int HDIST = 60;
 	static const int VDIST = 70;

@@ -16,6 +16,7 @@
 #include "Player.h"
 #include <string>
 #include "LevelLoader.h"
+#include "InputReplay.h"
 
 Game::Game()
 : mIsRunning(true)
@@ -52,6 +53,8 @@ bool Game::Initialize()
 
 	mTicksCount = SDL_GetTicks();
 
+	mInputReplay = new InputReplay(this);
+
 	return true;
 }
 
@@ -84,10 +87,17 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
+	if (state[SDL_SCANCODE_P])
+	{
+		mInputReplay->StartPlayback(mCurrentLevel);
+	}
+
 	int x = 0;
 	int y = 0;
 	Uint32 mouseButtons = SDL_GetRelativeMouseState(&x, &y);
 	Vector2 relativeMouse(x, y);
+
+	mInputReplay->InputPlayback(state, mouseButtons, relativeMouse);
 
 	for (auto actor : mActors)
 	{
@@ -101,17 +111,11 @@ void Game::UpdateGame()
 {
 	// Compute delta time
 	// Wait until 16ms has elapsed since last frame
-	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16))
-		;
-
-	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-	if (deltaTime > 0.01667f)
-	{
-		deltaTime = 0.01667f;
-	}
-	mTicksCount = SDL_GetTicks();
+	float deltaTime = 0.016f;
 
 	mAudio->Update(deltaTime);
+
+	mInputReplay->Update(deltaTime);
 
 	// Make copy of actor vector
 	// (iterate over this in case new actors are created)
@@ -151,7 +155,8 @@ void Game::LoadData()
 		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
 	mRenderer->SetProjectionMatrix(projection);
 	mAudio->CacheAllSounds();
-	LevelLoader::Load(this, "Assets/Lab09.json");
+	mCurrentLevel = "Assets/Lab09.json";
+	LevelLoader::Load(this, mCurrentLevel);
 }
 
 void Game::UnloadData()
@@ -170,6 +175,7 @@ void Game::Shutdown()
 	delete mAudio;
 	mRenderer->Shutdown();
 	delete mRenderer;
+	delete mInputReplay;
 	SDL_Quit();
 }
 

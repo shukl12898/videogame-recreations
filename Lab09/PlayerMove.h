@@ -41,6 +41,7 @@ private:
 
 	int mSound = 0;
 	bool mLastFrameSpace = false;
+	bool mLastFrameR = false;
 	int mCurrentState;
 	class Crosshair* mCrosshair = nullptr;
 	bool mLastFrameLeft = false;

@@ -44,7 +44,6 @@ void Actor::CalcWorldTransform()
 	Matrix4 rotationMatrixZ = Matrix4::CreateRotationZ(mRotation);
 	Matrix4 translationMatrix = Matrix4::CreateTranslation(mPosition);
 	Matrix4 rotationMatrixX = Matrix4::CreateRotationX(mRollAngle);
-
 	mWorldTransform = scaleMatrix * rotationMatrixZ * rotationMatrixX *
 					  Matrix4::CreateFromQuaternion(mQuat) * translationMatrix;
 }

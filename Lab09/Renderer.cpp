@@ -9,8 +9,7 @@
 #include "PortalMeshComponent.h"
 #include "Game.h"
 #include "Actor.h"
-// TODO: Uncomment below when adding portal views
-// #include "Portal.h"
+#include "Portal.h"
 #include <typeinfo>
 #include <GL/glew.h>
 
@@ -141,11 +140,8 @@ void Renderer::Draw()
 		SDL_WarpMouseInWindow(mWindow, x, y);
 	}
 
-	Actor* bluePortal = nullptr;
-	Actor* orangePortal = nullptr;
-	// TODO: Replace above code with below two lines for portal views
-	// Portal* bluePortal = mGame->GetBluePortal();
-	// Portal* orangePortal = mGame->GetOrangePortal();
+	Portal* bluePortal = mGame->GetBluePortal();
+	Portal* orangePortal = mGame->GetOrangePortal();
 
 	PortalMeshComponent* blueMesh = nullptr;
 	PortalMeshComponent* orangeMesh = nullptr;

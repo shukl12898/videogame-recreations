@@ -48,6 +48,10 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		{
 			Player* player = new Player(game);
 			actor = player;
+			Vector3 position;
+			GetVectorFromJSON(actorValue, "pos", position);
+			player->SetVector3(position);
+			actor = player;
 			game->SetPlayer(player);
 		}
 		else if (type == "Prop")

@@ -11,6 +11,7 @@
 #include "SegmentCast.h"
 #include "Portal.h"
 #include "MeshComponent.h"
+#include "Block.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
@@ -51,9 +52,9 @@ void PlayerMove::CreatePortal(bool isBlue)
 	if (segmentCastResult)
 	{
 
-
+		Block* block = dynamic_cast<Block*>(castInfo.mActor);
 		//Not a block
-		if (castInfo.mActor)
+		if (block == nullptr)
 		{
 		}
 		//A block
@@ -61,6 +62,33 @@ void PlayerMove::CreatePortal(bool isBlue)
 		{
 			Portal* portal = new Portal(mOwner->GetGame());
 			portal->SetPosition(castInfo.mPoint);
+
+			Vector3 desiredFacing = castInfo.mNormal;
+			Vector3 originalFacing = Vector3::UnitX;
+			Quaternion result;
+
+			float dotProduct = originalFacing.Dot(originalFacing, desiredFacing);
+
+			if (dotProduct == 1)
+			{
+				result = Quaternion::Identity;
+			}
+			else if (dotProduct == -1)
+			{
+				result = Quaternion(Vector3::UnitZ, Math::Pi);
+			}
+			else
+			{
+				//normalized axis of rotation
+				Vector3 axisRotation = desiredFacing.Cross(originalFacing, desiredFacing);
+				Vector3 normalizedAxisRotation = axisRotation.Normalize(axisRotation);
+
+				//angle of rotation
+				float theta = Math::Acos(dotProduct);
+
+				result = Quaternion(normalizedAxisRotation, theta);
+			}
+
 			if (!isBlue)
 			{
 				if (mOwner->GetGame()->GetOrangePortal() != nullptr)
@@ -69,6 +97,7 @@ void PlayerMove::CreatePortal(bool isBlue)
 				}
 				portal->GetComponent<MeshComponent>()->SetTextureIndex(1);
 				mOwner->GetGame()->SetOrangePortal(portal);
+				mOwner->GetGame()->GetOrangePortal()->SetQuat(result);
 			}
 			else
 			{
@@ -77,8 +106,25 @@ void PlayerMove::CreatePortal(bool isBlue)
 					mOwner->GetGame()->GetBluePortal()->SetState(ActorState::Destroy);
 				}
 				mOwner->GetGame()->SetBluePortal(portal);
+				mOwner->GetGame()->GetBluePortal()->SetQuat(result);
 			}
 		}
+	}
+
+	if (mOwner->GetGame()->GetBluePortal() != nullptr &&
+		mOwner->GetGame()->GetOrangePortal() == nullptr)
+	{
+		mCrosshair->SetState(CrosshairState::BlueFill);
+	}
+	else if (mOwner->GetGame()->GetBluePortal() == nullptr &&
+			 mOwner->GetGame()->GetOrangePortal() != nullptr)
+	{
+		mCrosshair->SetState(CrosshairState::OrangeFill);
+	}
+	else if (mOwner->GetGame()->GetBluePortal() != nullptr &&
+			 mOwner->GetGame()->GetOrangePortal() != nullptr)
+	{
+		mCrosshair->SetState(CrosshairState::BothFill);
 	}
 }
 
@@ -201,6 +247,24 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 	{
 		AddForce(mJumpForce);
 		ChangeState(Jump);
+	}
+
+	if (!mLastFrameR && keyState[SDL_SCANCODE_R])
+	{
+		Portal* blue = mOwner->GetGame()->GetBluePortal();
+		Portal* orange = mOwner->GetGame()->GetOrangePortal();
+
+		if (blue != nullptr)
+		{
+			blue->SetState(ActorState::Destroy);
+		}
+		if (orange != nullptr)
+		{
+			orange->SetState(ActorState::Destroy);
+		}
+		mOwner->GetGame()->SetBluePortal(nullptr);
+		mOwner->GetGame()->SetOrangePortal(nullptr);
+		mCrosshair->SetState(CrosshairState::Default);
 	}
 
 	if (mOwner->GetGame()->GetPlayer()->HasGun())

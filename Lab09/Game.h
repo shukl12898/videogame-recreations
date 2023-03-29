@@ -75,4 +75,7 @@ private:
 	float mStartTimer = 8.5f;
 	int mSound = 0;
 	bool mIsRunning;
+
+	std::string mCurrentLevel;
+	class InputReplay* mInputReplay;
 };
