@@ -31,14 +31,27 @@ public:
 	void Shutdown();
 
 	void AddActor(class Actor* actor);
+	void AddCollider(class Actor* collider);
 	void RemoveActor(class Actor* actor);
+	void RemoveCollider(class Actor* collider);
+	class Player* GetPlayer() { return mPlayer; };
+	void SetPlayer(class Player* player) { mPlayer = player; };
+	void LoadBlocks(std::string fileName, float x);
 
-	AudioSystem* GetAudio() { return mAudio; }
-
+	AudioSystem* GetAudio() { return mAudio; };
+	std::vector<class Actor*>& GetColliders() { return mColliders; };
+	int GetSoundHandle() { return mSound; };
 	class Renderer* GetRenderer() { return mRenderer; }
+
+	void SetBluePortal(class Portal* portal) { mBluePortal = portal; };
+	void SetOrangePortal(class Portal* portal) { mOrangePortal = portal; };
+	class Portal* GetBluePortal() { return mBluePortal; };
+	class Portal* GetOrangePortal() { return mOrangePortal; };
 
 	const float WINDOW_WIDTH = 1024.0f;
 	const float WINDOW_HEIGHT = 768.0f;
+	const float COLUMN_SIZE = 25;
+	const float ROW_SIZE = -25;
 
 private:
 	void ProcessInput();
@@ -49,10 +62,20 @@ private:
 
 	// All the actors in the game
 	std::vector<class Actor*> mActors;
+	std::vector<class Actor*> mColliders;
+	class Player* mPlayer = nullptr;
 
 	class Renderer* mRenderer = nullptr;
 	AudioSystem* mAudio = nullptr;
 
+	class Portal* mBluePortal = nullptr;
+	class Portal* mOrangePortal = nullptr;
+
 	Uint32 mTicksCount = 0;
+	float mStartTimer = 8.5f;
+	int mSound = 0;
 	bool mIsRunning;
+
+	std::string mCurrentLevel;
+	class InputReplay* mInputReplay;
 };
