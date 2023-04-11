@@ -36,6 +36,7 @@ public:
 	float GetRollAngle() const { return mRollAngle; }
 	void SetRollAngle(float rotation) { mRollAngle = rotation; }
 	class Vector3 GetForward() const;
+	class Vector3 GetQuatForward() const;
 	class Vector3 GetRight() const;
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }

@@ -92,6 +92,11 @@ void Game::ProcessInput()
 		mInputReplay->StartPlayback(mCurrentLevel);
 	}
 
+	if (!mLastFrameF5 && state[SDL_SCANCODE_F5])
+	{
+		ReloadLevel();
+	}
+
 	int x = 0;
 	int y = 0;
 	Uint32 mouseButtons = SDL_GetRelativeMouseState(&x, &y);
@@ -99,12 +104,14 @@ void Game::ProcessInput()
 
 	mInputReplay->InputPlayback(state, mouseButtons, relativeMouse);
 
-	for (auto actor : mActors)
+	std::vector<Actor*> copy = mActors;
+	for (Actor* actor : copy)
 	{
 		actor->ProcessInput(state, mouseButtons, relativeMouse);
 	}
 
 	mAudio->ProcessInput(state);
+	mLastFrameF5 = state[SDL_SCANCODE_F5];
 }
 
 void Game::UpdateGame()
@@ -142,6 +149,22 @@ void Game::UpdateGame()
 	{
 		delete actor;
 	}
+
+	if (mNextLevel != "")
+	{
+		UnloadData();
+		mInputReplay->StopPlayback();
+		mAudio->StopAllSounds();
+		mBluePortal = nullptr;
+		mOrangePortal = nullptr;
+		mCurrentLevel = mNextLevel;
+		LevelLoader::Load(this, mCurrentLevel);
+		mNextLevel = "";
+	}
+}
+
+void Game::ReloadLevel() {
+	mNextLevel = mCurrentLevel;
 }
 
 void Game::GenerateOutput()

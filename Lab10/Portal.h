@@ -8,4 +8,6 @@ public:
 
 private:
 	class PortalMeshComponent* mPortalMesh = nullptr;
+	class CollisionComponent* mCollisionComponent = nullptr;
+
 };

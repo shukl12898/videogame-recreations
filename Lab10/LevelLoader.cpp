@@ -47,13 +47,12 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		else if (type == "Player")
 		{
 			Player* player = new Player(game);
-			actor = player;
 			Vector3 position;
 			GetVectorFromJSON(actorValue, "pos", position);
 			player->SetVector3(position);
-			bool hasGun;
-			GetBoolFromJSON(actorValue, "gun", hasGun);
-			if (hasGun)
+			bool gun;
+			GetBoolFromJSON(actorValue, "gun", gun);
+			if (gun)
 			{
 				player->GiveGun();
 			}
@@ -70,6 +69,7 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 
 			bool hasCollisions = false;
 			GetBoolFromJSON(actorValue, "collision", hasCollisions);
+			std::string hi = "break";
 
 			Prop* prop = new Prop(mesh, usesAlpha, hasCollisions, game);
 			actor = prop;

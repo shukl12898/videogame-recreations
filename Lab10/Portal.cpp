@@ -7,4 +7,5 @@ Portal::Portal(Game* game)
 : Actor(game)
 {
 	mPortalMesh = new PortalMeshComponent(this);
+	
 }

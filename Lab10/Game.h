@@ -30,6 +30,8 @@ public:
 	}
 	void Shutdown();
 
+	void ReloadLevel();
+
 	void AddActor(class Actor* actor);
 	void AddCollider(class Actor* collider);
 	void RemoveActor(class Actor* actor);
@@ -75,7 +77,9 @@ private:
 	float mStartTimer = 8.5f;
 	int mSound = 0;
 	bool mIsRunning;
+	std::string mNextLevel = "";
 
 	std::string mCurrentLevel;
 	class InputReplay* mInputReplay;
+	bool mLastFrameF5 = false;
 };

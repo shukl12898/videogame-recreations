@@ -60,6 +60,14 @@ Vector3 Actor::GetForward() const
 	return forward;
 }
 
+Vector3 Actor::GetQuatForward() const
+{
+	Vector3 forward = Vector3::Transform(Vector3::UnitX, mQuat);
+	forward.Normalize();
+
+	return forward;
+}
+
 Vector3 Actor::GetRight() const
 {
 	Vector3 forward(cos(mRotation + Math::PiOver2), sin(mRotation + Math::PiOver2), 0.0f);
