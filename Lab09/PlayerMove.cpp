@@ -17,7 +17,7 @@ PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
 {
 	mOwner = owner;
-	ChangeState(Falling);
+	ChangeState(OnGround);
 	mGravity = Vector3(0.0f, 0.0f, -980.0f);
 	mJumpForce = Vector3(0.0f, 0.0f, 35000.0f);
 	mCrosshair = new Crosshair(mOwner);
@@ -142,7 +142,7 @@ void PlayerMove::UpdateOnGround(float deltaTime)
 {
 	PhysicsUpdate(deltaTime);
 	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
-	bool falling = false;
+	bool falling = true;
 	for (int i = 0; i < colliders.size(); i++)
 	{
 		CollSide result = FixCollision(mOwner->GetComponent<CollisionComponent>(),
@@ -150,7 +150,7 @@ void PlayerMove::UpdateOnGround(float deltaTime)
 
 		if (result == CollSide::Top)
 		{
-			falling = true;
+			falling = false;
 		}
 	}
 
@@ -165,7 +165,6 @@ void PlayerMove::UpdateJump(float deltaTime)
 	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
 	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
-	bool hitHead = false;
 	for (int i = 0; i < colliders.size(); i++)
 	{
 		CollSide result = FixCollision(mOwner->GetComponent<CollisionComponent>(),
@@ -173,18 +172,13 @@ void PlayerMove::UpdateJump(float deltaTime)
 
 		if (result == CollSide::Bottom)
 		{
-			hitHead = true;
+			mVelocity.z = 0.0f;
 		}
 	}
 
 	if (mVelocity.z <= 0.0f)
 	{
 		ChangeState(Falling);
-	}
-
-	if (hitHead)
-	{
-		mVelocity.z = 0.0f;
 	}
 }
 
@@ -222,13 +216,13 @@ void PlayerMove::FixXYVelocity()
 
 	if (mCurrentState == OnGround)
 	{
-		if ((std::abs(mAcceleration.x) < 0.1) || (mAcceleration.x > 0 && xyVelocity.x < 0) ||
+		if ((Math::NearZero(mAcceleration.x)) || (mAcceleration.x > 0 && xyVelocity.x < 0) ||
 			(mAcceleration.x < 0 && xyVelocity.x > 0))
 		{
 			xyVelocity.x *= 0.9f;
 		}
 
-		if ((std::abs(mAcceleration.y) < 0.1) || (mAcceleration.y > 0 && xyVelocity.y < 0) ||
+		if ((Math::NearZero(mAcceleration.y)) || (mAcceleration.y > 0 && xyVelocity.y < 0) ||
 			(mAcceleration.y < 0 && xyVelocity.y > 0))
 		{
 			xyVelocity.y *= 0.9f;

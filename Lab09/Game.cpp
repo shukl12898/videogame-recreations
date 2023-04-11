@@ -99,7 +99,8 @@ void Game::ProcessInput()
 
 	mInputReplay->InputPlayback(state, mouseButtons, relativeMouse);
 
-	for (auto actor : mActors)
+	std::vector<Actor*> copy = mActors;
+	for (Actor* actor : copy)
 	{
 		actor->ProcessInput(state, mouseButtons, relativeMouse);
 	}
