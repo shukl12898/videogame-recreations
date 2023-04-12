@@ -25,7 +25,9 @@ private:
 	void UpdateOnGround(float deltaTime);
 	void UpdateJump(float deltaTime);
 	void UpdateFalling(float deltaTime);
+	bool UpdatePortalTeleport(float deltaTime);
 	void CreatePortal(bool isBlue);
+	void Teleport(class Portal* entry, class Portal* exit);
 
 	void PhysicsUpdate(float deltaTime);
 	void FixXYVelocity();
@@ -38,12 +40,15 @@ private:
 	Vector3 mJumpForce;
 	Vector3 mGravity;
 	float mMass = 1.0f;
+	float mCountdown = 0.0f;
 
 	int mSound = 0;
+	class Game* mGame = nullptr;
 	bool mLastFrameSpace = false;
 	bool mLastFrameR = false;
 	int mCurrentState;
 	class Crosshair* mCrosshair = nullptr;
 	bool mLastFrameLeft = false;
 	bool mLastFrameRight = false;
+	bool mTeleporting = false;
 };

@@ -17,6 +17,7 @@ PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
 {
 	mOwner = owner;
+	mGame = mOwner->GetGame();
 	ChangeState(OnGround);
 	mGravity = Vector3(0.0f, 0.0f, -980.0f);
 	mJumpForce = Vector3(0.0f, 0.0f, 35000.0f);
@@ -39,20 +40,68 @@ void PlayerMove::Update(float deltaTime)
 	}
 
 	if (mOwner->GetPosition().z <= -750){
-		mOwner->GetGame()->ReloadLevel();
+		mGame->ReloadLevel();
 	}
 
 }
 
+void PlayerMove::Teleport(Portal* entry, Portal* exit){
+
+	//player should change to position of exit portal
+	mOwner->SetPosition(exit->GetPosition());
+	//change state to falling
+	ChangeState(Falling);
+	//use quat get forward for direction of portals
+	Vector3 entryDirection = entry->GetQuatForward();
+	Vector3 exitDirection = exit->GetQuatForward();
+	//calculate magnitude m of current velocity in direction of entry portal
+	float magnitudeEntry = mVelocity.Length();
+	float magnitudeExit = 1.5 * magnitudeEntry;
+	//magnitude of exit should either be 1.5 m or 350.0f (whichever is higher)
+	if (magnitudeExit < 350.0f){
+		magnitudeExit = 350.0f;
+	}
+	//direction of exit velocity is in direction of exit portal
+	mVelocity = magnitudeExit * exitDirection;
+	//set bool that says falling due to portal
+	mTeleporting = true;
+}
+
+bool PlayerMove::UpdatePortalTeleport(float deltaTime){
+	//only teleport if there's both a blue and orange portal
+	mCountdown -= deltaTime;
+	Portal* blue = mGame->GetBluePortal();
+	Portal* orange = mGame->GetOrangePortal();
+
+	if (blue != nullptr && orange != nullptr){
+		//can't teleport if it's been less than 0.2 sedconds since a previous portal teleport
+		if (mCountdown <= 0.0f){
+			//only initiate teleport if you intersect with one of the portals, intersected is entry, opposite is exit
+			if (blue->GetComponent<CollisionComponent>()->Intersect(mOwner->GetComponent<CollisionComponent>())){
+				Teleport(blue, orange);
+				//make sure update portal teleport returns true
+				return true;
+			} else if (orange->GetComponent<CollisionComponent>()->Intersect(mOwner->GetComponent<CollisionComponent>())){
+				Teleport(orange, blue);
+				//make sure update portal teleport returns true
+				return true;
+			}
+		}
+	}
+
+	return false;
+	
+}
+
 void PlayerMove::CreatePortal(bool isBlue)
 {
-	Vector3 start = mOwner->GetGame()->GetRenderer()->Unproject(Vector3(0.0f, 0.0f, 0.0f));
-	Vector3 end = mOwner->GetGame()->GetRenderer()->Unproject(Vector3(0.0f, 0.0f, 0.9f));
+	Vector3 start = mGame->GetRenderer()->Unproject(Vector3(0.0f, 0.0f, 0.0f));
+	Vector3 end = mGame->GetRenderer()->Unproject(Vector3(0.0f, 0.0f, 0.9f));
 	Vector3 segmentDirection = (end - start).Normalize(end - start);
 	LineSegment segment = LineSegment(start, start + 1000 * segmentDirection);
 	CastInfo castInfo;
 
-	bool segmentCastResult = SegmentCast(mOwner->GetGame()->GetColliders(), segment, castInfo);
+	bool segmentCastResult = SegmentCast(mGame->GetColliders(), segment, castInfo);
 
 	if (segmentCastResult)
 	{
@@ -65,7 +114,7 @@ void PlayerMove::CreatePortal(bool isBlue)
 		//A block
 		else
 		{
-			Portal* portal = new Portal(mOwner->GetGame());
+			Portal* portal = new Portal(mGame);
 			portal->SetPosition(castInfo.mPoint);
 
 			Vector3 desiredFacing = castInfo.mNormal;
@@ -94,40 +143,56 @@ void PlayerMove::CreatePortal(bool isBlue)
 				result = Quaternion(normalizedAxisRotation, theta);
 			}
 
+			if (std::abs(castInfo.mNormal.x) == 1)
+			{
+				CollisionComponent* cc = new CollisionComponent(mOwner);
+				cc->SetSize(110.0f, 125.0f, 10.0f);
+				portal->SetCollisionComponent(cc);
+
+			} else if (std::abs(castInfo.mNormal.y) == 1){
+				CollisionComponent* cc = new CollisionComponent(mOwner);
+				cc->SetSize(10.0f, 125.0f, 110.0f);
+				portal->SetCollisionComponent(cc);
+			} else {
+				CollisionComponent* cc = new CollisionComponent(mOwner);
+				cc->SetSize(110.0f, 10.0f, 125.0f);
+				portal->SetCollisionComponent(cc);
+			}
+
 			if (!isBlue)
 			{
-				if (mOwner->GetGame()->GetOrangePortal() != nullptr)
+				if (mGame->GetOrangePortal() != nullptr)
 				{
-					mOwner->GetGame()->GetOrangePortal()->SetState(ActorState::Destroy);
+					mGame->GetOrangePortal()->SetState(ActorState::Destroy);
 				}
 				portal->GetComponent<MeshComponent>()->SetTextureIndex(1);
-				mOwner->GetGame()->SetOrangePortal(portal);
-				mOwner->GetGame()->GetOrangePortal()->SetQuat(result);
+				mGame->SetOrangePortal(portal);
+				mGame->GetOrangePortal()->SetQuat(result);
 			}
 			else
 			{
-				if (mOwner->GetGame()->GetBluePortal() != nullptr)
+				if (mGame->GetBluePortal() != nullptr)
 				{
-					mOwner->GetGame()->GetBluePortal()->SetState(ActorState::Destroy);
+					mGame->GetBluePortal()->SetState(ActorState::Destroy);
 				}
-				mOwner->GetGame()->SetBluePortal(portal);
-				mOwner->GetGame()->GetBluePortal()->SetQuat(result);
+				mGame->SetBluePortal(portal);
+				mGame->GetBluePortal()->SetQuat(result);
 			}
 		}
 	}
 
-	if (mOwner->GetGame()->GetBluePortal() != nullptr &&
-		mOwner->GetGame()->GetOrangePortal() == nullptr)
+	if (mGame->GetBluePortal() != nullptr &&
+		mGame->GetOrangePortal() == nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::BlueFill);
 	}
-	else if (mOwner->GetGame()->GetBluePortal() == nullptr &&
-			 mOwner->GetGame()->GetOrangePortal() != nullptr)
+	else if (mGame->GetBluePortal() == nullptr &&
+			 mGame->GetOrangePortal() != nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::OrangeFill);
 	}
-	else if (mOwner->GetGame()->GetBluePortal() != nullptr &&
-			 mOwner->GetGame()->GetOrangePortal() != nullptr)
+	else if (mGame->GetBluePortal() != nullptr &&
+			 mGame->GetOrangePortal() != nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::BothFill);
 	}
@@ -152,7 +217,11 @@ void PlayerMove::PhysicsUpdate(float deltaTime)
 void PlayerMove::UpdateOnGround(float deltaTime)
 {
 	PhysicsUpdate(deltaTime);
-	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
+	bool teleport = UpdatePortalTeleport(deltaTime);
+	if (teleport){
+		return;
+	}
+	std::vector<Actor*> colliders = mGame->GetColliders();
 	bool falling = true;
 	for (int i = 0; i < colliders.size(); i++)
 	{
@@ -175,7 +244,11 @@ void PlayerMove::UpdateJump(float deltaTime)
 {
 	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
-	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
+	bool teleport = UpdatePortalTeleport(deltaTime);
+	if (teleport){
+		return;
+	}
+	std::vector<Actor*> colliders = mGame->GetColliders();
 	for (int i = 0; i < colliders.size(); i++)
 	{
 		CollSide result = FixCollision(mOwner->GetComponent<CollisionComponent>(),
@@ -197,7 +270,11 @@ void PlayerMove::UpdateFalling(float deltaTime)
 {
 	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
-	std::vector<Actor*> colliders = mOwner->GetGame()->GetColliders();
+	bool teleport = UpdatePortalTeleport(deltaTime);
+	if (teleport){
+		return;
+	}
+	std::vector<Actor*> colliders = mGame->GetColliders();
 	bool landed = false;
 	for (int i = 0; i < colliders.size(); i++)
 	{
@@ -212,7 +289,9 @@ void PlayerMove::UpdateFalling(float deltaTime)
 	if (landed)
 	{
 		mVelocity.z = 0;
+		//when falling changes to ground, change above bool back to false		
 		ChangeState(OnGround);
+		mTeleporting = false;
 	}
 }
 
@@ -225,7 +304,8 @@ void PlayerMove::FixXYVelocity()
 		xyVelocity = MAX_SPEED * xyVelocity;
 	}
 
-	if (mCurrentState == OnGround)
+	//make sure if falling (via bool) don't limit velocity in fixxyvelocity
+	if (mCurrentState == OnGround && !mTeleporting)
 	{
 		if ((Math::NearZero(mAcceleration.x)) || (mAcceleration.x > 0 && xyVelocity.x < 0) ||
 			(mAcceleration.x < 0 && xyVelocity.x > 0))
@@ -256,8 +336,8 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 
 	if (!mLastFrameR && keyState[SDL_SCANCODE_R])
 	{
-		Portal* blue = mOwner->GetGame()->GetBluePortal();
-		Portal* orange = mOwner->GetGame()->GetOrangePortal();
+		Portal* blue = mGame->GetBluePortal();
+		Portal* orange = mGame->GetOrangePortal();
 
 		if (blue != nullptr)
 		{
@@ -267,12 +347,12 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 		{
 			orange->SetState(ActorState::Destroy);
 		}
-		mOwner->GetGame()->SetBluePortal(nullptr);
-		mOwner->GetGame()->SetOrangePortal(nullptr);
+		mGame->SetBluePortal(nullptr);
+		mGame->SetOrangePortal(nullptr);
 		mCrosshair->SetState(CrosshairState::Default);
 	}
 
-	if (mOwner->GetGame()->GetPlayer()->HasGun())
+	if (mGame->GetPlayer()->HasGun())
 	{
 		if (!mLastFrameLeft && (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)))
 		{
