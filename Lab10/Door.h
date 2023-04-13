@@ -4,11 +4,13 @@
 class Door : public Actor
 {
 public:
-	Door(Game* game);
-	void SetName(std::string name) { mName = name; };
+	Door(Game* game, std::string name);
+	void OpenDoor() { mOpen = true; };
+	bool GetOpen() { return mOpen; };
 
 private:
 	class MeshComponent* mMeshComponent;
 	class CollisionComponent* mCollisionComponent;
 	std::string mName;
+	bool mOpen = false;
 };

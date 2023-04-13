@@ -6,6 +6,8 @@
 #include "Renderer.h"
 #include "Mesh.h"
 #include "Pellet.h"
+#include <unordered_map>
+#include "Door.h"
 
 EnergyLauncher::EnergyLauncher(Game* game)
 : Actor(game)
@@ -21,19 +23,34 @@ EnergyLauncher::EnergyLauncher(Game* game)
 
 void EnergyLauncher::OnUpdate(float deltaTime)
 {
-    pelletTimer += deltaTime;
 
-    if (pelletTimer >= mCooldown){
-        pelletTimer = 0.0f;
-        Pellet* pellet = new Pellet(mGame);
-        
-        //pellet 20 units in front of it
-        Vector3 pelletPos = GetPosition();
-        pelletPos.x += 20;
-        pellet->SetPosition(pelletPos);
-        //call calcworld transform on pellet
-        pellet->CalcWorldTransform();
-        //pellet moving in forward direction of energy launcher (get forward)
-        pellet->SetForward(GetForward());
-    }
+	std::unordered_map<std::string, Door*> doorNames = mGame->GetDoorNames();
+
+	if (doorNames.find(mDoorName) != doorNames.end())
+	{
+		if (doorNames[mDoorName]->GetOpen())
+		{
+			mLaunch = false;
+		}
+	}
+
+	if (mLaunch)
+	{
+		pelletTimer += deltaTime;
+
+		if (pelletTimer >= mCooldown)
+		{
+			pelletTimer = 0.0f;
+			Pellet* pellet = new Pellet(mGame);
+
+			//pellet 20 units in front of it
+			Vector3 direction = GetForward();
+			Vector3 pelletPos = GetPosition() + 20 * direction;
+			pellet->SetPosition(pelletPos);
+			//call calcworld transform on pellet
+			pellet->CalcWorldTransform();
+			//pellet moving in forward direction of energy launcher (get forward)
+			pellet->SetForward(GetForward());
+		}
+	}
 }

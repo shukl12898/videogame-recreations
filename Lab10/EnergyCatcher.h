@@ -4,11 +4,12 @@
 class EnergyCatcher : public Actor
 {
 public:
-	EnergyCatcher(Game* game);
-	void SetDoorName(std::string doorName) { mDoorName = doorName; };
+	EnergyCatcher(Game* game, std::string doorName);
+	void Activate();
 
 private:
 	class MeshComponent* mMeshComponent;
 	class CollisionComponent* mCollisionComponent;
 	std::string mDoorName;
+	bool mActivated = false;
 };

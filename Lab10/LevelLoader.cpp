@@ -16,6 +16,8 @@
 #include "Door.h"
 #include "EnergyCatcher.h"
 #include "EnergyLauncher.h"
+#include "EnergyGlass.h"
+#include "EnergyCube.h"
 
 namespace
 {
@@ -84,10 +86,9 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		}
 		else if (type == "Door")
 		{
-			Door* door = new Door(game);
 			std::string name = "none";
 			GetStringFromJSON(actorValue, "name", name);
-			door->SetName(name);
+			Door* door = new Door(game, name);
 			actor = door;
 		}
 		else if (type == "EnergyLauncher")
@@ -97,17 +98,26 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 			GetFloatFromJSON(actorValue, "cooldown", cooldown);
 			launcher->SetCooldown(cooldown);
 			std::string name;
-			GetStringFromJSON(actorValue, "name", name);
+			GetStringFromJSON(actorValue, "door", name);
 			launcher->SetDoorName(name);
 			actor = launcher;
 		}
 		else if (type == "EnergyCatcher")
 		{
-			EnergyCatcher* catcher = new EnergyCatcher(game);
 			std::string name;
-			GetStringFromJSON(actorValue, "name", name);
-			catcher->SetDoorName(name);
+			GetStringFromJSON(actorValue, "door", name);
+			EnergyCatcher* catcher = new EnergyCatcher(game, name);
 			actor = catcher;
+		}
+		else if (type == "EnergyGlass")
+		{
+			EnergyGlass* glass = new EnergyGlass(game);
+			actor = glass;
+		}
+		else if (type == "EnergyCube")
+		{
+			EnergyCube* cube = new EnergyCube(game);
+			actor = cube;
 		}
 
 		// Set properties of actor

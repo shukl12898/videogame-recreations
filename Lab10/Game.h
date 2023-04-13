@@ -39,6 +39,8 @@ public:
 	class Player* GetPlayer() { return mPlayer; };
 	void SetPlayer(class Player* player) { mPlayer = player; };
 	void LoadBlocks(std::string fileName, float x);
+	void AddDoor(class Door* door, std::string doorName) { mDoorNames[doorName] = door; };
+	std::unordered_map<std::string, class Door*> GetDoorNames() { return mDoorNames; };
 
 	AudioSystem* GetAudio() { return mAudio; };
 	std::vector<class Actor*>& GetColliders() { return mColliders; };
@@ -82,4 +84,6 @@ private:
 	std::string mCurrentLevel;
 	class InputReplay* mInputReplay;
 	bool mLastFrameF5 = false;
+
+	std::unordered_map<std::string, class Door*> mDoorNames;
 };
