@@ -39,13 +39,14 @@ void PlayerMove::Update(float deltaTime)
 		break;
 	}
 
-	if (mOwner->GetPosition().z <= -750){
+	if (mOwner->GetPosition().z <= -750)
+	{
 		mGame->ReloadLevel();
 	}
-
 }
 
-void PlayerMove::Teleport(Portal* entry, Portal* exit){
+void PlayerMove::Teleport(Portal* entry, Portal* exit)
+{
 
 	//player should change to position of exit portal
 	mOwner->SetPosition(exit->GetPosition());
@@ -55,33 +56,58 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit){
 	Vector3 entryDirection = entry->GetQuatForward();
 	Vector3 exitDirection = exit->GetQuatForward();
 	//calculate magnitude m of current velocity in direction of entry portal
-	float magnitudeEntry = mVelocity.Length();
+	float magnitudeEntry = -1 * (mVelocity.Dot(entryDirection, mVelocity));
 	float magnitudeExit = 1.5 * magnitudeEntry;
 	//magnitude of exit should either be 1.5 m or 350.0f (whichever is higher)
-	if (magnitudeExit < 350.0f){
+	if (magnitudeExit < 350.0f)
+	{
 		magnitudeExit = 350.0f;
 	}
 	//direction of exit velocity is in direction of exit portal
 	mVelocity = magnitudeExit * exitDirection;
 	//set bool that says falling due to portal
 	mTeleporting = true;
+	mCountdown = 2.0f;
+
+	//rotate player's yaw (if along +/-  x or +/- y)
+	if ((std::abs(exit->GetQuatForward().x) == 1) || (std::abs(exit->GetQuatForward().y) == 1))
+	{
+		float dotProduct = mOwner->GetForward().Dot(mOwner->GetForward(), exit->GetQuatForward());
+		float theta = Math::Acos(dotProduct);
+
+		Vector3 cross = mOwner->GetForward().Cross(exit->GetQuatForward(), mOwner->GetForward());
+		if (cross.z < 0)
+		{
+			theta = -theta;
+		}
+
+		mOwner->SetRotation(theta);
+	}
 }
 
-bool PlayerMove::UpdatePortalTeleport(float deltaTime){
+bool PlayerMove::UpdatePortalTeleport(float deltaTime)
+{
 	//only teleport if there's both a blue and orange portal
 	mCountdown -= deltaTime;
 	Portal* blue = mGame->GetBluePortal();
 	Portal* orange = mGame->GetOrangePortal();
 
-	if (blue != nullptr && orange != nullptr){
+	if (blue != nullptr && orange != nullptr)
+	{
 		//can't teleport if it's been less than 0.2 sedconds since a previous portal teleport
-		if (mCountdown <= 0.0f){
+		if (mCountdown <= 0.0f)
+		{
 			//only initiate teleport if you intersect with one of the portals, intersected is entry, opposite is exit
-			if (blue->GetComponent<CollisionComponent>()->Intersect(mOwner->GetComponent<CollisionComponent>())){
+			if (blue->GetComponent<CollisionComponent>()->Intersect(
+					mOwner->GetComponent<CollisionComponent>()))
+			{
 				Teleport(blue, orange);
 				//make sure update portal teleport returns true
 				return true;
-			} else if (orange->GetComponent<CollisionComponent>()->Intersect(mOwner->GetComponent<CollisionComponent>())){
+			}
+			else if (orange->GetComponent<CollisionComponent>()->Intersect(
+						 mOwner->GetComponent<CollisionComponent>()))
+			{
 				Teleport(orange, blue);
 				//make sure update portal teleport returns true
 				return true;
@@ -90,7 +116,6 @@ bool PlayerMove::UpdatePortalTeleport(float deltaTime){
 	}
 
 	return false;
-	
 }
 
 void PlayerMove::CreatePortal(bool isBlue)
@@ -145,16 +170,19 @@ void PlayerMove::CreatePortal(bool isBlue)
 
 			if (std::abs(castInfo.mNormal.x) == 1)
 			{
-				CollisionComponent* cc = new CollisionComponent(mOwner);
+				CollisionComponent* cc = new CollisionComponent(portal);
 				cc->SetSize(110.0f, 125.0f, 10.0f);
 				portal->SetCollisionComponent(cc);
-
-			} else if (std::abs(castInfo.mNormal.y) == 1){
-				CollisionComponent* cc = new CollisionComponent(mOwner);
+			}
+			else if (std::abs(castInfo.mNormal.y) == 1)
+			{
+				CollisionComponent* cc = new CollisionComponent(portal);
 				cc->SetSize(10.0f, 125.0f, 110.0f);
 				portal->SetCollisionComponent(cc);
-			} else {
-				CollisionComponent* cc = new CollisionComponent(mOwner);
+			}
+			else
+			{
+				CollisionComponent* cc = new CollisionComponent(portal);
 				cc->SetSize(110.0f, 10.0f, 125.0f);
 				portal->SetCollisionComponent(cc);
 			}
@@ -181,18 +209,15 @@ void PlayerMove::CreatePortal(bool isBlue)
 		}
 	}
 
-	if (mGame->GetBluePortal() != nullptr &&
-		mGame->GetOrangePortal() == nullptr)
+	if (mGame->GetBluePortal() != nullptr && mGame->GetOrangePortal() == nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::BlueFill);
 	}
-	else if (mGame->GetBluePortal() == nullptr &&
-			 mGame->GetOrangePortal() != nullptr)
+	else if (mGame->GetBluePortal() == nullptr && mGame->GetOrangePortal() != nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::OrangeFill);
 	}
-	else if (mGame->GetBluePortal() != nullptr &&
-			 mGame->GetOrangePortal() != nullptr)
+	else if (mGame->GetBluePortal() != nullptr && mGame->GetOrangePortal() != nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::BothFill);
 	}
@@ -218,7 +243,8 @@ void PlayerMove::UpdateOnGround(float deltaTime)
 {
 	PhysicsUpdate(deltaTime);
 	bool teleport = UpdatePortalTeleport(deltaTime);
-	if (teleport){
+	if (teleport)
+	{
 		return;
 	}
 	std::vector<Actor*> colliders = mGame->GetColliders();
@@ -245,7 +271,8 @@ void PlayerMove::UpdateJump(float deltaTime)
 	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
 	bool teleport = UpdatePortalTeleport(deltaTime);
-	if (teleport){
+	if (teleport)
+	{
 		return;
 	}
 	std::vector<Actor*> colliders = mGame->GetColliders();
@@ -271,7 +298,8 @@ void PlayerMove::UpdateFalling(float deltaTime)
 	AddForce(mGravity);
 	PhysicsUpdate(deltaTime);
 	bool teleport = UpdatePortalTeleport(deltaTime);
-	if (teleport){
+	if (teleport)
+	{
 		return;
 	}
 	std::vector<Actor*> colliders = mGame->GetColliders();
@@ -289,7 +317,7 @@ void PlayerMove::UpdateFalling(float deltaTime)
 	if (landed)
 	{
 		mVelocity.z = 0;
-		//when falling changes to ground, change above bool back to false		
+		//when falling changes to ground, change above bool back to false
 		ChangeState(OnGround);
 		mTeleporting = false;
 	}

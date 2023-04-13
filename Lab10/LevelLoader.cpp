@@ -13,6 +13,9 @@
 #include "Prop.h"
 #include "Game.h"
 #include "PortalGun.h"
+#include "Door.h"
+#include "EnergyCatcher.h"
+#include "EnergyLauncher.h"
 
 namespace
 {
@@ -78,6 +81,33 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		{
 			PortalGun* portalGun = new PortalGun(game);
 			actor = portalGun;
+		}
+		else if (type == "Door")
+		{
+			Door* door = new Door(game);
+			std::string name = "none";
+			GetStringFromJSON(actorValue, "name", name);
+			door->SetName(name);
+			actor = door;
+		}
+		else if (type == "EnergyLauncher")
+		{
+			EnergyLauncher* launcher = new EnergyLauncher(game);
+			float cooldown;
+			GetFloatFromJSON(actorValue, "cooldown", cooldown);
+			launcher->SetCooldown(cooldown);
+			std::string name;
+			GetStringFromJSON(actorValue, "name", name);
+			launcher->SetDoorName(name);
+			actor = launcher;
+		}
+		else if (type == "EnergyCatcher")
+		{
+			EnergyCatcher* catcher = new EnergyCatcher(game);
+			std::string name;
+			GetStringFromJSON(actorValue, "name", name);
+			catcher->SetDoorName(name);
+			actor = catcher;
 		}
 
 		// Set properties of actor
