@@ -70,12 +70,12 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 	mCountdown = 2.0f;
 
 	//rotate player's yaw (if along +/-  x or +/- y)
-	if ((std::abs(exit->GetQuatForward().x) == 1) || (std::abs(exit->GetQuatForward().y) == 1))
+	if ((!Math::NearZero(exit->GetQuatForward().x)) || (!Math::NearZero(exit->GetQuatForward().y)))
 	{
 		float dotProduct = mOwner->GetForward().Dot(mOwner->GetForward(), exit->GetQuatForward());
 		float theta = Math::Acos(dotProduct);
 
-		Vector3 cross = mOwner->GetForward().Cross(exit->GetQuatForward(), mOwner->GetForward());
+		Vector3 cross = mOwner->GetForward().Cross(mOwner->GetForward(), exit->GetQuatForward());
 		if (cross.z < 0)
 		{
 			theta = -theta;
