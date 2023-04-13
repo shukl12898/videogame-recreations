@@ -5,6 +5,9 @@
 #include <fstream>
 #include <sstream>
 #include "SDL2/SDL_log.h"
+#include "Game.h"
+#include "Player.h"
+#include "CameraComponent.h"
 
 namespace
 {
@@ -17,7 +20,7 @@ namespace
 	}
 } // namespace
 
-InputReplay::InputReplay()
+InputReplay::InputReplay(Game* game)
 {
 	mKeyStates.emplace(SDL_SCANCODE_W, false);
 	mKeyStates.emplace(SDL_SCANCODE_A, false);
@@ -29,6 +32,7 @@ InputReplay::InputReplay()
 	mKeyStates.emplace(SDL_SCANCODE_SPACE, false);
 
 	std::memset(mPlaybackKeys, 0, sizeof(Uint8) * SDL_NUM_SCANCODES);
+	mGame = game;
 }
 
 void InputReplay::StartRecording(const std::string& levelName)
@@ -92,6 +96,9 @@ void InputReplay::StartPlayback(const std::string& levelName)
 {
 	if (!mIsInPlayback && !mIsRecording)
 	{
+		mGame->GetPlayer()->SetPosition(mGame->GetPlayer()->GetVector3());
+		mGame->GetPlayer()->SetRotation(0);
+		mGame->GetPlayer()->GetCamera()->ResetPitchAngle();
 		mIsInPlayback = true;
 		mLastTimestamp = 0.0f;
 		std::memset(mPlaybackKeys, 0, sizeof(Uint8) * SDL_NUM_SCANCODES);

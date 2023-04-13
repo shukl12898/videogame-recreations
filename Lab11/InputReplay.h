@@ -8,7 +8,7 @@
 class InputReplay
 {
 public:
-	InputReplay();
+	InputReplay(class Game* game);
 
 	void StartRecording(const std::string& levelName);
 	void StopRecording();
@@ -42,4 +42,6 @@ private:
 
 	float mLastTimestamp = 0.0f;
 	int mCurrentPlaybackIndex = -1;
+
+	class Game* mGame;
 };

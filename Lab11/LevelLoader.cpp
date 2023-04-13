@@ -10,7 +10,14 @@
 #include "MeshComponent.h"
 #include "Block.h"
 #include "Player.h"
+#include "Prop.h"
 #include "Game.h"
+#include "PortalGun.h"
+#include "Door.h"
+#include "EnergyCatcher.h"
+#include "EnergyLauncher.h"
+#include "EnergyGlass.h"
+#include "EnergyCube.h"
 
 namespace
 {
@@ -44,9 +51,74 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		}
 		else if (type == "Player")
 		{
-			// TODO: Handle construction of a player!
+			Player* player = new Player(game);
+			Vector3 position;
+			GetVectorFromJSON(actorValue, "pos", position);
+			player->SetVector3(position);
+			bool gun;
+			GetBoolFromJSON(actorValue, "gun", gun);
+			if (gun)
+			{
+				player->GiveGun();
+			}
+			actor = player;
+			game->SetPlayer(player);
 		}
-		// TODO: Add else ifs for other actor types
+		else if (type == "Prop")
+		{
+			std::string mesh = "none";
+			GetStringFromJSON(actorValue, "mesh", mesh);
+
+			bool usesAlpha = false;
+			GetBoolFromJSON(actorValue, "alpha", usesAlpha);
+
+			bool hasCollisions = false;
+			GetBoolFromJSON(actorValue, "collision", hasCollisions);
+			std::string hi = "break";
+
+			Prop* prop = new Prop(mesh, usesAlpha, hasCollisions, game);
+			actor = prop;
+		}
+		else if (type == "PortalGun")
+		{
+			PortalGun* portalGun = new PortalGun(game);
+			actor = portalGun;
+		}
+		else if (type == "Door")
+		{
+			std::string name = "none";
+			GetStringFromJSON(actorValue, "name", name);
+			Door* door = new Door(game, name);
+			actor = door;
+		}
+		else if (type == "EnergyLauncher")
+		{
+			EnergyLauncher* launcher = new EnergyLauncher(game);
+			float cooldown;
+			GetFloatFromJSON(actorValue, "cooldown", cooldown);
+			launcher->SetCooldown(cooldown);
+			std::string name;
+			GetStringFromJSON(actorValue, "door", name);
+			launcher->SetDoorName(name);
+			actor = launcher;
+		}
+		else if (type == "EnergyCatcher")
+		{
+			std::string name;
+			GetStringFromJSON(actorValue, "door", name);
+			EnergyCatcher* catcher = new EnergyCatcher(game, name);
+			actor = catcher;
+		}
+		else if (type == "EnergyGlass")
+		{
+			EnergyGlass* glass = new EnergyGlass(game);
+			actor = glass;
+		}
+		else if (type == "EnergyCube")
+		{
+			EnergyCube* cube = new EnergyCube(game);
+			actor = cube;
+		}
 
 		// Set properties of actor
 		if (actor)
