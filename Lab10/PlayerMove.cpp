@@ -71,9 +71,12 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 	mCountdown = 2.0f;
 
 	//rotate player's yaw (if along +/-  x or +/- y)
-	if ((!Math::NearZero(exit->GetQuatForward().x)) || (!Math::NearZero(exit->GetQuatForward().y)))
+	if ((!Math::NearZero(exitDirection.x)) || (!Math::NearZero(exitDirection.y)))
 	{
-		float dotProduct = mOwner->GetForward().Dot(mOwner->GetForward(), exit->GetQuatForward());
+		Vector3 initialFacing = mOwner->GetForward();
+		initialFacing.Normalize();
+		exitDirection.Normalize();
+		float dotProduct = initialFacing.Dot(initialFacing, exitDirection);
 		float theta = Math::Acos(dotProduct);
 
 		Vector3 cross = mOwner->GetForward().Cross(mOwner->GetForward(), exit->GetQuatForward());
@@ -82,7 +85,7 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 			theta = -theta;
 		}
 
-		mOwner->SetRotation(theta);
+		mOwner->SetRotation(mOwner->GetRotation() + theta);
 	}
 }
 
