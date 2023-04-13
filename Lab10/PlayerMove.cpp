@@ -73,19 +73,7 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 	//rotate player's yaw (if along +/-  x or +/- y)
 	if ((!Math::NearZero(exitDirection.x)) || (!Math::NearZero(exitDirection.y)))
 	{
-		Vector3 initialFacing = mOwner->GetForward();
-		initialFacing.Normalize();
-		exitDirection.Normalize();
-		float dotProduct = initialFacing.Dot(initialFacing, exitDirection);
-		float theta = Math::Acos(dotProduct);
-
-		Vector3 cross = mOwner->GetForward().Cross(mOwner->GetForward(), exit->GetQuatForward());
-		if (cross.z < 0)
-		{
-			theta = -theta;
-		}
-
-		mOwner->SetRotation(mOwner->GetRotation() + theta);
+		mOwner->SetRotation(mOwner->GetRotation() + entry->GetOutYaw());
 	}
 }
 

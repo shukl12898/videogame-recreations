@@ -73,6 +73,21 @@ Matrix4 Portal::CalcViewMatrix(Portal* other)
 				Vector3 up = other->GetWorldTransform().GetZAxis();
 
 				mComplexView = Matrix4::CreateLookAt(eye, target, up);
+
+				outWorld.z = 0.0f;
+				outWorld.Normalize();
+
+				Vector3 initialFacing = mGame->GetPlayer()->GetForward();
+				initialFacing.Normalize();
+				float dotProduct = initialFacing.Dot(initialFacing, outWorld);
+				float theta = Math::Acos(dotProduct);
+
+				Vector3 cross = initialFacing.Cross(initialFacing, outWorld);
+				if (cross.z < 0)
+				{
+					theta = -theta;
+				}
+				mOutYaw = theta;
 			}
 
 			return mComplexView;
