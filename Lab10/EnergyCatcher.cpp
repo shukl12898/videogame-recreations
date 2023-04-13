@@ -21,6 +21,11 @@ EnergyCatcher::EnergyCatcher(Game* game, std::string doorName)
 	mGame->AddCollider(this);
 }
 
+EnergyCatcher::~EnergyCatcher()
+{
+	mGame->RemoveCollider(this);
+}
+
 void EnergyCatcher::Activate()
 {
 	mActivated = true;

@@ -5,6 +5,7 @@ class EnergyCatcher : public Actor
 {
 public:
 	EnergyCatcher(Game* game, std::string doorName);
+	~EnergyCatcher();
 	void Activate();
 
 private:

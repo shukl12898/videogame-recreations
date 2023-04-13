@@ -4,6 +4,7 @@ class EnergyGlass : public Actor
 {
 public:
 	EnergyGlass(class Game* game);
+	~EnergyGlass();
 
 private:
 	class CollisionComponent* mCollisionComponent;

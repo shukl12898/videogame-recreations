@@ -17,3 +17,8 @@ EnergyCube::EnergyCube(Game* game)
 	mMeshComponent->SetMesh(mesh);
 	mGame->AddCollider(this);
 }
+
+EnergyCube::~EnergyCube()
+{
+	mGame->RemoveCollider(this);
+}

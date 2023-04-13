@@ -4,6 +4,7 @@ class EnergyCube : public Actor
 {
 public:
 	EnergyCube(class Game* game);
+	~EnergyCube();
 
 private:
 	class MeshComponent* mMeshComponent;

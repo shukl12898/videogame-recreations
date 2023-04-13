@@ -18,3 +18,8 @@ EnergyGlass::EnergyGlass(Game* game)
 	mMeshComponent->SetMesh(mesh);
 	mMeshComponent->SetTextureIndex(17);
 }
+
+EnergyGlass::~EnergyGlass()
+{
+	mGame->RemoveCollider(this);
+}

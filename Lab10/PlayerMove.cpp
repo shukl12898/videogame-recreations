@@ -26,6 +26,12 @@ PlayerMove::PlayerMove(Actor* owner)
 
 void PlayerMove::Update(float deltaTime)
 {
+
+	if (mOwner->GetPosition().z <= -750)
+	{
+		mGame->ReloadLevel();
+	}
+
 	switch (mCurrentState)
 	{
 	case OnGround:
@@ -37,11 +43,6 @@ void PlayerMove::Update(float deltaTime)
 	case Falling:
 		UpdateFalling(deltaTime);
 		break;
-	}
-
-	if (mOwner->GetPosition().z <= -750)
-	{
-		mGame->ReloadLevel();
 	}
 }
 

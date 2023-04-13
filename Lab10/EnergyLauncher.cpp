@@ -21,6 +21,11 @@ EnergyLauncher::EnergyLauncher(Game* game)
 	mGame->AddCollider(this);
 }
 
+EnergyLauncher::~EnergyLauncher()
+{
+	mGame->RemoveCollider(this);
+}
+
 void EnergyLauncher::OnUpdate(float deltaTime)
 {
 

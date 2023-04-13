@@ -19,3 +19,8 @@ Door::Door(Game* game, std::string name)
 	mGame->AddCollider(this);
 	mGame->AddDoor(this, mName);
 }
+
+Door::~Door()
+{
+	mGame->RemoveCollider(this);
+}

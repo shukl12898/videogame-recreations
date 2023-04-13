@@ -5,6 +5,7 @@ class Door : public Actor
 {
 public:
 	Door(Game* game, std::string name);
+	~Door();
 	void OpenDoor() { mOpen = true; };
 	bool GetOpen() { return mOpen; };
 
