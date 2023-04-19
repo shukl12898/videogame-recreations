@@ -64,11 +64,11 @@ Matrix4 Portal::CalcViewMatrix(Portal* other)
 			//if length of vector is 0, return matrix you saved in member variable in 9 as that was valid view matrix from lsat frame
 			if (playerToIn.Length() != 0)
 			{
-				Vector3 outWorld = GetOut(playerToIn);
+				Vector3 outWorld = GetOut(playerToIn, other);
 				//eye: 5 units BEHIND opposite portal
 				Vector3 eye = other->GetPosition() - outWorld * 5;
 				//target: 5 units in front of opposite portal
-				Vector3 target = other->GetPosition() + outWorld * 5;
+				Vector3 target = other->GetPosition();
 				//up: get world transform matrix from other, use get z axis to get correct up vector
 				Vector3 up = other->GetWorldTransform().GetZAxis();
 
@@ -77,7 +77,7 @@ Matrix4 Portal::CalcViewMatrix(Portal* other)
 				outWorld.z = 0.0f;
 				outWorld.Normalize();
 
-				Vector3 initialFacing = mGame->GetPlayer()->GetForward();
+				Vector3 initialFacing = Vector3::UnitX;
 				initialFacing.Normalize();
 				float dotProduct = initialFacing.Dot(initialFacing, outWorld);
 				float theta = Math::Acos(dotProduct);
@@ -85,7 +85,7 @@ Matrix4 Portal::CalcViewMatrix(Portal* other)
 				Vector3 cross = initialFacing.Cross(initialFacing, outWorld);
 				if (cross.z < 0)
 				{
-					theta = -theta;
+					theta = -1 * theta;
 				}
 				mOutYaw = theta;
 			}
@@ -95,7 +95,7 @@ Matrix4 Portal::CalcViewMatrix(Portal* other)
 	}
 }
 
-Vector3 Portal::GetOut(Vector3 playerToIn)
+Vector3 Portal::GetOut(Vector3 playerToIn, Portal* other)
 {
 
 	//else, noramlize player to "in" vector
@@ -110,7 +110,7 @@ Vector3 Portal::GetOut(Vector3 playerToIn)
 	//transform playerToInObj by z rotation matrix
 	Vector3 outObj = Vector3::Transform(playerToInObj, zRotation, 0.0f);
 	//transform outObj by "out" portal's world transform
-	Vector3 outWorld = Vector3::Transform(outObj, GetWorldTransform(), 0.0f);
+	Vector3 outWorld = Vector3::Transform(outObj, other->GetWorldTransform(), 0.0f);
 	//normalize outworld
 	outWorld.Normalize();
 

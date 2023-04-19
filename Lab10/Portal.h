@@ -10,7 +10,7 @@ public:
 	Matrix4 CalcViewMatrixBasic(Portal* other);
 	float GetOutYaw() const { return mOutYaw; };
 	Matrix4 CalcViewMatrix(Portal* other);
-	Vector3 GetOut(Vector3 playerToIn);
+	Vector3 GetOut(Vector3 playerToIn, Portal* other);
 
 private:
 	class PortalMeshComponent* mPortalMesh = nullptr;

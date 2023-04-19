@@ -71,9 +71,9 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 	mCountdown = 2.0f;
 
 	//rotate player's yaw (if along +/-  x or +/- y)
-	if ((!Math::NearZero(exitDirection.x)) || (!Math::NearZero(exitDirection.y)))
+	if (Math::NearZero(exitDirection.z))
 	{
-		mOwner->SetRotation(mOwner->GetRotation() + entry->GetOutYaw());
+		mOwner->SetRotation(entry->GetOutYaw());
 	}
 }
 
