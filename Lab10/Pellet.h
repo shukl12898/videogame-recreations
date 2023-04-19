@@ -16,6 +16,5 @@ private:
 	Vector3 mForward;
 	float mLifetime = 0.0f;
 	bool mTeleport = true;
-	float mTeleportTime = 0.0f;
 	bool mGreen = false;
 };

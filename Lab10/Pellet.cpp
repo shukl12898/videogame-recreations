@@ -15,7 +15,7 @@ Pellet::Pellet(Game* game)
 : Actor(game)
 {
 	mGame = game;
-	mMeshComponent = new MeshComponent(this);
+	mMeshComponent = new MeshComponent(this, true);
 	Mesh* mesh = game->GetRenderer()->GetMesh("Assets/Meshes/Sphere.gpmesh");
 	mMeshComponent->SetMesh(mesh);
 	mMeshComponent->SetTextureIndex(1);
@@ -31,7 +31,7 @@ void Pellet::Teleport(Portal* entry, Portal* exit)
 
 	mForward = direction;
 	mTeleport = false;
-	mTeleportTime = 0.0f;
+	mLifetime = 0.0f;
 }
 
 void Pellet::OnUpdate(float deltaTime)
@@ -39,7 +39,6 @@ void Pellet::OnUpdate(float deltaTime)
 	//Pellet should travel 500 units in current movement direction
 	SetPosition(GetPosition() + mForward * SPEED * deltaTime);
 	mLifetime += deltaTime;
-	mTeleportTime += deltaTime;
 
 	if (mCollisionComponent->Intersect(mGame->GetPlayer()->GetComponent<CollisionComponent>()))
 	{
@@ -106,7 +105,7 @@ void Pellet::OnUpdate(float deltaTime)
 		}
 	}
 
-	if (!mTeleport && mTeleportTime >= 0.25)
+	if (!mTeleport && mLifetime >= 0.25)
 	{
 		mTeleport = true;
 	}

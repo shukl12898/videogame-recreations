@@ -150,7 +150,7 @@ void Game::UpdateGame()
 		delete actor;
 	}
 
-	if (mNextLevel.empty())
+	if (!mNextLevel.empty())
 	{
 		UnloadData();
 		mInputReplay->StopPlayback();

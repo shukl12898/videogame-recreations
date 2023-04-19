@@ -57,8 +57,8 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 	Vector3 entryDirection = entry->GetQuatForward();
 	Vector3 exitDirection = exit->GetQuatForward();
 	//calculate magnitude m of current velocity in direction of entry portal
-	float magnitudeEntry = -1 * (mVelocity.Dot(entryDirection, mVelocity));
-	float magnitudeExit = 1.5f * magnitudeEntry;
+	float magnitudeEntry = (mVelocity.Dot(entryDirection, mVelocity));
+	float magnitudeExit = -1.5f * magnitudeEntry;
 	//magnitude of exit should either be 1.5 m or 350.0f (whichever is higher)
 	if (magnitudeExit < 350.0f)
 	{
@@ -119,6 +119,9 @@ void PlayerMove::CreatePortal(bool isBlue)
 	CastInfo castInfo;
 
 	bool segmentCastResult = SegmentCast(mGame->GetColliders(), segment, castInfo);
+
+	Portal* orangePortal = mGame->GetOrangePortal();
+	Portal* bluePortal = mGame->GetBluePortal();
 
 	if (segmentCastResult)
 	{
@@ -181,9 +184,9 @@ void PlayerMove::CreatePortal(bool isBlue)
 
 			if (!isBlue)
 			{
-				if (mGame->GetOrangePortal() != nullptr)
+				if (orangePortal != nullptr)
 				{
-					mGame->GetOrangePortal()->SetState(ActorState::Destroy);
+					orangePortal->SetState(ActorState::Destroy);
 				}
 				portal->GetComponent<MeshComponent>()->SetTextureIndex(1);
 				mGame->SetOrangePortal(portal);
@@ -191,9 +194,9 @@ void PlayerMove::CreatePortal(bool isBlue)
 			}
 			else
 			{
-				if (mGame->GetBluePortal() != nullptr)
+				if (bluePortal != nullptr)
 				{
-					mGame->GetBluePortal()->SetState(ActorState::Destroy);
+					bluePortal->SetState(ActorState::Destroy);
 				}
 				mGame->SetBluePortal(portal);
 				mGame->GetBluePortal()->SetQuat(result);
@@ -201,15 +204,15 @@ void PlayerMove::CreatePortal(bool isBlue)
 		}
 	}
 
-	if (mGame->GetBluePortal() != nullptr && mGame->GetOrangePortal() == nullptr)
+	if (bluePortal != nullptr && orangePortal == nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::BlueFill);
 	}
-	else if (mGame->GetBluePortal() == nullptr && mGame->GetOrangePortal() != nullptr)
+	else if (bluePortal == nullptr && orangePortal != nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::OrangeFill);
 	}
-	else if (mGame->GetBluePortal() != nullptr && mGame->GetOrangePortal() != nullptr)
+	else if (bluePortal != nullptr && orangePortal != nullptr)
 	{
 		mCrosshair->SetState(CrosshairState::BothFill);
 	}
