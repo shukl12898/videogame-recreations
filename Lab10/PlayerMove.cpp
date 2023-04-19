@@ -58,7 +58,7 @@ void PlayerMove::Teleport(Portal* entry, Portal* exit)
 	Vector3 exitDirection = exit->GetQuatForward();
 	//calculate magnitude m of current velocity in direction of entry portal
 	float magnitudeEntry = -1 * (mVelocity.Dot(entryDirection, mVelocity));
-	float magnitudeExit = 1.5 * magnitudeEntry;
+	float magnitudeExit = 1.5f * magnitudeEntry;
 	//magnitude of exit should either be 1.5 m or 350.0f (whichever is higher)
 	if (magnitudeExit < 350.0f)
 	{

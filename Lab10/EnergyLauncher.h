@@ -14,7 +14,7 @@ private:
 	class MeshComponent* mMeshComponent;
 	class CollisionComponent* mCollisionComponent;
 	std::string mDoorName;
-	float mCooldown;
-	float pelletTimer = 0.0f;
+	float mCooldown = 0.0f;
+	float mPelletTimer = 0.0f;
 	bool mLaunch = true;
 };

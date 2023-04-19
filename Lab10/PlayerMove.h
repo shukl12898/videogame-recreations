@@ -46,7 +46,7 @@ private:
 	class Game* mGame = nullptr;
 	bool mLastFrameSpace = false;
 	bool mLastFrameR = false;
-	int mCurrentState;
+	int mCurrentState = 0;
 	class Crosshair* mCrosshair = nullptr;
 	bool mLastFrameLeft = false;
 	bool mLastFrameRight = false;

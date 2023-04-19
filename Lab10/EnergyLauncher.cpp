@@ -41,11 +41,11 @@ void EnergyLauncher::OnUpdate(float deltaTime)
 
 	if (mLaunch)
 	{
-		pelletTimer += deltaTime;
+		mPelletTimer += deltaTime;
 
-		if (pelletTimer >= mCooldown)
+		if (mPelletTimer >= mCooldown)
 		{
-			pelletTimer = 0.0f;
+			mPelletTimer = 0.0f;
 			Pellet* pellet = new Pellet(mGame);
 
 			//pellet 20 units in front of it

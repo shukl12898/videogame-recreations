@@ -16,7 +16,7 @@ public:
 	static const int VDIST = 70;
 	static const int TARGET_DIST = 50;
 	const float SPRING = 256.0f;
-	const float DAMP = 2.0 * sqrt(SPRING);
+	const float DAMP = static_cast<float>(2.0f * sqrt(SPRING));
 
 private:
 	Vector3 mCameraPos;
