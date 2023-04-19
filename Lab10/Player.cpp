@@ -25,7 +25,7 @@ void Player::GiveGun()
 	new PlayerMesh(mGame);
 }
 
-bool Player::HasGun()
+bool Player::HasGun() const
 {
 	return mHasGun;
 }
