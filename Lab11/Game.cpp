@@ -178,7 +178,7 @@ void Game::LoadData()
 		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
 	mRenderer->SetProjectionMatrix(projection);
 	mAudio->CacheAllSounds();
-	mCurrentLevel = "Assets/Lab10.json";
+	mCurrentLevel = "Assets/Lab11.json";
 	LevelLoader::Load(this, mCurrentLevel);
 }
 

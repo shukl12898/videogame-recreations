@@ -3,20 +3,42 @@
 #include "Component.h"
 #include <algorithm>
 
-Actor::Actor(Game* game)
+Actor::Actor(Game* game, Actor* parent)
 : mGame(game)
 , mState(ActorState::Active)
 , mPosition(Vector3::Zero)
 , mScale(1.0f)
 , mRotation(0.0f)
 , mRollAngle(0.0f)
+, mParent(parent)
 {
-	mGame->AddActor(this);
+	if (mParent == nullptr)
+	{
+		mGame->AddActor(this);
+	}
+	else
+	{
+		mParent->AddChild(this);
+	}
 }
 
 Actor::~Actor()
 {
-	mGame->RemoveActor(this);
+
+	while (!mChildren.empty())
+	{
+		delete mChildren.back();
+	}
+
+	if (mParent == nullptr)
+	{
+		mGame->RemoveActor(this);
+	}
+	else
+	{
+		mParent->RemoveChild(this);
+	}
+
 	for (auto i : mComponents)
 	{
 		delete i;
@@ -26,6 +48,9 @@ Actor::~Actor()
 
 void Actor::Update(float deltaTime)
 {
+
+	CalcWorldTransform();
+
 	if (mState == ActorState::Active)
 	{
 		for (auto i : mComponents)
@@ -36,6 +61,11 @@ void Actor::Update(float deltaTime)
 	}
 
 	CalcWorldTransform();
+
+	for (int i = 0; i < mChildren.size(); i++)
+	{
+		mChildren[i]->Update(deltaTime);
+	}
 }
 
 void Actor::CalcWorldTransform()
@@ -46,6 +76,44 @@ void Actor::CalcWorldTransform()
 	Matrix4 rotationMatrixX = Matrix4::CreateRotationX(mRollAngle);
 	mWorldTransform = scaleMatrix * rotationMatrixZ * rotationMatrixX *
 					  Matrix4::CreateFromQuaternion(mQuat) * translationMatrix;
+
+	if (mParent != nullptr)
+	{
+		if (mInheritScale)
+		{
+			mWorldTransform *= mParent->GetWorldTransform();
+		}
+		else
+		{
+			mWorldTransform *= mParent->GetWorldRotTrans();
+		}
+	}
+}
+
+const Matrix4 Actor::GetWorldRotTrans()
+{
+	Matrix4 rotationMatrixZ = Matrix4::CreateRotationZ(mRotation);
+	Matrix4 translationMatrix = Matrix4::CreateTranslation(mPosition);
+	Matrix4 rotationMatrixX = Matrix4::CreateRotationX(mRollAngle);
+	Matrix4 transform = rotationMatrixZ * rotationMatrixX * Matrix4::CreateFromQuaternion(mQuat) *
+						translationMatrix;
+
+	if (mParent != nullptr)
+	{
+		transform *= mParent->GetWorldRotTrans();
+	}
+
+	return transform;
+}
+
+const Vector3 Actor::GetWorldPosition()
+{
+	return mWorldTransform.GetTranslation();
+}
+
+const Vector3 Actor::GetWorldForward()
+{
+	return mWorldTransform.GetXAxis();
 }
 
 void Actor::SetScale(float scale)
@@ -100,4 +168,18 @@ void Actor::AddComponent(Component* c)
 	std::sort(mComponents.begin(), mComponents.end(), [](Component* a, Component* b) {
 		return a->GetUpdateOrder() < b->GetUpdateOrder();
 	});
+}
+
+void Actor::AddChild(Actor* child)
+{
+	mChildren.emplace_back(child);
+}
+
+void Actor::RemoveChild(Actor* child)
+{
+	auto iter = std::find(mChildren.begin(), mChildren.end(), child);
+	if (iter != mChildren.end())
+	{
+		mChildren.erase(iter);
+	}
 }

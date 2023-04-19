@@ -13,7 +13,7 @@ enum class ActorState
 class Actor
 {
 public:
-	Actor(class Game* game);
+	Actor(class Game* game, Actor* parent = nullptr);
 	virtual ~Actor();
 
 	// Update function called from Game (not overridable)
@@ -25,6 +25,7 @@ public:
 
 	// Getters/setters
 	const Vector3& GetPosition() const { return mPosition; }
+	class Actor* GetParent() { return mParent; }
 	void SetPosition(const Vector3& pos) { mPosition = pos; }
 	const Vector3& GetScale() const { return mScale; }
 	void SetScale(float scale);
@@ -41,6 +42,9 @@ public:
 	ActorState GetState() const { return mState; }
 	void SetState(ActorState state) { mState = state; }
 	const Matrix4& GetWorldTransform() const { return mWorldTransform; }
+	const Matrix4 GetWorldRotTrans();
+	const Vector3 GetWorldPosition();
+	const Vector3 GetWorldForward();
 
 	class Game* GetGame() { return mGame; }
 
@@ -77,6 +81,9 @@ protected:
 	float mRotation;
 	Matrix4 mWorldTransform;
 	float mRollAngle;
+	Actor* mParent;
+	std::vector<Actor*> mChildren;
+	bool mInheritScale = false;
 
 	// Components
 	std::vector<class Component*> mComponents;
@@ -86,5 +93,7 @@ private:
 	// Adds component to Actor (this is automatically called
 	// in the component constructor)
 	void AddComponent(class Component* c);
+	void AddChild(Actor* child);
+	void RemoveChild(Actor* child);
 	Quaternion mQuat;
 };
