@@ -18,6 +18,7 @@
 #include "EnergyLauncher.h"
 #include "EnergyGlass.h"
 #include "EnergyCube.h"
+#include "TurretBase.h"
 
 namespace
 {
@@ -118,6 +119,11 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		{
 			EnergyCube* cube = new EnergyCube(game);
 			actor = cube;
+		}
+		else if (type == "Turret")
+		{
+			TurretBase* turret = new TurretBase(game);
+			actor = turret;
 		}
 
 		// Set properties of actor
