@@ -19,6 +19,7 @@ void LaserComponent::Update(float deltaTime)
 {
 	//clear out line segment vector
 	mLineSegments.clear();
+	mLastHitActor = nullptr;
 
 	if (!mDisabled)
 	{

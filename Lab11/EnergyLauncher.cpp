@@ -29,33 +29,33 @@ EnergyLauncher::~EnergyLauncher()
 void EnergyLauncher::OnUpdate(float deltaTime)
 {
 
-	std::unordered_map<std::string, Door*> doorNames = mGame->GetDoorNames();
+	// std::unordered_map<std::string, Door*> doorNames = mGame->GetDoorNames();
 
-	if (doorNames.find(mDoorName) != doorNames.end())
-	{
-		if (doorNames[mDoorName]->GetOpen())
-		{
-			mLaunch = false;
-		}
-	}
+	// if (doorNames.find(mDoorName) != doorNames.end())
+	// {
+	// 	if (doorNames[mDoorName]->GetOpen())
+	// 	{
+	// 		mLaunch = false;
+	// 	}
+	// }
 
-	if (mLaunch)
-	{
-		pelletTimer += deltaTime;
+	// if (mLaunch)
+	// {
+	// 	pelletTimer += deltaTime;
 
-		if (pelletTimer >= mCooldown)
-		{
-			pelletTimer = 0.0f;
-			Pellet* pellet = new Pellet(mGame);
+	// 	if (pelletTimer >= mCooldown)
+	// 	{
+	// 		pelletTimer = 0.0f;
+	// 		Pellet* pellet = new Pellet(mGame);
 
-			//pellet 20 units in front of it
-			Vector3 direction = GetForward();
-			Vector3 pelletPos = GetPosition() + 20 * direction;
-			pellet->SetPosition(pelletPos);
-			//call calcworld transform on pellet
-			pellet->CalcWorldTransform();
-			//pellet moving in forward direction of energy launcher (get forward)
-			pellet->SetForward(GetForward());
-		}
-	}
+	// 		//pellet 20 units in front of it
+	// 		Vector3 direction = GetForward();
+	// 		Vector3 pelletPos = GetPosition() + 20 * direction;
+	// 		pellet->SetPosition(pelletPos);
+	// 		//call calcworld transform on pellet
+	// 		pellet->CalcWorldTransform();
+	// 		//pellet moving in forward direction of energy launcher (get forward)
+	// 		pellet->SetForward(GetForward());
+	// 	}
+	// }
 }

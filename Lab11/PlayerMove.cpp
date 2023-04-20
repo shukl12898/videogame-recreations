@@ -414,6 +414,9 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 	SetAngularSpeed(angularSpeed);
 	mOwner->GetComponent<CameraComponent>()->SetPitchSpeed(pitchSpeed);
 	mLastFrameSpace = keyState[SDL_SCANCODE_SPACE];
+	mLastFrameR = keyState[SDL_SCANCODE_R];
+	mLastFrameLeft = mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT);
+	mLastFrameRight = mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT);
 }
 
 CollSide PlayerMove::FixCollision(CollisionComponent* self, CollisionComponent* collider)
