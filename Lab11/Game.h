@@ -44,6 +44,7 @@ public:
 
 	AudioSystem* GetAudio() { return mAudio; };
 	std::vector<class Actor*>& GetColliders() { return mColliders; };
+	std::vector<class Actor*>& GetActors() { return mActors; };
 	int GetSoundHandle() { return mSound; };
 	class Renderer* GetRenderer() { return mRenderer; }
 
