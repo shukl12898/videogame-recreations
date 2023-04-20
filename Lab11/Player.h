@@ -20,6 +20,7 @@ protected:
 	class CameraComponent* mCameraComponent;
 	class CollisionComponent* mCollisionComponent;
 	class PlayerUI* mPlayerUI;
+	class HealthComponent* mHealthComponent;
 	bool mHasGun = false;
 	Vector3 mVector3;
 };

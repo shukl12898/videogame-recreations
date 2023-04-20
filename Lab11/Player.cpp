@@ -8,6 +8,7 @@
 #include "Random.h"
 #include "PlayerMesh.h"
 #include "CameraComponent.h"
+#include "HealthComponent.h"
 
 Player::Player(Game* game)
 : Actor(game)
@@ -17,6 +18,10 @@ Player::Player(Game* game)
 	mCameraComponent = new CameraComponent(this);
 	mCollisionComponent = new CollisionComponent(this);
 	mCollisionComponent->SetSize(50, 100, 50);
+	mHealthComponent = new HealthComponent(this);
+	mHealthComponent->SetOnDeath([this] {
+		mGame->ReloadLevel();
+	});
 }
 
 void Player::GiveGun()

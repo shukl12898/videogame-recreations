@@ -10,6 +10,7 @@
 #include "EnergyCatcher.h"
 #include "EnergyGlass.h"
 #include "EnergyCube.h"
+#include "HealthComponent.h"
 
 Pellet::Pellet(Game* game)
 : Actor(game)
@@ -65,6 +66,11 @@ void Pellet::OnUpdate(float deltaTime)
 		}
 	}
 
+	if (mCollisionComponent->Intersect(mGame->GetPlayer()->GetComponent<CollisionComponent>()))
+	{
+		mGame->GetPlayer()->GetComponent<HealthComponent>()->TakeDamage(100, mPosition);
+	}
+
 	if (mLifetime >= 0.25 && mTeleport)
 	{
 		std::vector<Actor*> colliders = mGame->GetColliders();
@@ -75,6 +81,7 @@ void Pellet::OnUpdate(float deltaTime)
 				EnergyCatcher* catcher = dynamic_cast<EnergyCatcher*>(colliders[i]);
 				EnergyGlass* glass = dynamic_cast<EnergyGlass*>(colliders[i]);
 				EnergyCube* cube = dynamic_cast<EnergyCube*>(colliders[i]);
+				HealthComponent* healthComponent = colliders[i]->GetComponent<HealthComponent>();
 
 				if (catcher != nullptr)
 				{
@@ -98,7 +105,21 @@ void Pellet::OnUpdate(float deltaTime)
 					mGreen = true;
 				}
 
-				if (catcher == nullptr && glass == nullptr && cube == nullptr)
+				bool skip = true;
+
+				if (healthComponent != nullptr)
+				{
+					if (!healthComponent->IsDead())
+					{
+						healthComponent->TakeDamage(100, mPosition);
+					}
+					else
+					{
+						skip = false;
+					}
+				}
+
+				if (catcher == nullptr && glass == nullptr && cube == nullptr && skip)
 				{
 					SetState(ActorState::Destroy);
 				}

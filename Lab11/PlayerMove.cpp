@@ -12,6 +12,7 @@
 #include "Portal.h"
 #include "MeshComponent.h"
 #include "Block.h"
+#include "HealthComponent.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
@@ -29,7 +30,7 @@ void PlayerMove::Update(float deltaTime)
 
 	if (mOwner->GetPosition().z <= -750)
 	{
-		mGame->ReloadLevel();
+		mOwner->GetComponent<HealthComponent>()->TakeDamage(Math::Infinity, mOwner->GetPosition());
 	}
 
 	switch (mCurrentState)

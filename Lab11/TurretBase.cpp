@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "MeshComponent.h"
 #include "CollisionComponent.h"
+#include "HealthComponent.h"
 
 TurretBase::TurretBase(Game* game)
 : Actor(game)
@@ -19,10 +20,19 @@ TurretBase::TurretBase(Game* game)
 	mCollisionComponent = new CollisionComponent(this);
 	mCollisionComponent->SetSize(25.0f, 110.0f, 25.0f);
 	mHead = new TurretHead(game, this);
+	mHealthComponent = new HealthComponent(this);
+	mHealthComponent->SetOnDeath([this] {
+		Die();
+	});
 	mGame->AddCollider(this);
 }
 
 TurretBase::~TurretBase()
 {
 	mGame->RemoveCollider(this);
+}
+
+void TurretBase::Die()
+{
+	mHead->Die();
 }
