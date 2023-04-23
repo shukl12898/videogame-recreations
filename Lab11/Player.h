@@ -6,7 +6,7 @@ class Player : public Actor
 public:
 	Player(class Game* game);
 	void OnUpdate(float deltaTime) override;
-	bool HasGun();
+	bool HasGun() const { return mHasGun; };
 	class PlayerUI* GetPlayerUI() { return mPlayerUI; };
 	void GiveGun();
 	class CameraComponent* GetCamera() { return mCameraComponent; };
@@ -15,12 +15,12 @@ public:
 
 protected:
 	class Game* mGame;
-	class MeshComponent* mMeshComp;
-	class PlayerMove* mPlayerMove;
-	class CameraComponent* mCameraComponent;
-	class CollisionComponent* mCollisionComponent;
-	class PlayerUI* mPlayerUI;
-	class HealthComponent* mHealthComponent;
+	class MeshComponent* mMeshComp = nullptr;
+	class PlayerMove* mPlayerMove = nullptr;
+	class CameraComponent* mCameraComponent = nullptr;
+	class CollisionComponent* mCollisionComponent = nullptr;
+	class PlayerUI* mPlayerUI = nullptr;
+	class HealthComponent* mHealthComponent = nullptr;
 	bool mHasGun = false;
 	Vector3 mVector3;
 };

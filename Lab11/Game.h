@@ -45,7 +45,7 @@ public:
 	AudioSystem* GetAudio() { return mAudio; };
 	std::vector<class Actor*>& GetColliders() { return mColliders; };
 	std::vector<class Actor*>& GetActors() { return mActors; };
-	int GetSoundHandle() { return mSound; };
+	int GetSoundHandle() const { return mSound; };
 	class Renderer* GetRenderer() { return mRenderer; }
 
 	void SetBluePortal(class Portal* portal) { mBluePortal = portal; };
@@ -80,10 +80,10 @@ private:
 	float mStartTimer = 8.5f;
 	int mSound = 0;
 	bool mIsRunning;
-	std::string mNextLevel = "";
+	std::string mNextLevel;
 
 	std::string mCurrentLevel;
-	class InputReplay* mInputReplay;
+	class InputReplay* mInputReplay = nullptr;
 	bool mLastFrameF5 = false;
 
 	std::unordered_map<std::string, class Door*> mDoorNames;

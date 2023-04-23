@@ -56,7 +56,7 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 			Vector3 position;
 			GetVectorFromJSON(actorValue, "pos", position);
 			player->SetVector3(position);
-			bool gun;
+			bool gun = false;
 			GetBoolFromJSON(actorValue, "gun", gun);
 			if (gun)
 			{
@@ -95,7 +95,7 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		else if (type == "EnergyLauncher")
 		{
 			EnergyLauncher* launcher = new EnergyLauncher(game);
-			float cooldown;
+			float cooldown = 0.0f;
 			GetFloatFromJSON(actorValue, "cooldown", cooldown);
 			launcher->SetCooldown(cooldown);
 			std::string name;

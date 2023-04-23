@@ -8,7 +8,6 @@ public:
 	~TurretBase();
 
 private:
-
 	class MeshComponent* mMeshComponent;
 	class CollisionComponent* mCollisionComponent;
 	class HealthComponent* mHealthComponent;

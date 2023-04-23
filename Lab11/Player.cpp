@@ -30,11 +30,6 @@ void Player::GiveGun()
 	new PlayerMesh(mGame);
 }
 
-bool Player::HasGun()
-{
-	return mHasGun;
-}
-
 void Player::OnUpdate(float deltaTime)
 {
 }

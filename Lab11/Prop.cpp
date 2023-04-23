@@ -6,7 +6,8 @@
 #include "MeshComponent.h"
 #include <string>
 
-Prop::Prop(std::string mesh, bool usesAlpha, bool hasCollisions, Game* game):Actor(game)
+Prop::Prop(std::string mesh, bool usesAlpha, bool hasCollisions, Game* game)
+: Actor(game)
 {
 	mMeshComponent = new MeshComponent(this, usesAlpha);
 	Mesh* currMesh = mGame->GetRenderer()->GetMesh(mesh);

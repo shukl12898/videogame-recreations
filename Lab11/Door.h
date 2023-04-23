@@ -8,7 +8,7 @@ public:
 	~Door();
 	void OnUpdate(float deltaTime) override;
 	void OpenDoor() { mOpen = true; };
-	bool GetOpen() { return mOpen; };
+	bool GetOpen() const { return mOpen; };
 
 private:
 	class MeshComponent* mMeshComponent;

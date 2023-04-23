@@ -150,7 +150,7 @@ void Game::UpdateGame()
 		delete actor;
 	}
 
-	if (mNextLevel != "")
+	if (!mNextLevel.empty())
 	{
 		UnloadData();
 		mInputReplay->StopPlayback();
@@ -163,7 +163,8 @@ void Game::UpdateGame()
 	}
 }
 
-void Game::ReloadLevel() {
+void Game::ReloadLevel()
+{
 	mNextLevel = mCurrentLevel;
 }
 

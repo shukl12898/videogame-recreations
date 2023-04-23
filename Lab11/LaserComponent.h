@@ -15,7 +15,7 @@ public:
 private:
 	Matrix4 LaserTransform(LineSegment segment);
 	std::vector<LineSegment> mLineSegments;
-	class Actor* mIgnoreActor;
+	class Actor* mIgnoreActor = nullptr;
 	class Actor* mLastHitActor = nullptr;
 	bool mDisabled = false;
 };
