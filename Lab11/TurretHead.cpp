@@ -133,7 +133,7 @@ void TurretHead::UpdateSearch(float deltaTime)
 		mFirstRound = true;
 	}
 
-	float time = Math::Clamp<float>(static_cast<float>(mStateTimer / 0.5, 0, 1));
+	float time = Math::Clamp<float>((static_cast<float>(mStateTimer / 0.5)), 0, 1);
 	if (mFirstRound && !mSecondRound)
 	{
 		SetQuat(Quaternion::Slerp(Quaternion::Identity, mAimQuat, time));
