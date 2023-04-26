@@ -9,8 +9,7 @@
 #include "PortalMeshComponent.h"
 #include "Game.h"
 #include "Actor.h"
-// TODO: Uncomment below when adding portal views
-// #include "Portal.h"
+#include "Portal.h"
 #include <typeinfo>
 #include <GL/glew.h>
 
@@ -141,11 +140,8 @@ void Renderer::Draw()
 		SDL_WarpMouseInWindow(mWindow, x, y);
 	}
 
-	Actor* bluePortal = nullptr;
-	Actor* orangePortal = nullptr;
-	// TODO: Replace above code with below two lines for portal views
-	// Portal* bluePortal = mGame->GetBluePortal();
-	// Portal* orangePortal = mGame->GetOrangePortal();
+	Portal* bluePortal = mGame->GetBluePortal();
+	Portal* orangePortal = mGame->GetOrangePortal();
 
 	PortalMeshComponent* blueMesh = nullptr;
 	PortalMeshComponent* orangeMesh = nullptr;
@@ -420,6 +416,23 @@ void Renderer::Draw3DScene(unsigned int framebuffer, const Matrix4& view, const 
 	glEnable(GL_BLEND);
 	glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
+
+	// Sort alpha objects based on depth
+	// This is not perfect for lasers because it uses the depth of the owner
+	Matrix4 viewProj = view * projection;
+	std::sort(mMeshCompsAlpha.begin(), mMeshCompsAlpha.end(),
+			  [&viewProj](MeshComponent* a, MeshComponent* b) {
+				  // Get depth of a
+				  Vector3 aPos = a->GetOwner()->GetWorldPosition();
+				  Vector3 aProj = Vector3::TransformWithPerspDiv(aPos, viewProj);
+				  float aDepth = aProj.z;
+
+				  // Get depth of b
+				  Vector3 bPos = b->GetOwner()->GetWorldPosition();
+				  Vector3 bProj = Vector3::TransformWithPerspDiv(bPos, viewProj);
+				  float bDepth = bProj.z;
+				  return aDepth > bDepth;
+			  });
 
 	// Draw mesh components with alpha
 	for (auto mc : mMeshCompsAlpha)
