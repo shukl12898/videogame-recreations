@@ -41,5 +41,6 @@ void Door::OnUpdate(float deltaTime)
 		float time = Math::Clamp<float>(mOpenTime, 0, 1);
 		mLeft->SetPosition(Vector3::Lerp(Vector3::Zero, Vector3(0, -100, 0), time));
 		mRight->SetPosition(Vector3::Lerp(Vector3::Zero, Vector3(0, 100, 0), time));
+		mGame->RemoveCollider(this);
 	}
 }

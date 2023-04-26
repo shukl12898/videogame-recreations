@@ -10,6 +10,7 @@ public:
 	class PlayerUI* GetPlayerUI() { return mPlayerUI; };
 	void GiveGun();
 	class CameraComponent* GetCamera() { return mCameraComponent; };
+	class HUD* GetHUD() { return mHUD; }
 	Vector3 GetVector3() { return mVector3; };
 	void SetVector3(Vector3 vec) { mVector3 = vec; };
 
@@ -21,6 +22,7 @@ protected:
 	class CollisionComponent* mCollisionComponent = nullptr;
 	class PlayerUI* mPlayerUI = nullptr;
 	class HealthComponent* mHealthComponent = nullptr;
+	class HUD* mHUD = nullptr;
 	bool mHasGun = false;
 	Vector3 mVector3;
 };

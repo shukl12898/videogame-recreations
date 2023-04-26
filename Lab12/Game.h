@@ -38,6 +38,7 @@ public:
 	void RemoveCollider(class Actor* collider);
 	class Player* GetPlayer() { return mPlayer; };
 	void SetPlayer(class Player* player) { mPlayer = player; };
+	void SetNextLevel(std::string level) { mNextLevel = level; }
 	void LoadBlocks(std::string fileName, float x);
 	void AddDoor(class Door* door, std::string doorName) { mDoorNames[doorName] = door; };
 	std::unordered_map<std::string, class Door*> GetDoorNames() { return mDoorNames; };

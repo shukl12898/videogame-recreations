@@ -17,6 +17,7 @@
 #include <string>
 #include "LevelLoader.h"
 #include "InputReplay.h"
+#include <SDL2/SDL_ttf.h>
 
 Game::Game()
 : mIsRunning(true)
@@ -48,6 +49,8 @@ bool Game::Initialize()
 	}
 
 	mAudio = new AudioSystem();
+
+	TTF_Init();
 
 	LoadData();
 
@@ -204,6 +207,7 @@ void Game::Shutdown()
 	mRenderer->Shutdown();
 	delete mRenderer;
 	delete mInputReplay;
+	TTF_Quit();
 	SDL_Quit();
 }
 

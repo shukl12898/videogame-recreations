@@ -9,6 +9,7 @@
 #include "PlayerMesh.h"
 #include "CameraComponent.h"
 #include "HealthComponent.h"
+#include "HUD.h"
 
 Player::Player(Game* game)
 : Actor(game)
@@ -22,6 +23,7 @@ Player::Player(Game* game)
 	mHealthComponent->SetOnDeath([this] {
 		mGame->ReloadLevel();
 	});
+	mHUD = new HUD(this);
 }
 
 void Player::GiveGun()

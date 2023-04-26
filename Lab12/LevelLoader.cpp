@@ -19,6 +19,7 @@
 #include "EnergyGlass.h"
 #include "EnergyCube.h"
 #include "TurretBase.h"
+#include "VOTrigger.h"
 
 namespace
 {
@@ -124,6 +125,23 @@ void LoadActor(const rapidjson::Value& actorValue, Game* game, Actor* parent)
 		{
 			TurretBase* turret = new TurretBase(game);
 			actor = turret;
+		}
+		else if (type == "VOTrigger")
+		{
+			VOTrigger* voTrigger = new VOTrigger(game);
+			std::string doorName;
+			GetStringFromJSON(actorValue, "door", doorName);
+			voTrigger->SetDoorName(doorName);
+			std::string nextLevel;
+			GetStringFromJSON(actorValue, "level", nextLevel);
+			voTrigger->SetNextLevel(nextLevel);
+			std::vector<std::string> sounds;
+			GetStringArrayFromJSON(actorValue, "sounds", sounds);
+			voTrigger->SetSounds(sounds);
+			std::vector<std::string> subtitles;
+			GetStringArrayFromJSON(actorValue, "subtitles", subtitles);
+			voTrigger->SetSubtitles(subtitles);
+			actor = voTrigger;
 		}
 
 		// Set properties of actor
