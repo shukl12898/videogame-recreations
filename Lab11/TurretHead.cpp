@@ -114,6 +114,7 @@ void TurretHead::UpdateSearch(float deltaTime)
 		Vector3 offset(0.0f, SIDE_DIST * cos(theta), UP_DIST * sin(theta));
 		mRandomPoint = center + offset;
 		mFirstRound = true;
+
 		Vector3 unit = mRandomPoint - GetPosition();
 		unit.Normalize();
 
@@ -131,26 +132,32 @@ void TurretHead::UpdateSearch(float deltaTime)
 
 		mAimQuat = Quaternion(normalizedAxisRotation, angle);
 		mFirstRound = true;
+		mTurnTime = 0.0f;
 	}
 
-	float time = Math::Clamp<float>((static_cast<float>(mStateTimer / 0.5)), 0, 1);
+	float time = Math::Clamp<float>((static_cast<float>((0.5 - mTurnTime) / 0.5)), 0, 1);
 	if (mFirstRound && !mSecondRound)
 	{
 		SetQuat(Quaternion::Slerp(Quaternion::Identity, mAimQuat, time));
-		if (mStateTimer >= 0.5f)
+		mTurnTime += deltaTime;
+		if (mTurnTime >= 0.5f)
 		{
 			mStateTimer = 0.0f;
 			mSecondRound = true;
+			mTurnTime = 0.0f;
 		}
 	}
 	if (mSecondRound)
 	{
 		SetQuat(Quaternion::Slerp(mAimQuat, Quaternion::Identity, time));
-		if (mStateTimer >= 0.5f)
+		mTurnTime += deltaTime;
+		if (mTurnTime >= 0.5f)
 		{
 			mStateTimer = 0.0f;
+			mTurnTime = 0.0f;
 			mSecondRound = false;
 			mFirstRound = false;
+			mCurrQuat = GetQuat();
 		}
 	}
 	if (mSearchTimer > 5.0f)

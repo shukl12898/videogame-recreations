@@ -41,8 +41,10 @@ private:
 	float mCountdown = 0.0f;
 	float mFireTimer = 0.05f;
 	float mSearchTimer = 0.0f;
+	float mTurnTime = 0.0f;
 	bool mFirstRound = false;
 	bool mSecondRound = false;
 	Vector3 mRandomPoint;
 	Quaternion mAimQuat;
+	Quaternion mCurrQuat = Quaternion::Identity;
 };

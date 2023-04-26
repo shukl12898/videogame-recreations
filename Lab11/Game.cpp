@@ -116,11 +116,15 @@ void Game::ProcessInput()
 
 void Game::UpdateGame()
 {
-	// Compute delta time
-	// Wait until 16ms has elapsed since last frame
-	float deltaTime = 0.016f;
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16))
+		;
 
-	mAudio->Update(deltaTime);
+	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+	if (deltaTime > 0.01667f)
+	{
+		deltaTime = 0.01667f;
+	}
+	mTicksCount = SDL_GetTicks();
 
 	mInputReplay->Update(deltaTime);
 
