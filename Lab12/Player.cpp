@@ -32,6 +32,7 @@ Player::Player(Game* game)
 	mHealthComponent = new HealthComponent(this);
 	mHealthComponent->SetOnDeath([this] {
 		int index = Random::GetIntRange(0, 3);
+		mGame->GetAudio()->StopAllSounds();
 		mDeadSound = mGame->GetAudio()->PlaySound(mDeathSounds[index]);
 		mHUD->ShowSubtitle(mDeathSubtitles[index]);
 	});
