@@ -1,5 +1,6 @@
 #pragma once
 #include "Actor.h"
+#include <string>
 
 class Player : public Actor
 {
@@ -10,6 +11,7 @@ public:
 	class PlayerUI* GetPlayerUI() { return mPlayerUI; };
 	void GiveGun();
 	class CameraComponent* GetCamera() { return mCameraComponent; };
+	int GetDeadSound() { return mDeadSound; }
 	class HUD* GetHUD() { return mHUD; }
 	Vector3 GetVector3() { return mVector3; };
 	void SetVector3(Vector3 vec) { mVector3 = vec; };
@@ -25,4 +27,7 @@ protected:
 	class HUD* mHUD = nullptr;
 	bool mHasGun = false;
 	Vector3 mVector3;
+	int mDeadSound = 0;
+	std::vector<std::string> mDeathSounds;
+	std::vector<std::string> mDeathSubtitles;
 };

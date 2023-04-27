@@ -29,6 +29,7 @@ EnergyCatcher::~EnergyCatcher()
 void EnergyCatcher::Activate()
 {
 	mActivated = true;
+	mGame->GetAudio()->PlaySound("EnergyCaught.ogg", false, this);
 	std::unordered_map<std::string, Door*> doorNames = mGame->GetDoorNames();
 	if (doorNames.find(mDoorName) != doorNames.end())
 	{

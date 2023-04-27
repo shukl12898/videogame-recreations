@@ -24,6 +24,7 @@ Actor::Actor(Game* game, Actor* parent)
 
 Actor::~Actor()
 {
+	mGame->GetAudio()->RemoveActor(this);
 
 	while (!mChildren.empty())
 	{

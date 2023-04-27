@@ -48,7 +48,7 @@ bool Game::Initialize()
 		return false;
 	}
 
-	mAudio = new AudioSystem();
+	mAudio = new AudioSystem(this, 32);
 
 	TTF_Init();
 
@@ -186,7 +186,7 @@ void Game::LoadData()
 		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
 	mRenderer->SetProjectionMatrix(projection);
 	mAudio->CacheAllSounds();
-	mCurrentLevel = "Assets/Level01.json";
+	mCurrentLevel = "Assets/Level04.json";
 	LevelLoader::Load(this, mCurrentLevel);
 }
 

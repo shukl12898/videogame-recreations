@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "SDL2/SDL_stdinc.h"
+#include <unordered_set>
 
 // SoundHandles are used to operate on active sounds
 typedef unsigned int SoundHandle;
@@ -22,7 +23,7 @@ class AudioSystem
 public:
 	// Create the AudioSystem with specified number of channels
 	// (Defaults to 8 channels)
-	AudioSystem(int numChannels = 8);
+	AudioSystem(class Game* game, int numChannels = 8);
 	// Destroy the AudioSystem
 	~AudioSystem();
 
@@ -37,7 +38,9 @@ public:
 	// NOTE: The soundName is without the "Assets/Sounds/" part of the file
 	//       For example, pass in "ChompLoop.wav" rather than
 	//       "Assets/Sounds/ChompLoop.wav".
-	SoundHandle PlaySound(const std::string& soundName, bool looping = false, int fadeTimeMS = 0);
+	SoundHandle PlaySound(const std::string& soundName, bool looping = false,
+						  class Actor* actor = nullptr, bool stopOnActorRemove = true,
+						  int fadeTimeMS = 0);
 
 	// Stops the sound if it is currently playing
 	void StopSound(SoundHandle sound, int fadeTimeMS = 0);
@@ -63,6 +66,8 @@ public:
 	//       "Assets/Sounds/ChompLoop.wav".
 	void CacheSound(const std::string& soundName);
 
+	void RemoveActor(class Actor* actor);
+
 private:
 	// If the sound is already loaded, returns Mix_Chunk from the map.
 	// Otherwise, will attempt to load the file and save it in the map.
@@ -71,6 +76,7 @@ private:
 	//       For example, pass in "ChompLoop.wav" rather than
 	//       "Assets/Sounds/ChompLoop.wav".
 	struct Mix_Chunk* GetSound(const std::string& soundName);
+	int CalculateVolume(class Actor* actor, class Actor* listener) const;
 
 	// Internal struct used to track the properties of active sound handles
 	struct HandleInfo
@@ -79,6 +85,8 @@ private:
 		int mChannel = -1;
 		bool mIsLooping = false;
 		bool mIsPaused = false;
+		class Actor* mActor = nullptr;
+		bool mStopOnActorRemove = true;
 	};
 
 	// Tracks the active SoundHandle for each channel
@@ -98,4 +106,8 @@ private:
 
 	// Used for debug input in ProcessInput
 	bool mLastDebugKey = false;
+	class Game* mGame = nullptr;
+
+	// Map for actors to their handles
+	std::unordered_map<class Actor*, std::unordered_set<SoundHandle>> mActorMap;
 };

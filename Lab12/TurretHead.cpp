@@ -24,6 +24,12 @@ TurretHead::TurretHead(Game* game, Actor* parent)
 	mLaserHolder->SetPosition(Vector3(0, 0, 10));
 	mLaserComponent = new LaserComponent(mLaserHolder);
 	mLaserComponent->SetIgnoreActor(mParent);
+	mStateSounds[TurretState::Idle] = "TurretIdle.ogg";
+	mStateSounds[TurretState::Search] = "TurretSearch.ogg";
+	mStateSounds[TurretState::Priming] = "TurretPriming.ogg";
+	mStateSounds[TurretState::Firing] = "TurretFiring.ogg";
+	mStateSounds[TurretState::Falling] = "TurretFalling.ogg";
+	mStateSounds[TurretState::Dead] = "TurretDead.ogg";
 }
 
 bool TurretHead::TargetAcquistion()
@@ -74,6 +80,15 @@ void TurretHead::OnUpdate(float deltaTime)
 
 void TurretHead::ChangeState(TurretState newState)
 {
+	if (newState != mTurretState)
+	{
+		if (mGame->GetAudio()->GetSoundState(mSoundHandle) == SoundState::Playing)
+		{
+			mGame->GetAudio()->StopSound(mSoundHandle);
+		}
+
+		mSoundHandle = mGame->GetAudio()->PlaySound(mStateSounds[newState], false, this);
+	}
 	mTurretState = newState;
 	mStateTimer = 0.0f;
 }
@@ -204,6 +219,7 @@ void TurretHead::UpdateFiring(float deltaTime)
 	if (!mTarget->GetComponent<HealthComponent>()->IsDead())
 	{
 		mFireTimer -= deltaTime;
+		mGame->GetAudio()->PlaySound("Bullet.ogg", false, mTarget);
 		if (mFireTimer <= 0.0f)
 		{
 			mTarget->GetComponent<HealthComponent>()->TakeDamage(2.5, GetWorldPosition());
@@ -309,4 +325,18 @@ bool TurretHead::PortalTeleport(float deltaTime)
 	}
 
 	return false;
+}
+
+void TurretHead::TakeDamage()
+{
+	if (mFirstDamage)
+	{
+		if (mGame->GetAudio()->GetSoundState(mSoundHandle) == SoundState::Playing)
+		{
+			mGame->GetAudio()->StopSound(mSoundHandle);
+		}
+
+		mGame->GetAudio()->PlaySound("TurretFriendlyFire.ogg", false, this);
+		mFirstDamage = false;
+	}
 }

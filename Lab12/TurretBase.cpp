@@ -24,6 +24,9 @@ TurretBase::TurretBase(Game* game)
 	mHealthComponent->SetOnDeath([this] {
 		Die();
 	});
+	mHealthComponent->SetOnDamage([this](const Vector3&) {
+		mHead->TakeDamage();
+	});
 	mGame->AddCollider(this);
 }
 

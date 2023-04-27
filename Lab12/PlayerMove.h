@@ -14,6 +14,7 @@ public:
 	};
 
 	PlayerMove(class Actor* owner);
+	~PlayerMove();
 	void Update(float deltaTime) override;
 	void ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 					  const Vector2& relativeMouse) override;
@@ -42,7 +43,8 @@ private:
 	float mMass = 1.0f;
 	float mCountdown = 0.0f;
 
-	int mSound = 0;
+	int mFootStepSound = 0;
+	class AudioSystem* mAudio = nullptr;
 	class Game* mGame = nullptr;
 	bool mLastFrameSpace = false;
 	bool mLastFrameR = false;

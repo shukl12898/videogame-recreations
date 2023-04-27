@@ -44,6 +44,7 @@ void Pellet::OnUpdate(float deltaTime)
 
 	if (mCollisionComponent->Intersect(mGame->GetPlayer()->GetComponent<CollisionComponent>()))
 	{
+		mGame->GetAudio()->PlaySound("PelletDeath.ogg", false, this, false);
 		SetState(ActorState::Destroy);
 	}
 
@@ -95,6 +96,7 @@ void Pellet::OnUpdate(float deltaTime)
 				{
 					if (!mGreen)
 					{
+						mGame->GetAudio()->PlaySound("PelletDeath.ogg", false, this, false);
 						SetState(ActorState::Destroy);
 					}
 				}
@@ -121,6 +123,7 @@ void Pellet::OnUpdate(float deltaTime)
 
 				if (catcher == nullptr && glass == nullptr && cube == nullptr && skip)
 				{
+					mGame->GetAudio()->PlaySound("PelletDeath.ogg", false, this, false);
 					SetState(ActorState::Destroy);
 				}
 			}

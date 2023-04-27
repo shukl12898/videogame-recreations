@@ -2,11 +2,15 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_mixer.h"
 #include <filesystem>
+#include "Game.h"
+#include "Actor.h"
+#include "Player.h"
 
 // Create the AudioSystem with specified number of channels
 // (Defaults to 8 channels)
-AudioSystem::AudioSystem(int numChannels)
+AudioSystem::AudioSystem(Game* game, int numChannels)
 {
+	mGame = game;
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 	Mix_AllocateChannels(numChannels);
 	mChannels.resize(numChannels);
@@ -34,8 +38,21 @@ void AudioSystem::Update(float deltaTime)
 			bool isPlaying = Mix_Playing(i);
 			if (!isPlaying)
 			{
+				if (mHandleMap[mChannels[i]].mActor != nullptr)
+				{
+					mActorMap[mHandleMap[mChannels[i]].mActor].erase(mChannels[i]);
+				}
 				mHandleMap.erase(mChannels[i]);
 				mChannels[i] = 0;
+			}
+			else
+			{
+				if (mHandleMap[mChannels[i]].mActor != nullptr)
+				{
+					int volume =
+						CalculateVolume(mHandleMap[mChannels[i]].mActor, mGame->GetPlayer());
+					Mix_Volume(i, volume);
+				}
 			}
 		}
 	}
@@ -47,7 +64,8 @@ void AudioSystem::Update(float deltaTime)
 // NOTE: The soundName is without the "Assets/Sounds/" part of the file
 //       For example, pass in "ChompLoop.wav" rather than
 //       "Assets/Sounds/ChompLoop.wav".
-SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping, int fadeTimeMS)
+SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping, Actor* actor,
+								   bool stopOnActorRemove, int fadeTimeMS)
 {
 	Mix_Chunk* currentSound = GetSound(soundName);
 	if (currentSound == nullptr)
@@ -121,8 +139,15 @@ SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping, i
 	currentHandleInfo.mIsLooping = looping;
 	currentHandleInfo.mIsPaused = false;
 	currentHandleInfo.mChannel = channelNumber;
+	currentHandleInfo.mActor = actor;
+	currentHandleInfo.mStopOnActorRemove = stopOnActorRemove;
 	mHandleMap[mLastHandle] = currentHandleInfo;
 	mChannels[channelNumber] = mLastHandle;
+
+	if (actor != nullptr)
+	{
+		mActorMap[actor].insert(mLastHandle);
+	}
 
 	int isLooping = 0;
 	if (looping)
@@ -139,7 +164,31 @@ SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping, i
 		Mix_PlayChannel(channelNumber, currentSound, isLooping);
 	}
 
+	int volume = CalculateVolume(actor, mGame->GetPlayer());
+	Mix_Volume(channelNumber, volume);
+
 	return mLastHandle;
+}
+
+void AudioSystem::RemoveActor(Actor* actor)
+{
+	if (mActorMap.find(actor) != mActorMap.end())
+	{
+		for (auto handle : mActorMap[actor])
+		{
+			if (mHandleMap.find(handle) != mHandleMap.end())
+			{
+				mHandleMap[handle].mActor = nullptr;
+				if (mHandleMap[handle].mStopOnActorRemove &&
+					Mix_Playing(mHandleMap[handle].mChannel))
+				{
+					Mix_HaltChannel(mHandleMap[handle].mChannel);
+				}
+			}
+		}
+
+		mActorMap.erase(actor);
+	}
 }
 
 // Stops the sound if it is currently playing
@@ -317,4 +366,28 @@ void AudioSystem::ProcessInput(const Uint8* keyState)
 	}
 
 	mLastDebugKey = keyState[SDL_SCANCODE_PERIOD];
+}
+
+int AudioSystem::CalculateVolume(Actor* actor, Actor* listener) const
+{
+	if (actor == nullptr || listener == nullptr)
+	{
+		return 128;
+	}
+
+	Vector3 actorPos = actor->GetWorldPosition();
+	Vector3 listenerPos = listener->GetWorldPosition();
+	float distance = Vector3::Distance(actorPos, listenerPos);
+
+	if (distance >= 600.0f)
+	{
+		return 0;
+	}
+	if (distance <= 25.0f)
+	{
+		return 128;
+	}
+
+	float volume = 1 - (distance - 25.0f) / (600.0f - 25.0f);
+	return static_cast<int>(volume);
 }

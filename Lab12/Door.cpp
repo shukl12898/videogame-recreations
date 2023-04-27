@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Renderer.h"
 #include "Mesh.h"
+#include "AudioSystem.h"
 
 Door::Door(Game* game, std::string name)
 : Actor(game)
@@ -41,6 +42,10 @@ void Door::OnUpdate(float deltaTime)
 		float time = Math::Clamp<float>(mOpenTime, 0, 1);
 		mLeft->SetPosition(Vector3::Lerp(Vector3::Zero, Vector3(0, -100, 0), time));
 		mRight->SetPosition(Vector3::Lerp(Vector3::Zero, Vector3(0, 100, 0), time));
+		if (mOpenTime == deltaTime)
+		{
+			mGame->GetAudio()->PlaySound("DoorOpen.ogg", false, this);
+		}
 		mGame->RemoveCollider(this);
 	}
 }

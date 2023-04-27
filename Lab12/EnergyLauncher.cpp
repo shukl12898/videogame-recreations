@@ -47,6 +47,7 @@ void EnergyLauncher::OnUpdate(float deltaTime)
 		{
 			mPelletTimer = 0.0f;
 			Pellet* pellet = new Pellet(mGame);
+			mGame->GetAudio()->PlaySound("PelletFire.ogg", false, this);
 
 			//pellet 20 units in front of it
 			Vector3 direction = GetForward();

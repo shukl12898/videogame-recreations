@@ -6,6 +6,7 @@
 #include "AudioSystem.h"
 #include "Door.h"
 #include "HUD.h"
+#include "HealthComponent.h"
 
 VOTrigger::VOTrigger(Game* game)
 : Actor(game)
@@ -18,36 +19,47 @@ VOTrigger::VOTrigger(Game* game)
 void VOTrigger::OnUpdate(float deltaTime)
 {
 
-	bool moreSounds = true;
-
-	if (!mActivated)
+	if (mGame->GetPlayer()->GetComponent<HealthComponent>()->IsDead())
 	{
-		CollisionComponent* playerCC = mGame->GetPlayer()->GetComponent<CollisionComponent>();
-		if (mCollisionComponent->Intersect(playerCC))
+		if (mAudio->GetSoundState(mSoundHandle) == SoundState::Stopped)
 		{
-			mActivated = true;
-			PlayNextSound();
+			mAudio->StopSound(mSoundHandle);
 		}
 	}
 	else
 	{
-		if (mAudio->GetSoundState(mSoundHandle) == SoundState::Stopped)
-		{
-			moreSounds = PlayNextSound();
-		}
 
-		if (!moreSounds)
+		bool moreSounds = true;
+
+		if (!mActivated)
 		{
-			if (!mDoorName.empty())
+			CollisionComponent* playerCC = mGame->GetPlayer()->GetComponent<CollisionComponent>();
+			if (mCollisionComponent->Intersect(playerCC))
 			{
-				Door* door = mGame->GetDoorNames()[mDoorName];
-				door->OpenDoor();
+				mActivated = true;
+				PlayNextSound();
 			}
-			if (!mNextLevel.empty())
+		}
+		else
+		{
+			if (mAudio->GetSoundState(mSoundHandle) == SoundState::Stopped)
 			{
-				mGame->SetNextLevel(mNextLevel);
+				moreSounds = PlayNextSound();
 			}
-			SetState(ActorState::Destroy);
+
+			if (!moreSounds)
+			{
+				if (!mDoorName.empty())
+				{
+					Door* door = mGame->GetDoorNames()[mDoorName];
+					door->OpenDoor();
+				}
+				if (!mNextLevel.empty())
+				{
+					mGame->SetNextLevel(mNextLevel);
+				}
+				SetState(ActorState::Destroy);
+			}
 		}
 	}
 }

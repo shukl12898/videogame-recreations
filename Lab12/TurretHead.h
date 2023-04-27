@@ -1,4 +1,6 @@
 #include "Actor.h"
+#include <unordered_map>
+#include <string>
 
 enum class TurretState
 {
@@ -25,6 +27,7 @@ public:
 	void ChangeState(TurretState newState);
 	void Die();
 	void OnUpdate(float deltaTime) override;
+	void TakeDamage();
 
 	static const int SIDE_DIST = 75;
 	static const int UP_DIST = 25;
@@ -44,7 +47,10 @@ private:
 	float mTurnTime = 0.0f;
 	bool mFirstRound = false;
 	bool mSecondRound = false;
+	bool mFirstDamage = true;
+	int mSoundHandle = 0;
 	Vector3 mRandomPoint;
 	Quaternion mAimQuat;
 	Quaternion mCurrQuat = Quaternion::Identity;
+	std::unordered_map<TurretState, std::string> mStateSounds;
 };

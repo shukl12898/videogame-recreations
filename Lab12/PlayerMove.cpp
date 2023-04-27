@@ -13,6 +13,7 @@
 #include "MeshComponent.h"
 #include "Block.h"
 #include "HealthComponent.h"
+#include "AudioSystem.h"
 
 PlayerMove::PlayerMove(Actor* owner)
 : MoveComponent(owner)
@@ -23,10 +24,30 @@ PlayerMove::PlayerMove(Actor* owner)
 	mGravity = Vector3(0.0f, 0.0f, -980.0f);
 	mJumpForce = Vector3(0.0f, 0.0f, 35000.0f);
 	mCrosshair = new Crosshair(mOwner);
+	mAudio = mGame->GetAudio();
+	mFootStepSound = mAudio->PlaySound("FootstepLoop.ogg", true);
+	mAudio->PauseSound(mFootStepSound);
+}
+
+PlayerMove::~PlayerMove()
+{
+	mAudio->StopSound(mFootStepSound);
 }
 
 void PlayerMove::Update(float deltaTime)
 {
+
+	if (mOwner->GetComponent<HealthComponent>()->IsDead())
+	{
+		if (mGame->GetAudio()->GetSoundState(mGame->GetPlayer()->GetDeadSound()) == SoundState::Stopped)
+		{
+			mGame->ReloadLevel();
+		}
+		else
+		{
+			return;
+		}
+	}
 
 	if (mOwner->GetPosition().z <= -750)
 	{
@@ -44,6 +65,11 @@ void PlayerMove::Update(float deltaTime)
 	case Falling:
 		UpdateFalling(deltaTime);
 		break;
+	}
+
+	if (mCurrentState == MoveState::OnGround && mVelocity.Length() > 50)
+	{
+		mAudio->ResumeSound(mFootStepSound);
 	}
 }
 
@@ -95,6 +121,7 @@ bool PlayerMove::UpdatePortalTeleport(float deltaTime)
 					mOwner->GetComponent<CollisionComponent>()))
 			{
 				Teleport(blue, orange);
+				mAudio->PlaySound("PortalTeleport.ogg");
 				//make sure update portal teleport returns true
 				return true;
 			}
@@ -102,6 +129,7 @@ bool PlayerMove::UpdatePortalTeleport(float deltaTime)
 						 mOwner->GetComponent<CollisionComponent>()))
 			{
 				Teleport(orange, blue);
+				mAudio->PlaySound("PortalTeleport.ogg");
 				//make sure update portal teleport returns true
 				return true;
 			}
@@ -131,6 +159,7 @@ void PlayerMove::CreatePortal(bool isBlue)
 		//Not a block
 		if (block == nullptr)
 		{
+			mAudio->PlaySound("PortalFail.ogg");
 		}
 		//A block
 		else
@@ -191,6 +220,15 @@ void PlayerMove::CreatePortal(bool isBlue)
 				}
 				portal->GetComponent<MeshComponent>()->SetTextureIndex(1);
 				mGame->SetOrangePortal(portal);
+				if (bluePortal == nullptr)
+				{
+					mCrosshair->SetState(CrosshairState::OrangeFill);
+				}
+				else
+				{
+					mCrosshair->SetState(CrosshairState::BothFill);
+				}
+				mAudio->PlaySound("PortalShootOrange.ogg");
 				mGame->GetOrangePortal()->SetQuat(result);
 			}
 			else
@@ -199,23 +237,23 @@ void PlayerMove::CreatePortal(bool isBlue)
 				{
 					bluePortal->SetState(ActorState::Destroy);
 				}
+				if (orangePortal == nullptr)
+				{
+					mCrosshair->SetState(CrosshairState::BlueFill);
+				}
+				else
+				{
+					mCrosshair->SetState(CrosshairState::BothFill);
+				}
 				mGame->SetBluePortal(portal);
+				mAudio->PlaySound("PortalShootBlue.ogg");
 				mGame->GetBluePortal()->SetQuat(result);
 			}
 		}
 	}
-
-	if (bluePortal != nullptr && orangePortal == nullptr)
+	else
 	{
-		mCrosshair->SetState(CrosshairState::BlueFill);
-	}
-	else if (bluePortal == nullptr && orangePortal != nullptr)
-	{
-		mCrosshair->SetState(CrosshairState::OrangeFill);
-	}
-	else if (bluePortal != nullptr && orangePortal != nullptr)
-	{
-		mCrosshair->SetState(CrosshairState::BothFill);
+		mAudio->PlaySound("PortalFail.ogg");
 	}
 }
 
@@ -316,6 +354,7 @@ void PlayerMove::UpdateFalling(float deltaTime)
 		//when falling changes to ground, change above bool back to false
 		ChangeState(OnGround);
 		mTeleporting = false;
+		mAudio->PlaySound("Land.ogg");
 	}
 }
 
@@ -352,10 +391,16 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 							  const Vector2& relativeMouse)
 {
 
+	if (mOwner->GetComponent<HealthComponent>()->IsDead())
+	{
+		return;
+	}
+
 	if (!mLastFrameSpace && keyState[SDL_SCANCODE_SPACE] && mCurrentState == OnGround)
 	{
 		AddForce(mJumpForce);
 		ChangeState(Jump);
+		mAudio->PlaySound("Jump.ogg");
 	}
 
 	if (!mLastFrameR && keyState[SDL_SCANCODE_R])
@@ -374,6 +419,7 @@ void PlayerMove::ProcessInput(const Uint8* keyState, Uint32 mouseButtons,
 		mGame->SetBluePortal(nullptr);
 		mGame->SetOrangePortal(nullptr);
 		mCrosshair->SetState(CrosshairState::Default);
+		mAudio->PlaySound("PortalClose.ogg");
 	}
 
 	if (mGame->GetPlayer()->HasGun())
