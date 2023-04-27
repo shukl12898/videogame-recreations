@@ -21,7 +21,7 @@ void VOTrigger::OnUpdate(float deltaTime)
 
 	if (mGame->GetPlayer()->GetComponent<HealthComponent>()->IsDead())
 	{
-		if (mAudio->GetSoundState(mSoundHandle) == SoundState::Stopped)
+		if (mAudio->GetSoundState(mSoundHandle) != SoundState::Stopped)
 		{
 			mAudio->StopSound(mSoundHandle);
 		}
