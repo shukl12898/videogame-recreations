@@ -129,6 +129,7 @@ void Game::UpdateGame()
 	}
 	mTicksCount = SDL_GetTicks();
 
+	mAudio->Update(deltaTime);
 	mInputReplay->Update(deltaTime);
 
 	// Make copy of actor vector
@@ -186,7 +187,7 @@ void Game::LoadData()
 		Matrix4::CreatePerspectiveFOV(1.22f, WINDOW_WIDTH, WINDOW_HEIGHT, 10.0f, 10000.0f);
 	mRenderer->SetProjectionMatrix(projection);
 	mAudio->CacheAllSounds();
-	mCurrentLevel = "Assets/Level04.json";
+	mCurrentLevel = "Assets/Level03.json";
 	LevelLoader::Load(this, mCurrentLevel);
 }
 
@@ -197,7 +198,7 @@ void Game::UnloadData()
 	while (!mActors.empty())
 	{
 		delete mActors.back();
-	}
+	} 
 }
 
 void Game::Shutdown()

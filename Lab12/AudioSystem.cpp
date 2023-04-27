@@ -388,6 +388,6 @@ int AudioSystem::CalculateVolume(Actor* actor, Actor* listener) const
 		return 128;
 	}
 
-	float volume = 1 - (distance - 25.0f) / (600.0f - 25.0f);
+	float volume = (1 - (distance - 25.0f) / (600.0f - 25.0f)) * 128.0f;
 	return static_cast<int>(volume);
 }

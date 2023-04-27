@@ -39,7 +39,8 @@ void PlayerMove::Update(float deltaTime)
 
 	if (mOwner->GetComponent<HealthComponent>()->IsDead())
 	{
-		if (mGame->GetAudio()->GetSoundState(mGame->GetPlayer()->GetDeadSound()) == SoundState::Stopped)
+		if (mGame->GetAudio()->GetSoundState(mGame->GetPlayer()->GetDeadSound()) ==
+			SoundState::Stopped)
 		{
 			mGame->ReloadLevel();
 		}
@@ -70,6 +71,10 @@ void PlayerMove::Update(float deltaTime)
 	if (mCurrentState == MoveState::OnGround && mVelocity.Length() > 50)
 	{
 		mAudio->ResumeSound(mFootStepSound);
+	}
+	else
+	{
+		mAudio->PauseSound(mFootStepSound);
 	}
 }
 
