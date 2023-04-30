@@ -1,4 +1,3 @@
-#include "UIComponent.h"
 #include "HUD.h"
 #include "UIComponent.h"
 #include "Shader.h"

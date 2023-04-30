@@ -11,7 +11,7 @@ public:
 	class PlayerUI* GetPlayerUI() { return mPlayerUI; };
 	void GiveGun();
 	class CameraComponent* GetCamera() { return mCameraComponent; };
-	int GetDeadSound() { return mDeadSound; }
+	int GetDeadSound() const { return mDeadSound; }
 	class HUD* GetHUD() { return mHUD; }
 	Vector3 GetVector3() { return mVector3; };
 	void SetVector3(Vector3 vec) { mVector3 = vec; };
